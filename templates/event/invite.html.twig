@@ -1,0 +1,13 @@
+{# templates/event/invite.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Inviter des participants à l'événement: {{ event.title }}</h1>
+
+    {{ form_start(form) }}
+        <div id="emails-collection">
+            {{ form_row(form.email) }}
+        </div>
+        <button type="submit" class="btn btn-primary">Envoyer les invitations</button>
+    {{ form_end(form) }}
+{% endblock %}

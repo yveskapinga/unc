@@ -1,0 +1,38 @@
+{# templates/channel/invite.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Inviter un utilisateur{% endblock %}
+
+{% block body %}
+    <h1>Inviter un utilisateur à rejoindre le salon {{ channel.name }}</h1>
+
+    {% if app.flashes('success') %}
+        <div class="alert alert-success">
+            {% for message in app.flashes('success') %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if app.flashes('error') %}
+        <div class="alert alert-danger">
+            {% for message in app.flashes('error') %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form action="{{ path('invite_user_to_channel', { 'id': channel.id }) }}" method="post">
+        <div class="form-group">
+            <label for="user_id">Utilisateur</label>
+            <select id="user_id" name="user_id" class="form-control">
+                {% for user in users %}
+                    <option value="{{ user.id }}">{{ user.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Inviter</button>
+    </form>
+
+    <a href="{{ path('app_channel_show', { 'id': channel.id }) }}" class="btn btn-secondary">Retour au salon</a>
+{% endblock %}

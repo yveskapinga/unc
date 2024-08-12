@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mise à jour{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        fieldset {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        legend {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    <h1>Create new User</h1>
+
+    {{ include('user_crud/_form.html.twig') }}
+
+    <a href="{{ path('app_user_crud_index') }}">back to list</a>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Channel index{% endblock %}
+
+{% block body %}
+    <h1>Channel index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>IsPrivate</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for channel in channels %}
+            <tr>
+                <td>{{ channel.id }}</td>
+                <td>{{ channel.name }}</td>
+                <td>{{ channel.description }}</td>
+                <td>{{ channel.isPrivate ? 'Yes' : 'No' }}</td>
+                <td>
+                    <a href="{{ path('app_channel_show', {'id': channel.id}) }}">show</a>
+                    <a href="{{ path('app_channel_edit', {'id': channel.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_channel_new') }}">Create new</a>
+{% endblock %}

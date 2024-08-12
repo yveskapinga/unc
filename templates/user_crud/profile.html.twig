@@ -1,0 +1,38 @@
+{# templates/user/profile.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil de {{ app.user.username }}{% endblock %}
+
+{% block body %}
+    <h1>Profil de {{ app.user.username }}</h1>
+
+    <div class="profile-info">
+        <h2>Informations personnelles</h2>
+        <ul>
+            <li><strong>Nom d'utilisateur :</strong> {{ app.user.username }}</li>
+            <li><strong>Email :</strong> {{ app.user.email }}</li>
+            <li><strong>Date d'inscription :</strong> {{ app.user.joinedAt|date('d/m/Y') }}</li>
+            <li><strong>Compte actif :</strong> {{ app.user.isActive ? 'Oui' : 'Non' }}</li>
+        </ul>
+
+        {% if app.user.address %}
+            <h2>Adresse</h2>
+            <ul>
+                <li><strong>Rue :</strong> {{ app.user.address.street }}</li>
+                <li><strong>Ville :</strong> {{ app.user.address.city }}</li>
+                <li><strong>Pays :</strong> {{ app.user.address.country }}</li>
+                <li><strong>Latitude :</strong> {{ app.user.address.latitude }}</li>
+                <li><strong>Longitude :</strong> {{ app.user.address.longitude }}</li>
+            </ul>
+        {% endif %}
+
+        <h2>Rôles</h2>
+        <ul>
+            {% for role in app.user.roles %}
+                <li>{{ role }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <a href="{{ path('app_user_crud_edit', {'id': app.user.id}) }}"  class="btn btn-primary">Mettre à jour le profil</a>
+{% endblock %}

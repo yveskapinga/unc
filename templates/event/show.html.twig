@@ -1,0 +1,34 @@
+{# templates/event/detail.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>{{ event.title }}</h1>
+    <p>{{ event.description }}</p>
+    <p><strong>Date de début :</strong> {{ event.startDate|date('d/m/Y H:i') }}</p>
+    <p><strong>Date de fin :</strong> {{ event.endDate|date('d/m/Y H:i') }}</p>
+    <p><strong>Lieu :</strong> {{ event.location }}</p>
+    <p><strong>Organisateur :</strong> {{ event.organizer.username }}</p>
+
+    <h2>Invités</h2>
+    <ul>
+        {% for user in event.participant %}
+            <li>{{ user.username }} ({{ user.email }})</li>
+        {% else %}
+            <p><strong>aucun participant !</strong></p>
+        {% endfor %}
+    </ul>
+    <div class="row">
+        <div class="col-4">
+            <a href="{{ path('event_invite', {'id': event.id}) }}" class="btn btn-primary">Inviter des participants</a>
+        </div>
+        {% if app.user in event.participant %}
+            <div class="col-4">
+                <a href="{{ path('app_unregister_for_event', {'id': event.id}) }}" class="btn btn-primary">Se soustraire à l'évènement</a>
+            </div>
+        {% else %}
+            <div class="col-4">
+                <a href="{{ path('app_register_for_event', {'id': event.id}) }}" class="btn btn-primary">S'inscrire à l'évènement</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

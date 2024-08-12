@@ -1,0 +1,18 @@
+{{ form_start(form) }}
+
+    {#<fieldset>
+         <legend>Informations Utilisateur</legend>
+        {{ form_row(form.username) }}
+        {{ form_row(form.email) }}
+    </fieldset>
+
+    <fieldset>
+        <legend>Adresse</legend>
+        {{ form_row(form.address.street) }}
+        {{ form_row(form.address.city) }}
+        {{ form_row(form.address.country) }}
+    </fieldset> #}
+
+    <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }}
+

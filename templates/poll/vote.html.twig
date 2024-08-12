@@ -1,0 +1,40 @@
+{# templates/poll/vote.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Voter dans le sondage{% endblock %}
+
+{% block body %}
+    <h1>{{ poll.question }}</h1>
+
+    {% if app.flashes('success') %}
+        <div class="alert alert-success">
+            {% for message in app.flashes('success') %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if app.flashes('error') %}
+        <div class="alert alert-danger">
+            {% for message in app.flashes('error') %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form action="{{ path('vote_on_poll', { 'id': poll.id }) }}" method="post">
+        <div class="form-group">
+            {% for option in poll.options %}
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="vote" id="option{{ option.id }}" value="{{ option.id }}">
+                    <label class="form-check-label" for="option{{ option.id }}">
+                        {{ option.text }}
+                    </label>
+                </div>
+            {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-primary">Voter</button>
+    </form>
+
+    <a href="{{ path('app_poll_show', { 'id': poll.id }) }}" class="btn btn-secondary">Retour au sondage</a>
+{% endblock %}

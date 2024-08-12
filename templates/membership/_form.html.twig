@@ -1,0 +1,24 @@
+<div class="container">
+    {{ form_start(form) }}
+    <div class="row">
+        <div class="col-md-4">
+            {{ form_row(form.level) }}
+        </div>
+        <div class="col-md-4">
+            {{ form_row(form.feeAmount) }}
+        </div>
+        <div class="col-md-4">
+            {{ form_row(form.currency) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            {{ form_row(form.feePaidAt) }}
+        </div>
+        <div class="col-md-4">
+            {{ form_row(form.theUser) }}
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+    {{ form_end(form) }}
+

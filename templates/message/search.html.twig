@@ -1,0 +1,25 @@
+{# templates/message/search.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Recherche de Messages{% endblock %}
+
+{% block body %}
+    <h1>Résultats de la recherche</h1>
+
+    {% if messages is empty %}
+        <p>Aucun message trouvé.</p>
+    {% else %}
+        <ul>
+            {% for message in messages %}
+                <li>
+                    <strong>Envoyé par :</strong> {{ message.sender.username }}<br>
+                    <strong>Envoyé à :</strong> {{ message.recipient.username }}<br>
+                    <strong>Canal :</strong> {{ message.channel.name }}<br>
+                    <strong>Contenu :</strong> {{ message.content }}<br>
+                    <strong>Date :</strong> {{ message.createdAt|date('d/m/Y H:i') }}<br>
+                    <strong>Lu :</strong> {{ message.isRead ? 'Oui' : 'Non' }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,84 @@
+{# templates/test/get_location.html.twig #}
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+{% endblock %}
+
+
+{% block title %}Obtenir la Position{% endblock %}
+
+{% block body %}
+    <h1>Obtenir la Position</h1>
+    <button onclick="getLocation()">Obtenir ma position</button>
+    <p id="location"></p>
+
+    <div id="map" style="height: 400px;">
+    
+    <script>
+    function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError, {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+        });
+    } else {
+            document.getElementById("location").innerHTML = "La géolocalisation n'est pas supportée par ce navigateur.";
+        }
+    }
+    
+
+
+    function showPosition(position) {
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
+        document.getElementById("location").innerHTML = "Latitude: " + latitude + "<br>Longitude: " + longitude;
+
+        // Envoyer les coordonnées au serveur
+        fetch('/test/save-location', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token('save_location') }}'
+            },
+            body: JSON.stringify({ latitude: latitude, longitude: longitude })
+        }).then(response => response.json())
+          .then(data => console.log(data));
+
+        // Initialiser la carte
+        var map = L.map('map').setView([latitude, longitude], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        L.marker([latitude, longitude]).addTo(map)
+            .bindPopup('Vous êtes ici.')
+            .openPopup();
+    }
+
+    function showError(error) {
+        switch(error.code) {
+            case error.PERMISSION_DENIED:
+                document.getElementById("location").innerHTML = "L'utilisateur a refusé la demande de géolocalisation."
+                break;
+            case error.POSITION_UNAVAILABLE:
+                document.getElementById("location").innerHTML = "Les informations de localisation ne sont pas disponibles."
+                break;
+            case error.TIMEOUT:
+                document.getElementById("location").innerHTML = "La demande de localisation a expiré."
+                break;
+            case error.UNKNOWN_ERROR:
+                document.getElementById("location").innerHTML = "Une erreur inconnue est survenue."
+                break;
+        }
+    }
+</script>
+    </div>
+    
+
+{% endblock %}
