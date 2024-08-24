@@ -13,6 +13,9 @@
         "doctrine/orm": "^3.2",
         "geocoder-php/nominatim-provider": "*",
         "knplabs/knp-paginator-bundle": "^6.2",
+        "knpuniversity/oauth2-client-bundle": "^2.18",
+        "league/oauth2-facebook": "^2.2",
+        "league/oauth2-google": "^4.0",
         "nyholm/psr7": "^1.8",
         "php-http/curl-client": "^2.3",
         "phpdocumentor/reflection-docblock": "^5.4",
@@ -47,6 +50,7 @@
         "symfony/yaml": "6.1.*",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0",
+        "vich/uploader-bundle": "^2.4",
         "willdurand/geocoder": "^4.6"
     },
     "require-dev": {
@@ -110,7 +114,7 @@
     },
     "extra": {
         "symfony": {
-            "allow-contrib": false,
+            "allow-contrib": true,
             "require": "6.1.*"
         }
     }
