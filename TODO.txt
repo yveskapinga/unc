@@ -1,0 +1,193 @@
+Tu peux utiliser un éditeur WYSIWYG pour permettre aux utilisateurs de créer et de formater du contenu, et VichUploaderBundle pour gérer le téléchargement et le stockage des fichiers.
+
+composer require kms/froala-editor-bundle
+composer require vich/uploader-bundle
+
+
+# config/packages/kms_froala_editor.yaml
+kms_froala_editor:
+    language: 'fr'
+    videoUpload: true
+    videoUploadURL: '/upload/video'
+
+
+# config/packages/vich_uploader.yaml
+vich_uploader:
+    db_driver: orm
+    mappings:
+        video_upload:
+            uri_prefix: /uploads/videos
+            upload_destination: '%kernel.project_dir%/public/uploads/videos'
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+
+
+composer require knplabs/knp-paginator-bundle
+- dans config/bundles.php vérifier ou ajouter : return [
+    // ...
+    Knp\Bundle\PaginatorBundle\KnpPaginatorBundle::class => ['all' => true],
+];
+
+- Ajoute la configuration suivante dans le fichier config/packages/knp_paginator.yaml :
+knp_paginator:
+    page_range: 5                       # Nombre de liens affichés dans le menu de pagination
+    default_options:
+        page_name: page                 # Nom du paramètre de page dans l'URL
+        sort_field_name: sort           # Nom du paramètre de tri dans l'URL
+        sort_direction_name: direction  # Nom du paramètre de direction de tri dans l'URL
+        distinct: true                  # Assure des résultats distincts
+    template:
+        pagination: '@KnpPaginator/Pagination/sliding.html.twig'  # Template de pagination
+        sortable: '@KnpPaginator/Pagination/sortable_link.html.twig'  # Template de lien triable
+
+
+#############################################################CLé de chiffrement################################################################
+La clé de chiffrement doit être une chaîne de caractères suffisamment longue et complexe pour garantir la sécurité. Pour openssl_encrypt avec l’algorithme aes-256-cbc, la clé doit être de 32 octets (256 bits).
+# .env
+ENCRYPTION_KEY=MaCléSecrete12345MaCléSecrete12345
+Exécute cette commande dans ton terminal : openssl rand -base64 32
+
+
+
+###############################################Authentification MFA (double facteur)############################################################
+composer require scheb/two-factor-bundle
+Configure le bundle dans config/packages/scheb_two_factor.yaml :
+
+scheb_two_factor:
+    security_tokens:
+        - Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken
+    google:
+        enabled: true
+        server_name: "your_server_name"
+        issuer: "your_issuer_name"
+
+// src/Entity/User.php
+namespace App\Entity;
+
+use Scheb\TwoFactorBundle\Model\Google\TwoFactorInterface as GoogleAuthenticatorInterface;
+use Scheb\TwoFactorBundle\Model\Google\TwoFactorTrait as GoogleAuthenticatorTrait;
+
+class User implements GoogleAuthenticatorInterface
+{
+    use GoogleAuthenticatorTrait;
+
+    // Ajoute les champs nécessaires pour la MFA
+    private ?string $googleAuthenticatorSecret = null;
+
+    public function getGoogleAuthenticatorSecret(): ?string
+    {
+        return $this->googleAuthenticatorSecret;
+    }
+
+    public function setGoogleAuthenticatorSecret(?string $googleAuthenticatorSecret): self
+    {
+        $this->googleAuthenticatorSecret = $googleAuthenticatorSecret;
+
+        return $this;
+    }
+}
+
+config/packages/security.yaml :
+
+security:
+    firewalls:
+        main:
+            two_factor:
+                auth_form_path: 2fa_login
+                check_path: 2fa_login_check
+                default_target_path: homepage
+
+
+################################################# Google - Facebook authentification ######################################################
+composer require knpuniversity/oauth2-client-bundle league/oauth2-google league/oauth2-facebook
+Configure les fournisseurs OAuth dans config/packages/knpu_oauth2_client.yaml :
+
+knpu_oauth2_client:
+    clients:
+        google:
+            type: google
+            client_id: '%env(GOOGLE_CLIENT_ID)%'
+            client_secret: '%env(GOOGLE_CLIENT_SECRET)%'
+            redirect_route: connect_google_check
+            redirect_params: {}
+        facebook:
+            type: facebook
+            client_id: '%env(FACEBOOK_CLIENT_ID)%'
+            client_secret: '%env(FACEBOOK_CLIENT_SECRET)%'
+            redirect_route: connect_facebook_check
+            redirect_params: {}
+
+// src/Entity/User.php
+namespace App\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+class User
+{
+    // Ajoute les champs nécessaires
+    private ?string $googleId = null;
+    private ?string $facebookId = null;
+
+    public function getGoogleId(): ?string
+    {
+        return $this->googleId;
+    }
+
+    public function setGoogleId(?string $googleId): self
+    {
+        $this->googleId = $googleId;
+
+        return $this;
+    }
+
+    public function getFacebookId(): ?string
+    {
+        return $this->facebookId;
+    }
+
+    public function setFacebookId(?string $facebookId): self
+    {
+        $this->facebookId = $facebookId;
+
+        return $this;
+    }
+}
+
+
+config/routes.yaml :
+
+connect_google_start:
+    path: /connect/google
+    controller: App\Controller\SecurityController::connectGoogleAction
+
+connect_google_check:
+    path: /connect/google/check
+
+connect_facebook_start:
+    path: /connect/facebook
+    controller: App\Controller\SecurityController::connectFacebookAction
+
+connect_facebook_check:
+    path: /connect/facebook/check
+
+// src/Controller/SecurityController.php
+namespace App\Controller;
+
+use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\Annotation\Route;
+
+class SecurityController extends AbstractController
+{
+    #[Route('/connect/google', name: 'connect_google_start')]
+    public function connectGoogleAction(ClientRegistry $clientRegistry): RedirectResponse
+    {
+        return $clientRegistry->getClient('google')->redirect();
+    }
+
+    #[Route('/connect/facebook', name: 'connect_facebook_start')]
+    public function connectFacebookAction(ClientRegistry $clientRegistry): RedirectResponse
+    {
+        return $clientRegistry->getClient('facebook')->redirect();
+    }
+}

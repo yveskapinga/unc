@@ -1,3 +1,4 @@
+{# templates/message/show.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Message{% endblock %}
@@ -5,30 +6,16 @@
 {% block body %}
     <h1>Message</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ message.id }}</td>
-            </tr>
-            <tr>
-                <th>Content</th>
-                <td>{{ message.content }}</td>
-            </tr>
-            <tr>
-                <th>CreatedAt</th>
-                <td>{{ message.createdAt ? message.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>IsRead</th>
-                <td>{{ message.isRead ? 'Yes' : 'No' }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="message {{ message.sender == app.user ? 'Envoyé' : 'Reçu' }}">
+        <div class="message-header">
+            <strong>{{ message.sender == app.user ? 'A: ' ~ message.recipient.username : 'De: ' ~ message.sender.username }}</strong>
+            <span class="message-date">{{ message.createdAt|date('Y-m-d H:i') }}</span>
+        </div>
+        <div class="message-content">
+            {{ message.content }}
+        </div>
+    </div>
 
-    <a href="{{ path('app_message_index') }}">back to list</a>
-
-    <a href="{{ path('app_message_edit', {'id': message.id}) }}">edit</a>
-
+    <a href="{{ path('app_message_index') }}" class="btn btn-secondary">Retour aux messages</a>
     {{ include('message/_delete_form.html.twig') }}
 {% endblock %}

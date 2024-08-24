@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+{% endblock %}
+
+{% block title %}Carte des Utilisateurs{% endblock %}
+
+{% block body %}
+    <h1>Carte des Utilisateurs</h1>
+    <div id="map" style="height: 400px;"></div>
+
+    <script>
+        var map = L.map('map').setView([-4.441931, 15.266293], 6); // Coordonnées de Kinshasa
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        fetch('/test/save-location')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(address => {
+                    L.marker([address.latitude, address.longitude]).addTo(map)
+                      .bindPopup('UNC')
+                      .openPopup;
+                });
+            });
+    </script>
+{% endblock %}

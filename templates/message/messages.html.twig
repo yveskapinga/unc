@@ -1,0 +1,125 @@
+{# templates/message/new.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Message{% endblock %}
+{% block stylesheet %}
+    <style>
+        .unc_message {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+        .container {
+            display: flex;
+            width: 100%;
+        }
+        .senders {
+            width: 30%;
+            border-right: 1px solid #ccc;
+            overflow-y: auto;
+            background-color: #f8f8f8;
+        }
+        .senders ul {
+            list-style: none;
+            padding: 0;
+        }
+        .senders li {
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .senders li img {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+        .senders li:hover {
+            background-color: #e0e0e0;
+        }
+        .messages {
+            width: 70%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .messages-header {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #fff;
+            border-bottom: 1px solid #ccc;
+        }
+        .messages-header img {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+        .messages-content {
+            flex-grow: 1;
+            padding: 10px;
+            overflow-y: auto;
+            background-color: #f1f1f1;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 60%;
+        }
+        .message.sent {
+            background-color: #dcf8c6;
+            align-self: flex-end;
+            text-align: right;
+            margin-left: auto;
+        }
+        .message.received {
+            background-color: #fff;
+            align-self: flex-start;
+            text-align: left;
+            margin-right: auto;
+        }
+        .message small {
+            display: block;
+            margin-top: 5px;
+            font-size: 0.8em;
+            color: #888;
+        }
+        .message-input {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #fff;
+            border-top: 1px solid #ccc;
+        }
+        .message-input input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            margin-right: 10px;
+        }
+        .message-input button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+
+    {{ include('message/index.html.twig') }}
+
+    <a href="{{ path('app_message_index') }}" class="btn btn-secondary">Retour aux messages</a>
+{% endblock %}

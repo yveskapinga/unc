@@ -1,39 +1,192 @@
 {% extends 'base.html.twig' %}
+    {% block title %}Message{% endblock %}
+    {% block stylesheet %}
+    <style>
+        .body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+        .container {
+            display: flex;
+            width: 100%;
+        }
+        .expediteurs {
+            width: 30%;
+            border-right: 1px solid #ccc;
+            overflow-y: auto;
+            background-color: #f8f8f8;
+        }
+        .expediteurs ul {
+            list-style: none;
+            padding: 0;
+        }
+        .expediteurs li {
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .expediteurs li img {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+        .expediteurs li:hover {
+            background-color: #e0e0e0;
+        }
+        .sms {
+            width: 70%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .sms-header {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #fff;
+            border-bottom: 1px solid #ccc;
+        }
+        .sms-header img {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+        .sms-content {
+            flex-grow: 1;
+            padding: 10px;
+            overflow-y: auto;
+            background-color: #f1f1f1;
+        }
+        .mon-message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 60%;
+        }
+        .mon-message.sent {
+            background-color: #dcf8c6;
+            align-self: flex-end;
+            text-align: right;
+            margin-left: auto;
+        }
+        .mon-message.received {
+            background-color: #fff;
+            align-self: flex-start;
+            text-align: left;
+            margin-right: auto;
+        }
+        .mon-message small {
+            display: block;
+            margin-top: 5px;
+            font-size: 0.8em;
+            color: #888;
+        }
+        .mon-message-input {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #fff;
+            border-top: 1px solid #ccc;
+        }
+        .message-input input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            margin-right: 10px;
+        }
+        .mon-message-input button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .mon-message-input form {
+            display: flex;
+            width: 100%;
+        }
+        .mon-message-input input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            margin-right: 10px;
+        }
+        .mon-message-input button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
 
-{% block title %}Message index{% endblock %}
 
+    </style>
+    {% endblock %}
 {% block body %}
-    <h1>Message index</h1>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Content</th>
-                <th>CreatedAt</th>
-                <th>IsRead</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for message in messages %}
-            <tr>
-                <td>{{ message.id }}</td>
-                <td>{{ message.content }}</td>
-                <td>{{ message.createdAt ? message.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ message.isRead ? 'Yes' : 'No' }}</td>
-                <td>
-                    <a href="{{ path('app_message_show', {'id': message.id}) }}">show</a>
-                    <a href="{{ path('app_message_edit', {'id': message.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_message_new') }}">Create new</a>
+<div class="body">
+    <div class="container">
+        <div class="expediteurs">
+            <ul>
+                {% for senderData in senders %}
+                    <li onclick="window.location.href='{{ path('app_message_index', {'userId': senderData.user.id}) }}'">
+                        <img src="{{ '' }}" alt="{{ senderData.user.username }}">
+                        <div>
+                            <strong>{{ senderData.user.username }}</strong><br>
+                            <small>{{ senderData.unreadCount }} non lus</small>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="sms">
+            <div class="sms-header">
+                {% if selectedUser %}
+                    <img src="{{ '' }}" alt="{{ selectedUser.username }}">
+                    <strong>{{ selectedUser.username }}</strong>
+                {% else %}
+                    <strong>Sélectionnez un utilisateur</strong>
+                {% endif %}
+            </div>
+            <div class="sms-content">
+                {% if messages is not empty %}
+                    {% for message in messages %}
+                        <div class="mon-message {{ message.sender.id == app.user.id ? 'sent' : 'received' }}">
+                            {{ message.content }}
+                            <small>{{ message.createdAt|date('Y-m-d H:i') }}</small>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Sélectionnez un utilisateur pour voir les messages échangés.</p>
+                {% endif %}
+            </div>
+            {% if selectedUser %}
+                <div class="mon-message-input">
+                    <form action="{{ path('send_message') }}" method="post">
+                        <input type="hidden" name="recipientId" value="{{ selectedUser.id }}">
+                        <input type="text" name="content" placeholder="Écrire un message...">
+                        <button type="submit"><i class="fas fa-sms"></i></button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}

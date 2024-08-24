@@ -26,6 +26,7 @@ class PostController extends AbstractController
     #[Route('/topic/{id}/post/new', name: 'app_post_new', methods: ['GET', 'POST'])]
     public function new(Topic $topic, Request $request, EntityManagerInterface $entityManager): Response
     {
+        dd($this->getUser());
         $post = new Post();
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);

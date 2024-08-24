@@ -6,10 +6,40 @@
 parameters:
 
 services:
+  App\Service\EncryptionService:
+    arguments:
+      $key: "%env(ENCRYPTION_KEY)%"
+
+  App\EventListener\MessageEncryptionListener:
+    tags:
+      - {
+          name: doctrine.orm.entity_listener,
+          event: prePersist,
+          entity: App\Entity\Message,
+        }
+      - {
+          name: doctrine.orm.entity_listener,
+          event: preUpdate,
+          entity: App\Entity\Message,
+        }
+      - {
+          name: doctrine.orm.entity_listener,
+          event: postLoad,
+          entity: App\Entity\Message,
+        }
+  App\Entity\Message:
+    calls:
+      - [setEncryptionService, ['@App\Service\EncryptionService']]
   # default configuration for services in *this* file
+  App\EventListener\ActivityListener:
+    tags:
+      - { name: kernel.event_listener, event: kernel.request }
   _defaults:
     autowire: true # Automatically injects dependencies in your services.
     autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+  App\DataFixtures\AppFixtures:
+    arguments:
+      $passwordHasher: "@security.password_hasher"
 
   # makes classes in src/ available to be used as services
   # this creates a service per class whose id is the fully-qualified class name

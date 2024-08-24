@@ -1,0 +1,10 @@
+{# templates/user/assign_roles.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Assign Roles to Users</h1>
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn btn-primary">Assign Roles</button>
+    {{ form_end(form) }}
+{% endblock %}

@@ -1,0 +1,40 @@
+{# templates/map/index.html.twig #}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Carte des Utilisateurs</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Initialisation de la carte
+        var map = L.map('map').setView([-4.0383, 21.7587], 5); // Coordonnées centrales de la RDC
+
+        // Ajouter une couche de tuiles (tiles layer)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Données des utilisateurs passées depuis le contrôleur
+        var users = {{ users|json_encode|raw }};
+
+        // Ajouter des marqueurs pour chaque utilisateur
+        users.forEach(function(user) {
+            if (user.address) {
+                L.marker([user.address.latitude, user.address.longitude])
+                    .addTo(map)
+                    .bindPopup(user.username + '<br>' + user.address.city);
+            }
+        });
+    </script>
+</body>
+</html>

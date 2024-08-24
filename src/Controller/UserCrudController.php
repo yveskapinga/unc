@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Form\UserType;
 use App\Entity\Address;
 use App\Form\AddressType;
+use App\Form\UserRoleType;
 use App\Service\GeocoderService;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 
@@ -102,6 +104,33 @@ class UserCrudController extends AbstractController
         // dd($user);
         return $this->render('user_crud/profile.html.twig', [
             // 'user' => $user,
+        ]);
+    }
+
+    #[Route('/assign-roles', name: 'assign_roles')]
+    public function assignRoles(Request $request, UserRepository $userRepository, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(UserRoleType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $users = $data['users'];
+            $roles = $data['roles'];
+
+            foreach ($users as $user) {
+                $user->setRoles($roles);
+                $entityManager->persist($user);
+            }
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Roles assigned successfully!');
+            return $this->redirectToRoute('assign_roles');
+        }
+
+        return $this->render('user/assign_roles.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
 

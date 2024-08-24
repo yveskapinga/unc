@@ -33,6 +33,9 @@ class Topic
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
+    
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $slug = null;
 
     public function __construct()
     {
@@ -118,6 +121,18 @@ class Topic
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+    
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(?string $slug): self
+    {
+        $this->slug = $slug;
 
         return $this;
     }

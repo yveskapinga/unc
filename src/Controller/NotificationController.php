@@ -84,7 +84,7 @@ class NotificationController extends AbstractController
     #[Route('/mark-all-as-read', name: 'app_mark_all_as_read')]
     public function markAllAsReadAction(UserInterface $user, NotificationRepository $notificationRepository, EntityManagerInterface $em): Response
     {
-        $notifications = $notificationRepository->findBy(['user' => $user, 'isRead' => false]);
+        $notifications = $notificationRepository->findBy(['theUser' => $user, 'isRead' => false]);
 
         foreach ($notifications as $notification) {
             $notification->setIsRead(true);

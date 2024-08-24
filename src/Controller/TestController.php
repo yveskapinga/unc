@@ -13,6 +13,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Entity\User;
+use App\Entity\Address;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Repository\AddressRepository;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TestController extends AbstractController
 {
@@ -23,33 +28,49 @@ class TestController extends AbstractController
         $this->client = $client;
     }
 
+    #[Route('/test/key', name: 'key')]
+    public function testKey():Response{
+        return new Response(bin2hex(openssl_random_pseudo_bytes(32))) ;
+    }
+    
+
     #[Route('/test/geocode', name: 'location')]
-    public function geocode(): Response
+    public function geocode(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
     {
-        $address = '672 Arpenteur Mutombo, Kolwezi, Lualaba, république démocratique du congo';
-        $response = $this->client->request('GET', 'https://nominatim.openstreetmap.org/search', [
-            'query' => [
-                'q' => $address,
-                'format' => 'json',
-            ],
-        ]);
+         $coordinates = [
+            [-4.441931, 15.266293], [-11.660357, 27.479397], [-6.136000, 23.589000], [0.515280, 25.190990],
+            [-2.507500, 28.862500], [-5.896240, 22.416590], [-1.680000, 29.220000], [-5.816670, 13.450000],
+            [-10.983330, 26.733330], [-10.716670, 25.472500], [-4.316667, 15.300000], [-5.033333, 18.783333],
+            [-6.150000, 23.600000], [-4.316667, 20.600000], [-2.933333, 25.933333], [-1.566667, 30.250000],
+            [-2.933333, 25.933333], [-4.316667, 15.300000], [-4.316667, 15.300000], [-4.316667, 15.300000]
+        ];
 
-        $data = $response->toArray();
+        for ($i = 0; $i < 20; $i++) {
+            $user = new User();
+            $user->setEmail('user'.$i.'@example.com');
+            $user->setUsername('user'.$i);
+            $user->setRoles(['ROLE_USER']);
+            $user->setPassword($passwordHasher->hashPassword($user, 'password'));
+            $user->setJoinedAt(new \DateTime());
+            $user->setIsActive(true);
 
-        if (!empty($data)) {
-            $location = $data[0];
-            $latitude = $location['lat'];
-            $longitude = $location['lon'];
+            $address = new Address();
+            $address->setLatitude($coordinates[$i][0]);
+            $address->setLongitude($coordinates[$i][1]);
+            $address->setCity('City'.$i);
+            $address->setStreet('Street'.$i);
+            $address->setCountry('RDC');
 
-            return new Response(sprintf(
-                'Adresse: %s<br>Latitude: %s<br>Longitude: %s',
-                $address,
-                $latitude,
-                $longitude
-            ));
+            // Associer l'adresse à l'utilisateur
+            $user->setAddress($address);
+
+            $entityManager->persist($user);
         }
 
-        return new Response('Adresse non trouvée.');
+        $entityManager->flush();
+
+        return new Response('20 users with addresses have been generated.');
+
     }
     
     #[Route('/test/get-location', name: 'test_geocode')]
@@ -58,20 +79,7 @@ class TestController extends AbstractController
         return $this->render('get_location.html.twig');
     }
 
-    #[Route('/test/save-location', name: 'test_save_location', methods: ['POST'])]
-    public function saveLocation(Request $request, UserInterface $user): Response
-    {
-        $data = json_decode($request->getContent(), true);
-        $latitude = $data['latitude'];
-        $longitude = $data['longitude'];
-        
-        return new Response(sprintf(
-        'Adresse: %s<br>Latitude: %s<br>Longitude: %s',
-            //$address,
-            $latitude,
-            $longitude
-            ));
-    }
+
 
     #[Route('/test/edit', name: 'test_edit')]
     public function action(Request $request, UserInterface $user, TopicRepository $repo, EntityManagerInterface $em): Response
