@@ -22,11 +22,11 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
-        // $this->createCategories($manager);
-        // $manager->flush();
+         $this->createCategories($manager);
+         $manager->flush();
     }
 
-    private function createAddress(ObjectManager $manager){
+    private function createUserAndAddress(ObjectManager $manager){
 
         $faker = Factory::create('fr_FR');
         $cities = ['Kinshasa', 'Lubumbashi', 'Mbuji-Mayi', 'Kananga', 'Kisangani', 'Goma', 'Bukavu', 'Tshikapa', 'Kolwezi', 'Likasi'];
@@ -43,7 +43,40 @@ class AppFixtures extends Fixture
             $user = new User();
             $user->setEmail($faker->email);
             $user->setUsername($faker->userName);
+            $user->setFirstName($faker->firstname);
+            $user->setName($faker->name);
             $user->setRoles(['ROLE_USER']);
+            $user->setJoinedAt($faker->dateTimeThisYear); // Date de l'année en cours
+            $user->setIsActive($faker->boolean);
+            $user->setAddress($address);
+
+            $password = $this->passwordHasher->hashPassword($user, 'password');
+            $user->setPassword($password);
+
+            $manager->persist($address);
+            $manager->persist($user);
+        }
+    }
+
+    private function createSuperAdmin(ObjectManager $manager){
+
+        $faker = Factory::create('fr_FR');
+
+        for ($i = 0; $i < 10; $i++) {
+            $address = new Address();
+            $address->setNumber('');
+            $address->setStreet('');
+            $address->setCity('');
+            $address->setCountry('République Démocratique du Congo');
+            $address->setLatitude(''); // Coordonnées de la RDC
+            $address->setLongitude('');
+
+            $user = new User();
+            $user->setEmail('');
+            $user->setUsername('');
+            $user->setFirstName('');
+            $user->setName('');
+            $user->setRoles(['ROLE_USER','RILE_SUPER_ADMIN']);
             $user->setJoinedAt($faker->dateTimeThisYear); // Date de l'année en cours
             $user->setIsActive($faker->boolean);
             $user->setAddress($address);

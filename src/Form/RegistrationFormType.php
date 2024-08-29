@@ -42,6 +42,7 @@ class RegistrationFormType extends AbstractType
             ])
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
+                'label' => 'Termes et conditions',
                 'constraints' => [
                     new IsTrue([
                         'message' => 'Vous devez accepter les politiques',
@@ -51,6 +52,7 @@ class RegistrationFormType extends AbstractType
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'mapped' => false,
+                'label' => 'Mot de passe',
                 'attr' => ['autocomplete' => 'new-password'],
                 'invalid_message' => 'Les mots de passe doivent correspondre.',
                 'first_options'  => ['label' => 'Mot de passe'],
@@ -65,9 +67,9 @@ class RegistrationFormType extends AbstractType
                         'max' => 4096,
                     ]),
                     new Regex([
-                        'pattern' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
+                        'pattern' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/',
                         'message' => 'Le mot de passe doit contenir au moins une lettre majuscule, un chiffre et un caractère spécial.',
-                    ]),
+                    ]),     
                 ],
             ]);
     }

@@ -14,9 +14,6 @@ class NotificationType extends AbstractType
         $builder
             ->add('type')
             ->add('content')
-            ->add('isRead')
-            ->add('createdAt')
-            ->add('theUser')
         ;
     }
 

@@ -29,6 +29,13 @@ class Membership
     #[ORM\Column(length: 10)]
     private ?string $currency = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $fonction = null;
+
+    #[ORM\ManyToOne(inversedBy: 'memberships')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Interfederation $interfederation = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -93,4 +100,36 @@ class Membership
 
         return $this;
     }
+
+    public function getFonction(): ?string
+    {
+        return $this->fonction;
+    }
+
+    public function setFonction(string $fonction): static
+    {
+        $this->fonction = $fonction;
+
+        return $this;
+    }
+
+    public function getInterfederation(): ?Interfederation
+    {
+        return $this->interfederation;
+    }
+
+    public function setInterfederation(?Interfederation $interfederation): static
+    {
+        $this->interfederation = $interfederation;
+
+        return $this;
+    }
+
+    public function changeInterfederation(?Interfederation $newInterfederation): static
+    {
+        $this->interfederation = $newInterfederation;
+
+        return $this;
+    }
 }
+

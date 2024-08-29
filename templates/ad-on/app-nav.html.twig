@@ -1,0 +1,118 @@
+{# <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+    <div class="container px-4 px-lg-5">
+        <a class="navbar-brand" href="{{ path('app_home') }}">UNC - APP</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            Menu
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4 btn-getstarted" href="{{path('app_index')}}">Administration</a></li>
+                {% if app.user %}
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4"><i class="fas fa-user"></i> Salut, {{ app.user.username }}</a></li>
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ path('app_logout') }}">Déconnexion</a></li>
+                {% else %}
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{ path('app_login') }}">Connexion</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav> #}
+
+    <aside id="sidebar" class="sidebar">
+
+      <ul class="sidebar-nav" id="sidebar-nav">
+
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="{{path('app_index')}}">
+            <i class="bi bi-grid"></i>
+            <span>Tableau de bord</span>
+          </a>
+        </li><!-- End Dashboard Nav -->
+
+        <li class="nav-item">
+          <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+            <i class="bi bi-menu-button-wide"></i><span>Menu</span><i class="bi bi-chevron-down ms-auto"></i>
+          </a>
+          <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+            <li>
+              <a href="{{path('app_address_index')}}">
+                <i class="bi bi-circle"></i><span>Gestion des adresses</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{path('app_category_index')}}">
+                <i class="bi bi-circle"></i><span>Gestion des catégories</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{path('app_event_index')}}">
+                <i class="bi bi-circle"></i><span>Géstion des évènements</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{path('app_membership_index')}}">
+                <i class="bi bi-circle"></i><span>Gestion des membres</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{path('app_notification_index')}}">
+                <i class="bi bi-circle"></i><span>Gestion des notification</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{path('app_topic_index')}}">
+                <i class="bi bi-circle"></i><span>Forum</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{path('app_register')}}">
+                <i class="bi bi-circle"></i><span>Créer un compte</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{path('app_map')}}">
+                <i class="bi bi-circle"></i><span>Carte des membres</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{path('app_user_crud_index')}}">
+                <i class="bi bi-circle"></i><span>Gestion des utilisateurs</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{path('app_message_index')}}">
+                <i class="bi bi-circle"></i><span>Gestion des messages</span>
+              </a>
+            </li>
+            {#<li>#}
+            {#  <a href="components-tabs.html">#}
+            {#    <i class="bi bi-circle"></i><span>Tabs</span>#}
+            {#  </a>#}
+            {#</li>#}
+            {#<li>#}
+            {#  <a href="components-pagination.html">#}
+            {#    <i class="bi bi-circle"></i><span>Pagination</span>#}
+            {#  </a>#}
+            {#</li>#}
+            {#<li>#}
+            {#  <a href="components-progress.html">#}
+            {#    <i class="bi bi-circle"></i><span>Progress</span>#}
+            {#  </a>#}
+            {#</li>#}
+            {#<li>#}
+            {#  <a href="components-spinners.html">#}
+            {#    <i class="bi bi-circle"></i><span>Spinners</span>#}
+            {#  </a>#}
+            {#</li>#}
+            {#<li>#}
+            {#  <a href="components-tooltips.html">#}
+            {#    <i class="bi bi-circle"></i><span>Tooltips</span>#}
+            {#  </a>#}
+            {#</li>#}
+          </ul>
+        </li><!-- End Components Nav -->
+
+      </ul>
+
+    </aside><!-- End Sidebar-->

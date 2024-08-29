@@ -1,46 +1,130 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}User{% endblock %}
-
 {% block body %}
-    <h1>User</h1>
+    <h1>Tableau de bord de {{ user.username }}</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ user.id }}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>{{ user.email }}</td>
-            </tr>
-            <tr>
-                <th>Roles</th>
-                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
-            </tr>
-            <tr>
-                <th>Password</th>
-                <td>{{ user.password }}</td>
-            </tr>
-            <tr>
-                <th>JoinedAt</th>
-                <td>{{ user.joinedAt ? user.joinedAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>IsActive</th>
-                <td>{{ user.isActive ? 'Yes' : 'No' }}</td>
-            </tr>
-            <tr>
-                <th>Username</th>
-                <td>{{ user.username }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Informations personnelles</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            {% if app.user.photo %}
+                                <img src="{{asset('uploads/photos/' ~ app.user.photo)}}" alt="Photo de profil" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px;">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Nom :</strong> {{ user.name }}</p>
+                            <p><strong>Prénom :</strong> {{ user.firstName }}</p>
+                            <p><strong>Email :</strong> {{ user.email }}</p>
+                            <p><strong>Date d'inscription :</strong> {{ user.joinedAt|date('d/m/Y') }}</p>
+                            <p><strong>Dernière activité :</strong> {{ user.lastActivityAt|date('d/m/Y H:i') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% if user.address and user.address.latitude and user.address.longitude %}
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Votre position</h5>
+                        <div id="map" style="height: 300px; width: 100%;"></div>
+                        <p>{{ user.address.city }}, {{ user.address.country }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
 
-    <a href="{{ path('app_user_crud_index') }}">back to list</a>
+    <h2>Activités</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Posts</h5>
+                    <p class="card-text">{{ user.posts|length }} posts</p>
+                    <a href="{{ path('app_post_index') }}" class="btn btn-primary">Voir les posts</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Topics</h5>
+                    <p class="card-text">{{ user.topics|length }} topics</p>
+                    <a href="{{ path('app_topic_index') }}" class="btn btn-primary">Voir les topics</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Polls</h5>
+                    <p class="card-text">{{ user.polls|length }} polls</p>
+                    <a href="{{ path('app_poll_index') }}" class="btn btn-primary">Voir les polls</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Documents</h5>
+                    <p class="card-text">{{ user.documents|length }} documents</p>
+                    <a href="{{ path('app_document_index') }}" class="btn btn-primary">Voir les documents</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Événements</h5>
+                    <p class="card-text">{{ user.events|length }} événements</p>
+                    <a href="{{ path('app_event_index') }}" class="btn btn-primary">Voir les événements</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Messages</h5>
+                    <p class="card-text">{{ user.messages|length }} messages</p>
+                    <a href="{{ path('app_message_index') }}" class="btn btn-primary">Voir les messages</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Notifications</h5>
+                    <p class="card-text">{{ user.notifications|length }} notifications</p>
+                    <a href="{{ path('app_notification_index') }}" class="btn btn-primary">Voir les notifications</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Canaux</h5>
+                    <p class="card-text">{{ user.channels|length }} canaux</p>
+                    <a href="{{ path('app_channel_index') }}" class="btn btn-primary">Voir les canaux</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <a href="{{ path('app_user_crud_edit', {'id': user.id}) }}">edit</a>
+    {% if user.address and user.address.latitude and user.address.longitude %}
+        <script>
+            var map = L.map('map').setView([{{ user.address.latitude }}, {{ user.address.longitude }}], 15);
 
-    {{ include('user_crud/_delete_form.html.twig') }}
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            L.marker([{{ user.address.latitude }}, {{ user.address.longitude }}]).addTo(map)
+                .bindPopup('{{ user.address.city }}, {{ user.address.country }}')
+                .openPopup();
+        </script>
+    {% endif %}
 {% endblock %}

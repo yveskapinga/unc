@@ -21,6 +21,18 @@ class TopicRepository extends ServiceEntityRepository
         parent::__construct($registry, Topic::class);
     }
 
+    public function findTopCommentedTopics(int $max = 5)
+    {
+        return $this->createQueryBuilder('t')
+            ->leftJoin('t.posts', 'p')
+            ->groupBy('t.id')
+            ->orderBy('COUNT(p.id)', 'DESC')
+            ->setMaxResults($max)
+            ->getQuery()
+            ->getResult();
+    }
+
+
 //    /**
 //     * @return Topic[] Returns an array of Topic objects
 //     */

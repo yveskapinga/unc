@@ -20,6 +20,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+
 
 
 
@@ -37,6 +39,18 @@ class AdminController extends AbstractController
 
     ){
     }
+
+    #[Route('/set-timezone', name: 'set_timezone', methods: ['POST'])]
+    public function setTimezone(Request $request, SessionInterface $session): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        if (isset($data['timezone'])) {
+            $session->set('timezone', $data['timezone']);
+        }
+
+        return new Response('Timezone set', Response::HTTP_OK);
+    }
+    
     #[Route('/map', name: 'app_map')]
     public function map(): Response
     {
@@ -78,13 +92,16 @@ class AdminController extends AbstractController
         $data = [];
 
         foreach ($addresses as $address) {
+            if ($address->getLatitude() & $address->getLongitude()) {
+                # code...
+            
             $data[] = [
                 'latitude' => $address->getLatitude(),
                 'longitude' => $address->getLongitude(),
-                'user' => $address->getUser()->getUsername(), // Assuming you have a getUsername() method
+                // 'user' => $address->getUser()->getUsername(), // Assuming you have a getUsername() method
             ];
+            }
         }
-
         return new JsonResponse($data);
     }
 

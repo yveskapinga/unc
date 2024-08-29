@@ -1,22 +1,20 @@
 <?php
 
-// src/EventListener/ActivityListener.php
-
 namespace App\EventListener;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class ActivityListener
 {
     private $security;
-    private $session;
+    private $entityManager;
 
-    public function __construct(Security $security, SessionInterface $session)
+    public function __construct(Security $security, EntityManagerInterface $entityManager)
     {
         $this->security = $security;
-        $this->session = $session;
+        $this->entityManager = $entityManager;
     }
 
     public function onKernelRequest(RequestEvent $event)
@@ -27,7 +25,9 @@ class ActivityListener
 
         $user = $this->security->getUser();
         if ($user) {
-            $this->session->set('lastActivityAt', new \DateTime());
+            $user->setLastActivityAt(new \DateTime());
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
         }
     }
 }

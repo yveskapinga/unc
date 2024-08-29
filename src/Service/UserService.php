@@ -4,11 +4,16 @@ namespace App\Service;
 
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Security;
+use App\Repository\MembershipRepository;
+
 
 class UserService
 {
 
-    public function __construct(private Security $security)
+    public function __construct(
+        private Security $security,
+        private MembershipRepository $membershipRepository
+        )
     {
         
     }
@@ -28,5 +33,16 @@ class UserService
         }
 
         return $activeUsers ;
+    }
+
+    public function getUserLevel()
+    {
+        $user = $this->security->getUser();
+        if (!$user) {
+            return null;
+        }
+
+        $membership = $this->membershipRepository->findOneBy(['theUser' => $user]);
+        return $membership ? $membership->getLevel() : 'Militant';
     }
 }

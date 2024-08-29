@@ -6,6 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Doctrine\ORM\EntityManagerInterface;
+
 
 class SecurityController extends AbstractController
 {
@@ -13,8 +15,9 @@ class SecurityController extends AbstractController
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
         if ($this->getUser()) {
-            return $this->redirectToRoute('app_topic_index');
+            return $this->redirectToRoute('app_user_crud_show', ['id' => $this->getUser()->getId()]);
         }
+
 
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
@@ -27,6 +30,8 @@ class SecurityController extends AbstractController
     #[Route(path: '/logout', name: 'app_logout')]
     public function logout(): void
     {
+
+        // Symfony will intercept this route and handle the logout process
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 }

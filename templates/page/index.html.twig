@@ -1,7 +1,7 @@
 {% extends 'template_site.html.twig' %}
 {% block title %}accueil{% endblock %}
 {% block body %}
-    <!-- Slider Section -->
+    <!-- Slider Section = Section de l'entête -->
     <section id="slider" class="slider section dark-background">
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
@@ -31,9 +31,9 @@
 
           <div class="swiper-wrapper">
 
-            <div class="swiper-slide" style="background-image: url('{{asset("zenblog/assets/img/post-slide-1.jpg")}}');">
+            <div class="swiper-slide" style="background-image: url('{{asset("zenblog/assets/img/post-slide-1.jpeg")}}');">
               <div class="content">
-                <h2><a href="{{path('single-post')}}">UNC !</a></h2>
+                <h2 style="color=red;"><a href="{{path('single-post')}}">UNC !</a></h2>
                 <p>Mopepe ya sika </p>
               </div>
             </div>
@@ -77,35 +77,57 @@
 
     </section><!-- /Slider Section -->
 
-    <!-- Trending Category Section -->
+    <!-- Trending Category Section = les catégories qui ont les plus d'articles de publication -->
     <section id="trending-category" class="trending-category section">
+      {% set categories = category_service.getTopCategories() %}
+      {% set topCommentedTopics = topic_service.getTopCommentedTopics() %}
+
+  
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
 
         <div class="container" data-aos="fade-up">
           <div class="row g-5">
             <div class="col-lg-4">
-
+              <!-- FROM BING -->
               <div class="post-entry lg">
-                <a href="#"><img src="{{asset('zenblog/assets/img/post-landscape-1.jpg')}}" alt="" class="img-fluid"></a>
-                <div class="post-meta"><span class="date">Culture</span> <span class="mx-1">•</span> <span>Jul 5th '22</span></div>
-                <h2><a href="#">11 Work From Home Part-Time Jobs You Can Do Now</a></h2>
-                <p class="mb-4 d-block">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Vero temporibus repudiandae, inventore pariatur numquam cumque possimus exercitationem? Nihil tempore odit ab minus eveniet praesentium, similique blanditiis molestiae ut saepe perspiciatis officia nemo, eos quae cumque. Accusamus fugiat architecto rerum animi atque eveniet, quo, praesentium dignissimos</p>
-
-                <div class="d-flex align-items-center author">
-                  <div class="photo"><img src="{{asset('zenblog/assets/img/person-1.jpg')}}" alt="" class="img-fluid"></div>
-                  <div class="name">
-                    <h3 class="m-0 p-0">Cameron Williamson</h3>
-                  </div>
-                </div>
+                  {% if categories is defined and categories is not null %}
+                    <a href="{{ path('app_category_show', { 'id': categories.mainCategory.id }) }}">
+                        <img src="{{ asset('uploads/pictures/' ~ categories.mainCategory.image) }}" alt="{{ categories.mainCategory.name }}" class="img-fluid">
+                    </a>
+                    <div class="post-meta">
+                        <span class="date">{{ categories.mainCategory.name }}</span>
+                        <span class="mx-1">•</span>
+                        <span>{{ categories.mainCategory.createdAt|date('M jS \'y') }}</span>
+                    </div>
+                    <h2>
+                        <a href="{{ path('app_category_show', { 'id': categories.mainCategory.id }) }}">
+                            {{ categories.mainCategory.name }}
+                        </a>
+                    </h2>
+                    <p class="mb-4 d-block">{{ categories.mainCategory.description|length > 150 ? categories.mainCategory.description|slice(0, 150) ~ '...' : categories.mainCategory.description }}</p>
+                    <div class="d-flex align-items-center author">
+                        <div class="photo">
+                          {% if categories.mainCategory.author.photo is defined %}
+                            <img src="{{ asset('uploads/photos/' ~ categories.mainCategory.author.photo ) }}" alt="{{ categories.mainCategory.author.firstname }}" class="img-fluid">
+                          {% else %}
+                              <img src="{{ asset('uploads/photos/apple-touch-icon.jpg') }}" alt="{{ categories.mainCategory.author.firstname }}" class="img-fluid">
+                          {% endif %}
+                        </div>
+                        <div class="name">
+                            <h3 class="m-0 p-0">{{ categories.mainCategory.author.firstname }}</h3>
+                        </div>
+                    </div>
+                {# </div> #}
               </div>
+              <!-- END FROM BING -->
 
             </div>
 
             <div class="col-lg-8">
               <div class="row g-5">
                 <div class="col-lg-4 border-start custom-border">
-                  <div class="post-entry">
+                  {# <div class="post-entry">
                     <a href="#"><img src="{{asset('zenblog/assets/img/post-landscape-2.jpg')}}" alt="" class="img-fluid"></a>
                     <div class="post-meta"><span class="date">Sport</span> <span class="mx-1">•</span> <span>Jul 5th '22</span></div>
                     <h2><a href="#">Let’s Get Back to Work, New York</a></h2>
@@ -119,10 +141,27 @@
                     <a href="#"><img src="{{asset('zenblog/assets/img/post-landscape-7.jpg')}}" alt="" class="img-fluid"></a>
                     <div class="post-meta"><span class="date">Design</span> <span class="mx-1">•</span> <span>Mar 15th '22</span></div>
                     <h2><a href="#">Why Craigslist Tampa Is One of The Most Interesting Places On the Web?</a></h2>
-                  </div>
+                  </div> #}
+                        
+                            <div class="post-entry">{% for category in categories.firstTwoCategories %}
+                                <a href="{{ path('app_category_show', { 'id': category.id }) }}">
+                                    <img src="{{ asset('uploads/pictures/' ~ category.image) }}" alt="{{ category.name }}" class="img-fluid">
+                                </a>
+                                <div class="post-meta">
+                                    <span class="date">{{ category.name }}</span>
+                                    <span class="mx-1">•</span>
+                                    <span>{{ category.createdAt|date('M jS \'y') }}</span>
+                                </div>
+                                <h2>
+                                    <a href="{{ path('app_category_show', { 'id': category.id }) }}">
+                                        {{ category.name }}
+                                    </a>
+                                </h2>{% endfor %}
+                            </div>
+                        
                 </div>
                 <div class="col-lg-4 border-start custom-border">
-                  <div class="post-entry">
+                  {# <div class="post-entry">
                     <a href="#"><img src="{{asset('zenblog/assets/img/post-landscape-3.jpg')}}" alt="" class="img-fluid"></a>
                     <div class="post-meta"><span class="date">Business</span> <span class="mx-1">•</span> <span>Jul 5th '22</span></div>
                     <h2><a href="#">6 Easy Steps To Create Your Own Cute Merch For Instagram</a></h2>
@@ -136,14 +175,31 @@
                     <a href="#"><img src="{{asset('zenblog/assets/img/post-landscape-8.jpg')}}" alt="" class="img-fluid"></a>
                     <div class="post-meta"><span class="date">Travel</span> <span class="mx-1">•</span> <span>Jul 5th '22</span></div>
                     <h2><a href="#">5 Great Startup Tips for Female Founders</a></h2>
-                  </div>
+                  </div> #}
+                  {% for category in categories.lastTwoCategories %}
+                      <div class="post-entry">
+                        <a href="{{ path('app_category_show', { 'id': category.id }) }}">
+                          <img src="{{ asset('uploads/pictures/' ~ category.image) }}" alt="{{ category.name }}" class="img-fluid">
+                        </a>
+                        <div class="post-meta">
+                          <span class="date">{{ category.name }}</span>
+                          <span class="mx-1">•</span>
+                          <span>{{ category.createdAt|date('M jS \'y') }}</span>
+                        </div>
+                        <h2>
+                          <a href="{{ path('app_category_show', { 'id': category.id }) }}">
+                             {{ category.name }}
+                          </a>
+                        </h2>
+                      </div>
+                  {% endfor %}               
                 </div>
-
+                {% endif %}
                 <!-- Trending Section -->
-                <div class="col-lg-4">
+                {#<div class="col-lg-4">
 
-                  <div class="trending">
-                    <h3>Trending</h3>
+                   <div class="trending">
+                    <h3>Populaire</h3>
                     <ul class="trending-post">
                       <li>
                         <a href="#">
@@ -183,7 +239,25 @@
                     </ul>
                   </div>
 
+                </div> <!-- End Trending Section --> #}
+                
+                <div class="col-lg-4">{% if topCommentedTopics is defined and categories is not null %}
+                  <div class="trending">
+                      <h3>Populaire</h3>
+                      <ul class="trending-post">
+                          {% for topic in topCommentedTopics %}
+                              <li>
+                                  <a href="{{ path('app_topic_show', { 'id': topic.id }) }}">
+                                      <span class="number">{{ loop.index }}</span>
+                                      <h3>{{ topic.title }}</h3>
+                                      <span class="author">{{ topic.author.firstname }}</span>
+                                  </a>
+                              </li>
+                          {% endfor %}
+                      </ul>
+                  </div>{% endif %}
                 </div> <!-- End Trending Section -->
+                
               </div>
             </div>
 
@@ -194,7 +268,7 @@
 
     </section><!-- /Trending Category Section -->
 
-    <!-- Culture Category Section -->
+{#     <!-- Culture Category Section -->
     <section id="culture-category" class="culture-category section">
 
       <!-- Section Title -->
@@ -526,6 +600,6 @@
 
       </div>
 
-    </section><!-- /Lifestyle Category Section -->
+    </section><!-- /Lifestyle Category Section --> #}
 
 {% endblock %}

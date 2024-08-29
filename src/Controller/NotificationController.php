@@ -45,10 +45,13 @@ class NotificationController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_notification_show', methods: ['GET'])]
-    public function show(Notification $notification): Response
+    public function show(Notification $notification=null, EntityManagerInterface $entityManager): Response
     {
+        $notification->setIsRead(true);
+        $entityManager->persist($notification);
+        $entityManager->flush();
         return $this->render('notification/show.html.twig', [
-            'notification' => $notification,
+            'notification' =>$notification,
         ]);
     }
 
@@ -66,7 +69,7 @@ class NotificationController extends AbstractController
 
         return $this->renderForm('notification/edit.html.twig', [
             'notification' => $notification,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 

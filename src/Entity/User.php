@@ -81,6 +81,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $firstName = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $photo = null;
+
+    #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'author')]
+    private Collection $categories;
+
+    #[ORM\OneToOne(mappedBy: 'sif', cascade: ['persist', 'remove'])]
+    private ?Interfederation $interfederation = null;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
@@ -92,6 +101,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->notifications = new ArrayCollection();
         $this->channels = new ArrayCollection();
         $this->eventsParticipants = new ArrayCollection();
+        // $this->categories = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -511,4 +521,94 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    //     /**
+    //  * @return Collection<int, Category>
+    //  */
+    // public function getCategories(): Collection
+    // {
+    //     return $this->categories;
+    // }
+
+    // public function addCategory(Category $category): static
+    // {
+    //     if (!$this->categories->contains($category)) {
+    //         $this->categories->add($category);
+    //         $category->setAuthor($this);
+    //     }
+
+    //     return $this;
+    // }
+
+    // public function removeCategory(Category $category): static
+    // {
+    //     if ($this->categories->removeElement($category)) {
+    //         // set the owning side to null (unless already changed)
+    //         if ($category->getAuthor() === $this) {
+    //             $category->setAuthor(null);
+    //         }
+    //     }
+
+    //     return $this;
+    // }
+
+    public function getPhoto(): ?string
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto(?string $photo): static
+    {
+        $this->photo = $photo;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Category>
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): static
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories->add($category);
+            $category->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): static
+    {
+        if ($this->categories->removeElement($category)) {
+            // set the owning side to null (unless already changed)
+            if ($category->getAuthor() === $this) {
+                $category->setAuthor(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getInterfederation(): ?Interfederation
+    {
+        return $this->interfederation;
+    }
+
+    public function setInterfederation(Interfederation $interfederation): static
+    {
+        // set the owning side of the relation if necessary
+        if ($interfederation->getSif() !== $this) {
+            $interfederation->setSif($this);
+        }
+
+        $this->interfederation = $interfederation;
+
+        return $this;
+    }
+
 }

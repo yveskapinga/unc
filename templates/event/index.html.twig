@@ -2,16 +2,54 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Liste des événements</h1>
+    <h4>Liste des événements</h4>
 
-    <ul>
+    {# <ul>
         {% for event in events %}
             <li>
                 <a href="{{ path('app_event_show', {'id': event.id}) }}">{{ event.title }}</a>
                 <p>{{ event.description|slice(0, 50) }}...</p>
             </li>
         {% endfor %}
-    </ul>
+    </ul> #}
+    
+    <table class="table datatable">
+        <thead>
+            <tr>
+                <th>
+                    Titre
+                </th>
+                <th>Description</th>
+                <th>Début</th>
+                <th>Fin</th>
+                <th>Lieu</th>
+                <th>Organisateur</th>
+                <th>Participant</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in events %}
+            <tr>
+                <td>{% if event.title is not null %}{{ event.title }}{% endif  %}</td>
+                <td>{{ event.description|slice(0, 80) }}...</td>
+                <td>{{ event.startDate|date('d/m/Y H:i') }}</td>
+                <td>{{ event.endDate|date('d/m/Y H:i') }}</td>
+                <td>{{ event.location }}</td>
+                <td>{{ event.organizer.username }}</td>
+                <td>{{ event.participant|length }}</td>
+                <td>                    
+                    <a href="{{ path('app_event_show', {'id': event.id}) }}"><i class="fas fa-eye"></i>voir</a>
+                    <a href="{{ path('app_event_edit', {'id': event.id}) }}"><i class="fas fa-edit"></i>edit</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8">Aucune adresse</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
     <a href="{{ path('app_event_new') }}" class="btn btn-primary">Créer un nouvel événement</a>
 {% endblock %}

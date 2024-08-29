@@ -10,37 +10,69 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Service\SecurityService;
+use App\Service\UploaderService;
+use DateTimeImmutable;
 
 #[Route('/category')]
 class CategoryController extends AbstractController
 {
+    
+    public function __construct(
+        private EntityManagerInterface $em,
+        private UploaderService $uploaderService,
+        private SecurityService $securityService,
+        private CategoryRepository $categoryRepository
+    ) {
+    }
     #[Route('/', name: 'app_category_index', methods: ['GET'])]
-    public function index(CategoryRepository $categoryRepository): Response
+    public function index(): Response
     {
+        $topCategories = $this->categoryRepository->findTopCategories();
+        $mainCategory = array_shift($topCategories); // Récupère la première catégorie
+        $firstTwoCategories = array_slice($topCategories, 0, 2); // Récupère les deux suivantes
+        $lastTwoCategories = array_slice($topCategories, 2, 2); // Récupère les deux dernières
+
         return $this->render('category/index.html.twig', [
-            'categories' => $categoryRepository->findAll(),
+            'mainCategory' => $mainCategory,
+            'firstTwoCategories' => $firstTwoCategories,
+            'lastTwoCategories' => $lastTwoCategories,
+            'categories' => $this->categoryRepository->findAll(),
         ]);
+        // return $this->render('page/category.html.twig', [
+        //     'categories' => $this->categoryRepository->findAll(),
+        // ]);
     }
 
-    #[Route('/new', name: 'app_category_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/new/{id?}', name: 'app_category_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, Category $category = null): Response
     {
-        $category = new Category();
+        if ($category === null) {
+            $category = new Category();
+        }
+    
         $form = $this->createForm(CategoryType::class, $category);
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($category);
-            $entityManager->flush();
-
+            $photo = $form->get('photo')->getData();
+            if ($photo) {
+                $directory = $this->getParameter('pictures_directory');
+                $category->setImage($this->uploaderService->uploadPhoto($photo, $directory));
+            }
+            $category->setCreatedAt(new \DateTimeImmutable());
+            $this->em->persist($category);
+            $this->em->flush();
+    
             return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
         }
-
+    
         return $this->renderForm('category/new.html.twig', [
             'category' => $category,
             'form' => $form,
         ]);
     }
+    
 
     #[Route('/{id}', name: 'app_category_show', methods: ['GET'])]
     public function show(Category $category): Response

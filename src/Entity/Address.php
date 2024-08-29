@@ -34,6 +34,9 @@ class Address
     #[ORM\OneToOne(mappedBy: 'address', cascade: ['persist', 'remove'])]
     private ?User $user = null;
 
+    #[ORM\OneToOne(mappedBy: 'siege', cascade: ['persist', 'remove'])]
+    private ?Interfederation $interfederation = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -129,6 +132,23 @@ class Address
         }
 
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getInterfederation(): ?Interfederation
+    {
+        return $this->interfederation;
+    }
+
+    public function setInterfederation(Interfederation $interfederation): static
+    {
+        // set the owning side of the relation if necessary
+        if ($interfederation->getSiege() !== $this) {
+            $interfederation->setSiege($this);
+        }
+
+        $this->interfederation = $interfederation;
 
         return $this;
     }

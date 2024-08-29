@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Addresses{% endblock %}
+{% block title %}Adresses{% endblock %}
 
 {% block body %}
-    <h1>Les adresses</h1>
+    <h4>Les adresses</h4>
 
-    <table class="table">
+    {# <table class="table">
         <thead>
             <tr>
                 <th>Pseudo</th>
@@ -34,8 +34,42 @@
                 <td colspan="8">no records found</td>
             </tr>
         {% endfor %}
+        </tbody> 
+    </table>#}
+
+    <table class="table datatable">
+        <thead>
+            <tr>
+                <th>
+                    Utilisateur
+                </th>
+                <th>Avenue</th>
+                <th>N°</th>
+                <th>Ville</th>
+                <th>Pays</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for address in addresses %}
+            <tr>
+                <td>{% if address.user is not null %}{{ address.user.username }}{% endif  %}</td>
+                <td>{{ address.street }}</td>
+                <td>{{ address.number }}</td>
+                <td>{{ address.city }}</td>
+                <td>{{ address.country }}</td>
+                <td>                    
+                    <a href="{{ path('app_address_show', {'id': address.id}) }}"><i class="fas fa-eye"></i></a>
+                    <a href="{{ path('app_address_edit', {'id': address.id}) }}"><i class="fas fa-edit"></i></a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8">Aucune adresse</td>
+            </tr>
+            {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_address_new') }}">Ajouter une adresse</a>
+    {# <a href="{{ path('app_address_new') }}">Ajouter une adresse</a> #}
 {% endblock %}

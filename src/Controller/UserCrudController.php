@@ -5,27 +5,47 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Entity\Address;
+use App\Entity\Interfederation;
 use App\Form\AddressType;
 use App\Form\UserRoleType;
+use App\Form\ChangePasswordType;
+use App\Repository\InterfederationRepository;
 use App\Service\GeocoderService;
+use App\Service\SecurityService;
+use App\Service\UploaderService;
 use App\Repository\UserRepository;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[Route('/user/crud')]
 class UserCrudController extends AbstractController
 {
+    public function __construct(
+        private EntityManagerInterface $em,
+        private UploaderService $uploaderService,
+        private SecurityService $securityService,
+        private NotificationService $notificationService,
+        private UserRepository $userRepository,
+        private Security $security
+    ) {
+    }
     #[Route('/', name: 'app_user_crud_index', methods: ['GET'])]
-    public function index(UserRepository $userRepository): Response
+    public function index(InterfederationRepository $interfederationRepository): Response
     {
+        $user = $this->security->getUser();
+        $interfederation = $user->getInterfederation();
+
+        //$users = $interfederation->getMemberships();
         return $this->render('user_crud/index.html.twig', [
-            'users' => $userRepository->findAll(),
+            'users' => $this->userRepository->findAll(),
         ]);
     }
 
@@ -61,30 +81,58 @@ class UserCrudController extends AbstractController
     #[Route('/{id}', name: 'app_user_crud_show', methods: ['GET'])]
     public function show(User $user): Response
     {
-        return $this->render('user_crud/profile.html.twig', [
+        return $this->render('user_crud/show.html.twig', [
             'user' => $user,
         ]);
     }
 
     #[Route('/{id}/edit', name: 'app_user_crud_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, User $user = null, EntityManagerInterface $entityManager): Response
     {
-        $address = new Address;
+        if (!$user) {
+            throw $this->createNotFoundException('Utilisateur non trouvé');
+        }
+    
+        $address = $user->getAddress() ?: new Address();
         $user->setAddress($address);
+    
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
+            $photo = $form->get('photo')->getData();
+            if ($photo) {
+                $directory = $this->getParameter('photo_directory');
+                $user->setPhoto($this->uploaderService->uploadPhoto($photo, $directory));
+            }
+    
+            // Récupérer les coordonnées de géolocalisation
+            $latitude = $request->request->get('latitude');
+            $longitude = $request->request->get('longitude');
+            if ($latitude && $longitude) {
+                $address->setLatitude($latitude);
+                $address->setLongitude($longitude);
+            }
+            $notification = $this->notificationService
+                            ->createNotification(
+                                $user, 
+                                'info',
+                                'Votre profil a été mis à jour avec succès'
+                            );
+            $entityManager->persist($notification);
+            $entityManager->persist($user);
             $entityManager->flush();
+    
             $this->addFlash('success', 'Profil mis à jour avec succès');
             return $this->redirectToRoute('app_user_crud_index', [], Response::HTTP_SEE_OTHER);
         }
-
+    
         return $this->renderForm('user_crud/edit.html.twig', [
             'user' => $user,
             'form' => $form,
         ]);
     }
+    
 
     #[Route('/{id}', name: 'app_user_crud_delete', methods: ['POST'])]
     public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
@@ -130,6 +178,41 @@ class UserCrudController extends AbstractController
         }
 
         return $this->render('user/assign_roles.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/update/password/{id}', name: 'update_password')]
+    public function changePassword(Request $request, User $user = null, EntityManagerInterface $entityManager, UserPasswordHasherInterface $userPasswordHasher): Response
+    {
+        $form = $this->createForm(ChangePasswordType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user->setPassword(
+                $userPasswordHasher->hashPassword(
+                    $user,
+                    $form->get('password')->getData()
+                )
+                );
+            $notification = $this->notificationService
+                ->createNotification(
+                    $user, 
+                    'info',
+                    'Votre mot de passe a été mis à jour avec succès'
+                );
+            $entityManager->persist($notification);
+            $entityManager->persist($user);
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Mot de passe modifié');
+
+
+            return $this->redirectToRoute('app_user_crud_index');
+        }
+
+        return $this->render('user_crud/password_update.html.twig', [
             'form' => $form->createView(),
         ]);
     }

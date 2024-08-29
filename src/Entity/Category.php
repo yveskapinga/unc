@@ -28,9 +28,25 @@ class Category
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
 
+    #[ORM\ManyToOne(inversedBy: 'categories')]
+    private ?User $author = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $createdAt = null;
+
+    // #[ORM\Column(length: 255, nullable: true)]
+    // private ?string $image = null;
+
+    // #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'categories')]
+    // private ?User $author = null;
+
+    // #[ORM\Column(type: 'datetime', nullable: true)]
+    // private ?\DateTimeInterface $createdAt = null;
+
     public function __construct()
     {
         $this->topics = new ArrayCollection();
+        // $this->createdAt = new \DateTime();
     }
 
     public function getId(): ?int
@@ -92,6 +108,42 @@ class Category
         return $this;
     }
 
+    // public function getImage(): ?string
+    // {
+    //     return $this->image;
+    // }
+
+    // public function setImage(?string $image): static
+    // {
+    //     $this->image = $image;
+
+    //     return $this;
+    // }
+
+    // public function getAuthor(): ?User
+    // {
+    //     return $this->author;
+    // }
+
+    // public function setAuthor(?User $user): static
+    // {
+    //     $this->author = $user;
+
+    //     return $this;
+    // }
+
+    // public function getCreatedAt(): ?\DateTimeInterface
+    // {
+    //     return $this->createdAt;
+    // }
+
+    // public function setCreatedAt(\DateTimeInterface $createdAt): static
+    // {
+    //     $this->createdAt = $createdAt;
+
+    //     return $this;
+    // }
+
     public function getImage(): ?string
     {
         return $this->image;
@@ -100,6 +152,30 @@ class Category
     public function setImage(?string $image): static
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    public function getAuthor(): ?User
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(?User $author): static
+    {
+        $this->author = $author;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTimeInterface $createdAt): static
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

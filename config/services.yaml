@@ -4,51 +4,72 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    photo_directory: "%kernel.project_dir%/public/uploads/photos"
+    pictures_directory: "%kernel.project_dir%/public/uploads/pictures"
 
 services:
-  App\Service\EncryptionService:
-    arguments:
-      $key: "%env(ENCRYPTION_KEY)%"
+    App\EventSubscriber\ActivitySubscriber:
+        arguments:
+            $security: '@security.helper'
+            $entityManager: '@doctrine.orm.entity_manager'
+            $requestStack: '@request_stack'
 
-  App\EventListener\MessageEncryptionListener:
-    tags:
-      - {
-          name: doctrine.orm.entity_listener,
-          event: prePersist,
-          entity: App\Entity\Message,
-        }
-      - {
-          name: doctrine.orm.entity_listener,
-          event: preUpdate,
-          entity: App\Entity\Message,
-        }
-      - {
-          name: doctrine.orm.entity_listener,
-          event: postLoad,
-          entity: App\Entity\Message,
-        }
-  App\Entity\Message:
-    calls:
-      - [setEncryptionService, ['@App\Service\EncryptionService']]
+        tags:
+            - { name: 'kernel.event_subscriber' }
+    # App\EventListener\MessageEncryptionListener:
+    #     tags:
+    #         - {
+    #             name: doctrine.orm.entity_listener,
+    #             event: prePersist,
+    #             entity: App\Entity\Message,
+    #           }
+    #         - {
+    #             name: doctrine.orm.entity_listener,
+    #             event: preUpdate,
+    #             entity: App\Entity\Message,
+    #           }
+    #         - {
+    #             name: doctrine.orm.entity_listener,
+    #             event: postLoad,
+    #             entity: App\Entity\Message,
+    #           }
+    # App\Entity\Message:
+    #     calls:
+    #         - [setEncryptionService, ['@App\Service\EncryptionService']]
   # default configuration for services in *this* file
-  App\EventListener\ActivityListener:
-    tags:
-      - { name: kernel.event_listener, event: kernel.request }
-  _defaults:
-    autowire: true # Automatically injects dependencies in your services.
-    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
-  App\DataFixtures\AppFixtures:
-    arguments:
-      $passwordHasher: "@security.password_hasher"
+    # App\EventListener\ActivityListener:
+    #     tags:
+    #         - { name: kernel.event_listener, event: kernel.request }
+    _defaults:
+        autowire: true # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    App\DataFixtures\AppFixtures:
+        arguments:
+            $passwordHasher: "@security.password_hasher"
+    App\Service\UserService:
+        arguments:
+            $security: '@security.helper'
+            $membershipRepository: '@App\Repository.MembershipRepository'
 
+    App\Service\CategoryService:
+        arguments:
+            $categoryRepository: '@App\Repository.CategoryRepository'
+            
+    App\Service\TopicService:
+        arguments:
+            $topicRepository: '@App\Repository.TopicRepository'
+
+    App\Service\EncryptionService:
+        arguments:
+            $key: "%env(ENCRYPTION_KEY)%"
   # makes classes in src/ available to be used as services
   # this creates a service per class whose id is the fully-qualified class name
-  App\:
-    resource: "../src/"
-    exclude:
+    App\:
+        resource: "../src/"
+        exclude:
       # - "../src/DependencyInjection/"
       # - "../src/Entity/"
-      - "../src/Kernel.php"
+          - "../src/Kernel.php"
 
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
