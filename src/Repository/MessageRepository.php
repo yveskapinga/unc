@@ -35,39 +35,25 @@ class MessageRepository extends ServiceEntityRepository
     public function findSendersWithUnreadCount(User $user)
     {
         return $this->createQueryBuilder('m')
-        ->select('IDENTITY(m.sender) as senderId, COUNT(m.id) as unreadCount')
+        ->select('IDENTITY(m.sender) as senderId, COUNT(m.isRead) as unreadCount')
         ->where('m.recipient = :user')
         ->andWhere('m.isRead = false')
         ->setParameter('user', $user)
         ->groupBy('m.sender')
-        ->orderBy('MAX(m.createdAt)', 'DESC')
+        ->orderBy('m.createdAt', 'DESC')
         ->getQuery()
         ->getResult();
     }
-    
 
-    public function findMessagesBetweenUsers(User $currentUser, User $otherUser)
-    {
+    public function findAllSenders(User $user) {
         return $this->createQueryBuilder('m')
-            ->where('(m.sender = :currentUser AND m.recipient = :otherUser) OR (m.sender = :otherUser AND m.recipient = :currentUser)')
-            ->setParameter('currentUser', $currentUser)
-            ->setParameter('otherUser', $otherUser)
-            ->orderBy('m.createdAt', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
-    
-
-    public function markMessagesAsRead(User $currentUser, User $otherUser)
-    {
-        $this->createQueryBuilder('m')
-            ->update()
-            ->set('m.isRead', true)
-            ->where('m.sender = :otherUser AND m.recipient = :currentUser AND m.isRead = false')
-            ->setParameter('currentUser', $currentUser)
-            ->setParameter('otherUser', $otherUser)
-            ->getQuery()
-            ->execute();
+        ->select('(m.sender) as senderId')
+        ->where('m.recipient = :user')
+        ->setParameter('user', $user)
+        ->groupBy('m.sender')
+        ->orderBy('m.isRead', 'DESC')
+        ->getQuery()
+        ->getResult();
     }
 
     public function findSenders(User $user)
@@ -79,5 +65,53 @@ class MessageRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findUnreadMessagesByRecipient(User $recipient)
+    {
+        return $this->createQueryBuilder('m')
+            ->where('m.isRead = false')
+            ->andWhere('m.recipient = :recipient')
+            ->setParameter('recipient', $recipient)
+            ->orderBy('m.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findAllSendersWithLastMessageDate(User $user)
+    {
+        return $this->createQueryBuilder('m')
+            ->select('IDENTITY(m.sender) as senderId, MAX(m.createdAt) as lastMessageDate, SUM(CASE WHEN m.isRead = false THEN 1 ELSE 0 END) as unreadCount')
+            ->where('m.recipient = :user')
+            ->setParameter('user', $user)
+            ->groupBy('m.sender')
+            ->orderBy('lastMessageDate', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findMessagesBetweenUsers(User $currentUser, User $otherUser)
+    {
+        return $this->createQueryBuilder('m')
+            ->where('(m.sender = :currentUser AND m.recipient = :otherUser) OR (m.sender = :otherUser AND m.recipient = :currentUser)')
+            ->setParameter('currentUser', $currentUser)
+            ->setParameter('otherUser', $otherUser)
+            ->orderBy('m.createdAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function markMessagesAsRead(User $currentUser, User $otherUser)
+    {
+        $this->createQueryBuilder('m')
+            ->update()
+            ->set('m.isRead', ':true')
+            ->where('(m.sender = :otherUser AND m.recipient = :currentUser)')
+            ->setParameter('true', true)
+            ->setParameter('currentUser', $currentUser)
+            ->setParameter('otherUser', $otherUser)
+            ->getQuery()
+            ->execute();
+    }
+
 
 }

@@ -33,7 +33,7 @@ class Membership
     private ?string $fonction = null;
 
     #[ORM\ManyToOne(inversedBy: 'memberships')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Interfederation $interfederation = null;
 
     public function getId(): ?int

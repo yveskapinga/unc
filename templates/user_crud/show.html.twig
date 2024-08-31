@@ -31,7 +31,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Votre position</h5>
                         <div id="map" style="height: 300px; width: 100%;"></div>
-                        <p>{{ user.address.city }}, {{ user.address.country }}</p>
+                        {# <p>{{ user.address.city }}, {{ user.address.country }}</p> #}
                     </div>
                 </div>
             </div>
@@ -79,12 +79,22 @@
         <div class="col-md-4">
             <div class="card mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">Événements</h5>
+                    <h5 class="card-title">Événements organisés</h5>
                     <p class="card-text">{{ user.events|length }} événements</p>
-                    <a href="{{ path('app_event_index') }}" class="btn btn-primary">Voir les événements</a>
+                    <a href="{{ path('app_event_index') }}" class="btn btn-primary">Voir les événements organisés</a>
                 </div>
             </div>
         </div>
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Événements participés</h5>
+                    <p class="card-text">{{ user.eventsParticipants|length }} événements</p>
+                    <a href="{{ path('app_event_index') }}" class="btn btn-primary">Voir les événements participés</a>
+                </div>
+            </div>
+        </div>
+
         <div class="col-md-4">
             <div class="card mb-3">
                 <div class="card-body">

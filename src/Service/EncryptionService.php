@@ -7,10 +7,12 @@ class EncryptionService
 {
     private $key ;
 
-    public function __construct()
+    public function __construct(string $key)
     {
-        $this->key = '598dbe6e961d056e7bbf2d16596faa35400e4f4dbdc44345f8b75caf95d8744e';
+        $this->key = $key;
+        // '598dbe6e961d056e7bbf2d16596faa35400e4f4dbdc44345f8b75caf95d8744e';
     }
+    
 
     public function encrypt(string $data): string
     {

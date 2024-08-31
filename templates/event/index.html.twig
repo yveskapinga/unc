@@ -39,9 +39,9 @@
                 <td>{{ event.organizer.username }}</td>
                 <td>{{ event.participant|length }}</td>
                 <td>                    
-                    <a href="{{ path('app_event_show', {'id': event.id}) }}"><i class="fas fa-eye"></i>voir</a>
+                    <a href="{{ path('app_event_show', {'id': event.id}) }}"><i class="fas fa-eye"></i>voir</a><br> 
                     <a href="{{ path('app_event_edit', {'id': event.id}) }}"><i class="fas fa-edit"></i>edit</a>
-                </td>
+                </br>
             </tr>
             {% else %}
             <tr>

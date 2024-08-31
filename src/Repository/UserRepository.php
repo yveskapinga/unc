@@ -38,6 +38,29 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->persist($user);
         $this->getEntityManager()->flush();
     }
+
+    public function findOneByRole(string $role): ?User
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.roles LIKE :role')
+            ->setParameter('role', '%"'.$role.'"%')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findAllSenders(User $currentUser)
+    {
+        return $this->createQueryBuilder('u')
+            ->innerJoin('u.messages', 'm')
+            // ->addSelect('MAX(m.createdAt) as lastMessageDate')
+            ->where('m.recipient = :currentUser')
+            ->setParameter('currentUser', $currentUser)
+            ->groupBy('u.id')
+            // ->orderBy('lastMessageDate', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
     
 
 //    /**

@@ -1,30 +1,31 @@
 <?php
 
-// src/Service/TopicService.php
+// src/Service/NotificationService.php
 namespace App\Service;
 
 use App\Entity\Notification;
 use App\Entity\User;
-
+use Doctrine\ORM\EntityManagerInterface;
 
 class NotificationService
 {
-    
-    public function __construct(
-        )
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
     {
+        $this->entityManager = $entityManager;
     }
 
-    public function createNotification(
-        User $user, 
-        string $type, 
-        string $message) : ?Notification
+    public function createNotification(User $user, string $type, string $message): void
     {
-        return (new Notification())
+        $notification = (new Notification())
             ->setTheUser($user)
             ->setType($type)
             ->setContent($message)
             ->setCreatedAt(new \DateTime());
 
+        $this->entityManager->persist($notification);
+        $this->entityManager->flush();
     }
 }
+

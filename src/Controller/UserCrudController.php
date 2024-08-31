@@ -7,6 +7,7 @@ use App\Form\UserType;
 use App\Entity\Address;
 use App\Entity\Interfederation;
 use App\Form\AddressType;
+use App\Form\AssignRolesType;
 use App\Form\UserRoleType;
 use App\Form\ChangePasswordType;
 use App\Repository\InterfederationRepository;
@@ -113,13 +114,12 @@ class UserCrudController extends AbstractController
                 $address->setLatitude($latitude);
                 $address->setLongitude($longitude);
             }
-            $notification = $this->notificationService
+            $this->notificationService
                             ->createNotification(
                                 $user, 
                                 'info',
                                 'Votre profil a été mis à jour avec succès'
                             );
-            $entityManager->persist($notification);
             $entityManager->persist($user);
             $entityManager->flush();
     
@@ -155,29 +155,33 @@ class UserCrudController extends AbstractController
         ]);
     }
 
-    #[Route('/assign-roles', name: 'assign_roles')]
-    public function assignRoles(Request $request, UserRepository $userRepository, EntityManagerInterface $entityManager): Response
+    #[Route('/assign/roles', name: 'assign_roles', methods: ['GET','POST'])]
+    public function assignRoles(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(UserRoleType::class);
+        
+        // $user= new User;
+        $form = $this->createForm(AssignRolesType::class);
         $form->handleRequest($request);
-
+        //dd('je suis ici');
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
-            $users = $data['users'];
+            $users = $data['author'];
             $roles = $data['roles'];
-
-            foreach ($users as $user) {
-                $user->setRoles($roles);
-                $entityManager->persist($user);
-            }
-
+            $users->setRoles($roles);
+            // dd($users);
+            // foreach ($users as $user) {
+            //     $tab[]= $user->setRoles($roles);
+                $entityManager->persist($users);
+            // }
+            // dd($tab);
+            $this->securityService->isAdmin();
             $entityManager->flush();
 
             $this->addFlash('success', 'Roles assigned successfully!');
             return $this->redirectToRoute('assign_roles');
         }
 
-        return $this->render('user/assign_roles.html.twig', [
+        return $this->render('user_crud/assign_roles.html.twig', [
             'form' => $form->createView(),
         ]);
     }

@@ -1,144 +1,7 @@
 {% extends 'base.html.twig' %}
     {% block title %}Message{% endblock %}
     {% block stylesheet %}
-    <style>
-        .body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            height: 100vh;
-        }
-        .container {
-            display: flex;
-            width: 100%;
-        }
-        .expediteurs {
-            width: 30%;
-            border-right: 1px solid #ccc;
-            overflow-y: auto;
-            background-color: #f8f8f8;
-        }
-        .expediteurs ul {
-            list-style: none;
-            padding: 0;
-        }
-        .expediteurs li {
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-        }
-        .expediteurs li img {
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            margin-right: 10px;
-        }
-        .expediteurs li:hover {
-            background-color: #e0e0e0;
-        }
-        .sms {
-            width: 70%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .sms-header {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            background-color: #fff;
-            border-bottom: 1px solid #ccc;
-        }
-        .sms-header img {
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            margin-right: 10px;
-        }
-        .sms-content {
-            flex-grow: 1;
-            padding: 10px;
-            overflow-y: auto;
-            background-color: #f1f1f1;
-        }
-        .mon-message {
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 10px;
-            max-width: 60%;
-        }
-        .mon-message.sent {
-            background-color: #dcf8c6;
-            align-self: flex-end;
-            text-align: right;
-            margin-left: auto;
-        }
-        .mon-message.received {
-            background-color: #fff;
-            align-self: flex-start;
-            text-align: left;
-            margin-right: auto;
-        }
-        .mon-message small {
-            display: block;
-            margin-top: 5px;
-            font-size: 0.8em;
-            color: #888;
-        }
-        .mon-message-input {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            background-color: #fff;
-            border-top: 1px solid #ccc;
-        }
-        .message-input input {
-            flex-grow: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 20px;
-            margin-right: 10px;
-        }
-        .mon-message-input button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        .mon-message-input form {
-            display: flex;
-            width: 100%;
-        }
-        .mon-message-input input {
-            flex-grow: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 20px;
-            margin-right: 10px;
-        }
-        .mon-message-input button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-
-    </style>
+        <link href="{{asset('css/message.css')}}" rel="stylesheet">
     {% endblock %}
 {% block body %}
 <div class="body">
@@ -147,11 +10,13 @@
             <ul>
                 {% for senderData in senders %}
                     <li onclick="window.location.href='{{ path('app_message_index', {'userId': senderData.user.id}) }}'">
-                        <img src="{{ '' }}" alt="{{ senderData.user.username }}">
-                        <div>
+                            <img style="width: 50px; height: 50px;" src="{{ asset('uploads/photos/' ~ senderData.user.photo) }}" alt="{{ senderData.user.username }}">                        <div>
                             <strong>{{ senderData.user.username }}</strong><br>
-                            <small>{{ senderData.unreadCount }} non lus</small>
+                            {# <small>{{ senderData.unreadCount }} non lus</small> #}
                         </div>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
                     </li>
                 {% endfor %}
             </ul>

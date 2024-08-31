@@ -6,6 +6,7 @@ twig:
         user_service: '@App\Service\UserService'
         category_service: '@App\Service\CategoryService'
         topic_service: '@App\Service\TopicService'
+        # message_service: '@App\Service\MessageService'
 
 
 when@test:

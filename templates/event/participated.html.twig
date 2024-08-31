@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Événements participés{% endblock %}
+
+{% block body %}
+<h1>Événements participés</h1>
+<ul>
+    {% for event in participatedEvents %}
+        <li>{{ event.title }} - {{ event.startDate|date('d/m/Y') }}</li>
+    {% else %}
+        <li>Aucun événement participé.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

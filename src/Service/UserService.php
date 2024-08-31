@@ -5,14 +5,17 @@ namespace App\Service;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Security;
 use App\Repository\MembershipRepository;
-
+use App\Repository\MessageRepository;
+use App\Repository\NotificationRepository;
 
 class UserService
 {
 
     public function __construct(
         private Security $security,
-        private MembershipRepository $membershipRepository
+        private MembershipRepository $membershipRepository,
+        private NotificationRepository $notificationRepository,
+        private MessageRepository $messageRepository,
         )
     {
         
@@ -37,12 +40,38 @@ class UserService
 
     public function getUserLevel()
     {
-        $user = $this->security->getUser();
-        if (!$user) {
-            return null;
-        }
+        $user = $this->testUser();
 
         $membership = $this->membershipRepository->findOneBy(['theUser' => $user]);
         return $membership ? $membership->getLevel() : 'Militant';
+    }
+
+    public function getMessage()
+    {
+        $this->testUser();
+        $unreadMessages = $this->messageRepository->findUnreadMessagesByRecipient($this->security->getUser());
+        // foreach ($unreadMessages as $message) {
+        //     // $message->decryptContent();
+        //     $unreadMessages [] = $message;
+        // }
+        // dd($unreadMessages);      
+        return $unreadMessages;
+    }
+
+    public function getNotification()
+    {
+        $this->testUser();
+        $unreadNotifications = $this->notificationRepository->findUnreadByUser($this->security->getUser());
+        return  $unreadNotifications;
+    }
+
+    private function testUser()
+    {
+        $user = $this->security->getUser();
+        if (!$user) {
+            return null;
+        }else{
+            return $user;
+        }
     }
 }

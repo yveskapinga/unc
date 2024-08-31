@@ -7,7 +7,9 @@ use App\Repository\EventRepository;
 use App\Repository\TopicRepository;
 use App\Repository\AddressRepository;
 use App\Repository\MembershipRepository;
+use App\Repository\MessageRepository;
 use App\Repository\NotificationRepository;
+use App\Service\SecurityService;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
@@ -29,6 +31,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 class AdminController extends AbstractController
 {
     public function __construct(
+        private SecurityService $securityService,
         private Security $security,
         private EventRepository $eventRepo,
         private TopicRepository $topicRepo,
@@ -36,6 +39,7 @@ class AdminController extends AbstractController
         private MembershipRepository $memberRepo,
         private AddressRepository $addressRepo,
         private UserRepository $userRepo,
+        private MessageRepository $messageRepo,
 
     ){
     }
@@ -63,15 +67,18 @@ class AdminController extends AbstractController
             // Redirigez vers la page d'enregistrement si non authentifié
             return new RedirectResponse($this->generateUrl('app_login'));
         }
-        $notifications = $this->notificationRepo->findUnreadByUser($this->security->getUser());
-
-        return $this->render('admin/index.html.twig', [
+        // $notifications = $this->notificationRepo->findBy(['theUser'=>$this->security->getUser()]);
+        // $message = $this->messageRepo->findBy(['recipient'=>$this->security->getUser()]);       
+        return $this->render('admin/index.html.twig'
+        , [
             'users' => $this->userRepo->findAll(),
-            'topics' => $this->topicRepo->findAll(),
-            'unreadNotifications' => $notifications,
-            'membership' => $this->memberRepo->findAll(),
+        //     'topics' => $this->topicRepo->findAll(),
+        //     'notifications' => $notifications,
+        //     'messages' => $message,
+        //     'membership' => $this->memberRepo->findAll(),
             'events'=> $this->eventRepo->findAll()
-        ]);
+        ]
+        );
     }
     
     #[Route('/test/save-location', name: 'test_save_location')]

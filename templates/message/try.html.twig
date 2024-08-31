@@ -1,0 +1,107 @@
+{# templates/messages/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="body">
+    <div class="container">
+        <div class="expediteurs">
+            <ul>
+                {% for senderId, messages in senders %}
+                    {% set sender = messages[0].getSender().getId() == app.user.id ? messages[0].getRecipient() : messages[0].getSender() %}
+                    <li class="sender-item {{ cycle(['odd', 'even'], loop.index) }}" data-sender-id="{{ senderId }}">
+                        <img style="width: 50px; height: 50px;" src="{{ asset('uploads/photos/' ~ sender.getPhoto()) }}" alt="profile">
+                        <div>
+                            <strong>{{ sender.getUsername() }}</strong><br>
+                            {# <small>{{ messages|length }} messages</small> #}
+                        </div>
+                    </li>
+                    <li class="divider"></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="sms">
+            <div class="sms-header">
+                <img id="selected-user-picture" src="" alt="">
+                <strong id="selected-user-name">Sélectionnez un utilisateur</strong>
+            </div>
+            <div class="sms-content" id="conversation">
+                <p>Sélectionnez un utilisateur pour voir les messages échangés.</p>
+            </div>
+            <div class="mon-message-input">
+                <form action="{{ path('send_message') }}" method="post">
+                    <input type="hidden" name="recipientId" id="recipientId" value="">
+                    <input type="text" name="content" placeholder="Écrire un message...">
+                    <button type="submit"><i class="fas fa-sms"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block stylesheet %}
+<link href="{{asset('css/message.css')}}" rel="stylesheet">
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.expediteurs li').forEach(sender => {
+        sender.addEventListener('click', () => {
+            const senderId = sender.getAttribute('data-sender-id');
+            fetch(`/message/conversation/${senderId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const conversationDiv = document.getElementById('conversation');
+                    const selectedUserPicture = document.getElementById('selected-user-picture');
+                    const selectedUserName = document.getElementById('selected-user-name');
+                    const recipientIdInput = document.getElementById('recipientId');
+
+                    // Mettre à jour les informations de l'expéditeur sélectionné
+                    selectedUserPicture.src = `{{ asset('uploads/photos/') }}${data.sender.profilePicture}`;
+                    selectedUserName.textContent = data.sender.username;
+                    recipientIdInput.value = senderId;
+
+                    // Afficher la conversation
+                    conversationDiv.innerHTML = '';
+                    data.messages.forEach(message => {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.classList.add('mon-message');
+                        messageDiv.classList.add(message.isSent ? 'sent' : 'received');
+                        messageDiv.innerHTML = `
+                            <p>${message.content}</p>
+                            <small>${message.createdAt}</small>
+                        `;
+                        conversationDiv.appendChild(messageDiv);
+                    });
+
+                    // Faire défiler vers le bas de la conversation
+                    conversationDiv.scrollTop = conversationDiv.scrollHeight;
+                });
+        });
+    });
+
+    document.querySelector('.mon-message-input form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            const conversationDiv = document.getElementById('conversation');
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('mon-message', 'sent');
+            messageDiv.innerHTML = `
+                <p>${data.content}</p>
+                <small>${data.createdAt}</small>
+            `;
+            conversationDiv.appendChild(messageDiv);
+            conversationDiv.scrollTop = conversationDiv.scrollHeight;
+            form.reset();
+        });
+    });
+});
+
+</script>
+{% endblock %}

@@ -10,35 +10,50 @@ use App\Form\EventInvitationType;
 use App\Form\InvitationType;
 use App\Form\UserType;
 use App\Repository\EventRepository;
+use App\Service\DoctrineService;
+use App\Service\NotificationService;
+use App\Service\SecurityService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
+use Symfony\Component\Security\Core\Security;
 
 #[Route('/event')]
 class EventController extends AbstractController
 {
+    public function __construct(
+        private EventRepository $eventRepo,
+        private SecurityService $securityService,
+        private NotificationService $notificationService,
+        private EntityManagerInterface $em,
+        private DoctrineService $doctrineService,
+
+    )
+    {
+        
+    }
     #[Route('/', name: 'app_event_index', methods: ['GET'])]
-    public function index(EventRepository $eventRepository): Response
+    public function index(): Response
     {
         return $this->render('event/index.html.twig', [
-            'events' => $eventRepository->findAll(),
+            'events' => $this->eventRepo->findAll(),
         ]);
     }
 
     #[Route('/new', name: 'app_event_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request): Response
     {
         $event = new Event();
         $form = $this->createForm(EventType::class, $event);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($event);
-            $entityManager->flush();
+            $this->doctrineService->persistEntities($event, null, 'votre évènement a été créé avec succès','success');
+            // $this->em->persist($event);
+            // $this->em->flush();
 
             return $this->redirectToRoute('app_event_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -58,13 +73,13 @@ class EventController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_event_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Event $event, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Event $event): Response
     {
         $form = $this->createForm(EventType::class, $event);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            $this->em->flush();
 
             return $this->redirectToRoute('app_event_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -76,11 +91,11 @@ class EventController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_event_delete', methods: ['POST'])]
-    public function delete(Request $request, Event $event, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Event $event): Response
     {
         if ($this->isCsrfTokenValid('delete'.$event->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($event);
-            $entityManager->flush();
+            $this->em->remove($event);
+            $this->em->flush();
         }
 
         return $this->redirectToRoute('app_event_index', [], Response::HTTP_SEE_OTHER);
@@ -90,33 +105,25 @@ class EventController extends AbstractController
      * Il faut prévoir que sa demande d'inscription soit acceptée
      */
     #[Route('/register/{id}', name: 'app_register_for_event')]
-    public function registerForEventAction(Event $event, UserInterface $user, EntityManagerInterface $em): Response
+    public function registerForEventAction(Event $event): Response
     {
+        $user = $this->securityService->getConnectedUser();
         $event->addParticipant($user);
-        $notification = new Notification();
-        $notification->setTheUser($user);
-        $notification->setType('Invitation');
-        $notification->setContent($user->getUsername() . " a souscrit à l'évènement : "   . $event->getTitle());
-        $notification->setCreatedAt(new \DateTime());
-        $em->persist($notification);
-        $em->persist($event);
-        $em->flush();
-
+        $message = $user->getUsername() . " a souscrit à l'évènement : "   . $event->getTitle();
+        $this->notificationService->createNotification($user, 'Invitation', $message);
+        $this->doctrineService->persistEntities($event,null,$message,'inscription');
         return $this->redirectToRoute('app_event_show', ['id' => $event->getId()]);
     }
 
     #[Route('/unregister/{id}', name: 'app_unregister_for_event')]
     public function unregisterForEventAction(Event $event, UserInterface $user, EntityManagerInterface $em): Response
     {
+        $user = $this->securityService->getConnectedUser();
         $event->removeParticipant($user);
-        $notification = new Notification();
-        $notification->setTheUser($user);
-        $notification->setType('Désinscription');
-        $notification->setContent($user->getUsername() . " s'est soustrait à l'évènement : "   . $event->getTitle());
-        $notification->setCreatedAt(new \DateTime());
-        $em->persist($notification);
-        $em->persist($event);
-        $em->flush();
+        $message = $user->getUsername() . " s'est soustrait à l'évènement : "   . $event->getTitle();
+        $this->notificationService->createNotification($user, 'Désinscription', $message);
+        $this->doctrineService->persistEntities($event,null,$message,'Desinscription');
+
 
         return $this->redirectToRoute('app_event_show', ['id' => $event->getId()]);
     }
@@ -152,6 +159,28 @@ class EventController extends AbstractController
         return $this->render('event/invite.html.twig', [
             'form' => $form->createView(),
             'event' => $event,
+        ]);
+    }
+
+    #[Route('/events/organized', name: 'app_event_organized')]
+    public function organizedEvents(EventRepository $eventRepository, Security $security): Response
+    {
+        $user = $security->getUser();
+        $organizedEvents = $eventRepository->findBy(['organizer' => $user]);
+
+        return $this->render('event/organized.html.twig', [
+            'organizedEvents' => $organizedEvents,
+        ]);
+    }
+
+    #[Route('/events/participated', name: 'app_event_participated')]
+    public function participatedEvents(EventRepository $eventRepository, Security $security): Response
+    {
+        $user = $security->getUser();
+        $participatedEvents = $eventRepository->findByParticipant($user);
+
+        return $this->render('event/participated.html.twig', [
+            'participatedEvents' => $participatedEvents,
         ]);
     }
 }

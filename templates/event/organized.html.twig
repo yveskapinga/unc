@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Événements organisés{% endblock %}
+
+{% block body %}
+<h1>Événements organisés</h1>
+<ul>
+    {% for event in organizedEvents %}
+        <li>{{ event.title }} - {{ event.startDate|date('d/m/Y') }}</li>
+    {% else %}
+        <li>Aucun événement organisé.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

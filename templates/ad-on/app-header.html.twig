@@ -25,9 +25,9 @@
           </li><!-- End Search Icon-->
 
           <li class="nav-item dropdown">
-            {% set unreadNotifications = [] %}
-            {% set unreadMessages = [] %}
-            {% set sortedUnreadNotifications = [] %}
+            {% set unreadNotifications = user_service.getNotification() %}
+            {% set unreadMessages = user_service.getMessage() %}
+            {# {% set sortedUnreadNotifications = [] %}
             {% set sortedUnreadMessages = [] %}
             {% set lastFourUnreadMessages = [] %}
             {% set lastFourUnreadNotifications = [] %}
@@ -39,7 +39,7 @@
                 {% set sortedUnreadMessages = unreadMessages|sort((a, b) => b.createdAt <=> a.createdAt) %}
                 {% set lastFourUnreadMessages = sortedUnreadMessages|slice(0, 4) %}
                 {% set lastFourUnreadNotifications = sortedUnreadNotifications|slice(0, 4) %}
-            {% endif %}
+            {% endif %} #}
 
             <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
               <i class="bi bi-bell"></i>
@@ -54,7 +54,7 @@
               Vous avez <span class="badge bg-primary"> {{ unreadNotifications|length }}</span> notifications non lues
               <a href="{{path('app_notification_index')}}"><span class="badge rounded-pill bg-primary p-2 ms-2">Voir tout</span></a>
             </li>
-            {% for notification in lastFourUnreadNotifications %}
+            {% for notification in unreadNotifications|slice(0, 4) %}
                   <li>
                     <hr class="dropdown-divider">
                   </li>
@@ -92,16 +92,16 @@
                 Vous avez {{ unreadMessages|length }} messages non lus
                 <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">Voir tout</span></a>
               </li>
-              {% for message in lastFourUnreadMessages %}
+              {% for message in unreadMessages | slice(0,4) %}
               <li>
                 <hr class="dropdown-divider">
               </li>
 
               <li class="message-item">
-                <a href="#">
-                  <img src="{{asset('admin/assets/img/messages-1.jpg')}}" alt="" class="rounded-circle">
+                <a href="{{path('app_message_index')}}" title="voir le message">
+                  <img src="{{asset('uploads/photos/' ~ message.sender.photo)}}" alt="profile" class="rounded-circle">
                   <div>
-                    <h4>{{ message.recipient.username }}</h4>
+                    <h4>{{ message.sender.username }}</h4>
                     <p>{{ message.content|slice(0, 50) }}...</p>
                     <p>{{ message.createdAt|date('d/m/Y H:i')}}</p>
                   </div>
@@ -141,9 +141,12 @@
                 </a>
               </li>
               <li>
-                <a class="dropdown-item d-flex align-items-center" href="">
-                  <i class="bi bi-person"></i>
-                  <span>Mon Profile</span>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="{{path('app_user_crud_edit', {'id':app.user.id})}}">
+                  <i class="fas fa-edit"></i>
+                  <span>Modifier</span>
                 </a>
               </li>
               <li>

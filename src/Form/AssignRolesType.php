@@ -8,6 +8,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class AssignRolesType extends AbstractType
 {
@@ -15,16 +16,17 @@ class AssignRolesType extends AbstractType
     {
 
         $builder
-            ->add('users', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'username',
-                'multiple' => true,
-                'expanded' => true,
-            ])
+        ->add('author', EntityType::class, [
+            'class' => User::class,
+            'choice_label' => 'username',
+            'label' => 'Auteur',
+            'attr' => ['class' => 'form-control'],])
             ->add('roles', ChoiceType::class, [
                 'choices' => [
+                    'Super admin' => 'ROLE_USER_ADMIN',
                     'Admin' => 'ROLE_ADMIN',
                     'User' => 'ROLE_USER',
+
                     // Ajoutez d'autres rôles si nécessaire
                 ],
                 'multiple' => true,
@@ -35,7 +37,7 @@ class AssignRolesType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => User::class,
+            // 'data_class' => User::class,
         ]);
     }
 }

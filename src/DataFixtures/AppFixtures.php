@@ -22,7 +22,7 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
-         $this->createCategories($manager);
+         $this->createSuperAdmin($manager);
          $manager->flush();
     }
 
@@ -61,32 +61,29 @@ class AppFixtures extends Fixture
     private function createSuperAdmin(ObjectManager $manager){
 
         $faker = Factory::create('fr_FR');
-
-        for ($i = 0; $i < 10; $i++) {
             $address = new Address();
-            $address->setNumber('');
-            $address->setStreet('');
-            $address->setCity('');
-            $address->setCountry('République Démocratique du Congo');
-            $address->setLatitude(''); // Coordonnées de la RDC
-            $address->setLongitude('');
+            $address->setNumber(303);
+            $address->setStreet('du traffic');
+            $address->setCity('kolwezi');
+            $address->setCountry('Congo Kinshasa');
+            //$address->setLatitude(''); // Coordonnées de la RDC
+            //$address->setLongitude('');
 
             $user = new User();
-            $user->setEmail('');
-            $user->setUsername('');
-            $user->setFirstName('');
-            $user->setName('');
-            $user->setRoles(['ROLE_USER','RILE_SUPER_ADMIN']);
-            $user->setJoinedAt($faker->dateTimeThisYear); // Date de l'année en cours
-            $user->setIsActive($faker->boolean);
+            $user->setEmail('superadmin@unc.org');
+            $user->setUsername('superadmin');
+            $user->setFirstName('Yves');
+            $user->setName('Kayembe');
+            $user->setRoles(['ROLE_USER','ROLE_ADMIN','ROLE_SUPER_ADMIN']);
+            $user->setJoinedAt(new \DateTime('2020-01-30')); // Date de l'année en cours
+            $user->setIsActive(true);
             $user->setAddress($address);
 
-            $password = $this->passwordHasher->hashPassword($user, 'password');
+            $password = $this->passwordHasher->hashPassword($user, '1.0SuperAdmin');
             $user->setPassword($password);
 
             $manager->persist($address);
             $manager->persist($user);
-        }
     }
 
     private function createCategories(ObjectManager $manager){

@@ -90,6 +90,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(mappedBy: 'sif', cascade: ['persist', 'remove'])]
     private ?Interfederation $interfederation = null;
 
+    #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'referrers')]
+    private Collection $referredBy;
+
+    #[ORM\ManyToMany(targetEntity: self::class, mappedBy: 'referredBy')]
+    private Collection $referrers;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
@@ -102,6 +108,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->channels = new ArrayCollection();
         $this->eventsParticipants = new ArrayCollection();
         // $this->categories = new ArrayCollection();
+        $this->referredBy = new ArrayCollection();
+        $this->referrers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -607,6 +615,57 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         $this->interfederation = $interfederation;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getReferredBy(): Collection
+    {
+        return $this->referredBy;
+    }
+
+    public function addReferredBy(self $referredBy): static
+    {
+        if (!$this->referredBy->contains($referredBy)) {
+            $this->referredBy->add($referredBy);
+        }
+
+        return $this;
+    }
+
+    public function removeReferredBy(self $referredBy): static
+    {
+        $this->referredBy->removeElement($referredBy);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getReferrers(): Collection
+    {
+        return $this->referrers;
+    }
+
+    public function addReferrer(self $referrer): static
+    {
+        if (!$this->referrers->contains($referrer)) {
+            $this->referrers->add($referrer);
+            $referrer->addReferredBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReferrer(self $referrer): static
+    {
+        if ($this->referrers->removeElement($referrer)) {
+            $referrer->removeReferredBy($this);
+        }
 
         return $this;
     }
