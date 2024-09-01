@@ -42,7 +42,7 @@ class UserCrudController extends AbstractController
     public function index(InterfederationRepository $interfederationRepository): Response
     {
         $user = $this->security->getUser();
-        $interfederation = $user->getInterfederation();
+        // $interfederation = $user->getInterfederation();
 
         //$users = $interfederation->getMemberships();
         return $this->render('user_crud/index.html.twig', [
@@ -205,7 +205,7 @@ class UserCrudController extends AbstractController
                     'info',
                     'Votre mot de passe a été mis à jour avec succès'
                 );
-            $entityManager->persist($notification);
+            // $entityManager->persist($notification);
             $entityManager->persist($user);
 
             $entityManager->flush();

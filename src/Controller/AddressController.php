@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Address;
 use App\Form\AddressType;
+use App\Service\DoctrineService;
 use App\Repository\AddressRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,12 +16,19 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/address')]
 class AddressController extends AbstractController
 {
+    public function __construct(
+        private AddressRepository $addressRepository,
+        private UserRepository $userRepository,
+        private DoctrineService $doctrineService
+    ){
+
+    }
     #[Route('/', name: 'app_address_index', methods: ['GET'])]
-    public function index(AddressRepository $addressRepository, UserRepository $userRepository): Response
+    public function index(): Response
     {
         return $this->render('address/index.html.twig', [
-            'addresses' => $addressRepository->findAll(),
-            'users' => $userRepository->findAll(),
+            'addresses' => $this->addressRepository->findAll(),
+            'users' => $this->userRepository->findAll(),
         ]);
     }
 
@@ -32,8 +40,14 @@ class AddressController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($address);
-            $entityManager->flush();
+            $this->doctrineService->persistEntities(
+                $address, 
+                null, 
+                'L\'adresse a été créée', 
+                'success'
+            );
+            // $entityManager->persist($address);
+            // $entityManager->flush();
 
             return $this->redirectToRoute('app_address_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -52,14 +66,21 @@ class AddressController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_address_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Address $address, EntityManagerInterface $entityManager): Response
+    #[Route('/{id?}/edit', name: 'app_address_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Address $address = null): Response
     {
         $form = $this->createForm(AddressType::class, $address);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            $this->doctrineService->persistEntities(
+                $address, 
+                null, 
+                'L\'adresse a été modifiée', 
+                'success'
+            );
+
+            // $entityManager->flush();
 
             return $this->redirectToRoute('app_address_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -70,12 +91,17 @@ class AddressController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_address_delete', methods: ['POST'])]
-    public function delete(Request $request, Address $address, EntityManagerInterface $entityManager): Response
+    #[Route('/{id?}', name: 'app_address_delete', methods: ['POST'])]
+    public function delete(Request $request, Address $address = null): Response
     {
         if ($this->isCsrfTokenValid('delete'.$address->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($address);
-            $entityManager->flush();
+            $this->doctrineService->removeEntities(
+                $address, 
+                'L\'adresse a été modifiée', 
+                'success'
+            );
+            // $entityManager->remove($address);
+            // $entityManager->flush();
         }
 
         return $this->redirectToRoute('app_address_index', [], Response::HTTP_SEE_OTHER);

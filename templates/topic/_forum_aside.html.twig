@@ -1,0 +1,54 @@
+
+            <!-- Blog Author Widget 2 -->
+            {% if user %}
+            <div class="blog-author-widget-2 widget-item">
+
+              <div class="d-flex flex-column align-items-center">
+              
+                <img src="{{ asset('uploads/photos/' ~ user.photo) }}" class="rounded-circle flex-shrink-0" alt="profile">
+                <h4>Meilleur Auteur :</h4>
+                <div class="social-links">
+                  {# templates/topic/best_author.html.twig #}
+
+                  <h1>{{ user ? user.username : 'Aucun auteur trouvé' }}</h1>
+                  <p>Nombre d'articles : {{ user ? articleCount : 0 }}</p>
+                  <p>Nombre de commentaires : {{ user ? commentCount : 0 }}</p>
+
+                </div>
+
+                <p>
+                {{user.firstname}} {{user.name}} a publié plusieurs articles sur notre site, félicitons le...
+                </p>
+
+              </div>
+            </div><!--/Blog Author Widget 2 -->
+            {% endif %}  
+          
+            <!-- Recent Posts Widget -->
+            <div class="recent-posts-widget widget-item">
+
+              <h3 class="widget-title">Recent Posts</h3>
+              {% for topic in topics %}
+                {% for comment in topic.posts | slice (0,4) %}
+                  <div class="post-item">
+                    <img src="{{ asset('uploads/photos/' ~ comment.author.photo) }}" alt="profile" class="flex-shrink-0">
+                    <div>
+                      <h4><a href="#">{{comment.content | slice (0, 100)}} </a></h4>
+                      <time datetime="2020-01-01">{{comment.createdAt | date('d-m-Y')}} </time>
+                    </div>
+                  </div><!-- End recent post item-->                  
+                {% endfor %}
+              {% endfor %}
+            </div><!--/Recent Posts Widget -->
+
+            <!-- Tags Widget -->
+            <div class="tags-widget widget-item">
+
+              <h3 class="widget-title">Tags</h3>
+              <ul>
+                {% for category in categories %}
+                  <li><a href="#">{{category.name | slice (0, 10)}}</a></li>
+                {% endfor %}
+              </ul>
+
+            </div><!--/Tags Widget -->

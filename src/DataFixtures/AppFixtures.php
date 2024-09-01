@@ -22,7 +22,7 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
-         $this->createSuperAdmin($manager);
+        //  $this->createSuperAdmin($manager);
          $manager->flush();
     }
 

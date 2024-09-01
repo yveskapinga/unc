@@ -6,44 +6,96 @@ use App\Entity\Post;
 use App\Entity\Topic;
 use App\Form\PostType;
 use App\Repository\PostRepository;
+use App\Repository\UserRepository;
+use App\Service\SecurityService;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse; // Ajout de l'importation nécessaire
+
 
 #[Route('/post')]
 class PostController extends AbstractController
 {
+    public function __construct(
+        private SecurityService $securityService,
+        private NotificationService $notificationService,
+        private PostRepository $postRepository,
+        private UserRepository $userRepository
+        ){
+
+    }
     #[Route('/', name: 'app_post_index', methods: ['GET'])]
-    public function index(PostRepository $postRepository): Response
+    public function index(): Response
     {
         return $this->render('post/index.html.twig', [
-            'posts' => $postRepository->findAll(),
+            'posts' => $this->postRepository->findAll(),
         ]);
     }
 
     #[Route('/topic/{id}/post/new', name: 'app_post_new', methods: ['GET', 'POST'])]
     public function new(Topic $topic, Request $request, EntityManagerInterface $entityManager): Response
     {
-        dd($this->getUser());
         $post = new Post();
+        $post->setTopic($topic);
+        $user = $this->securityService->getConnectedUser();
+        if ($user) {
+            $post->setAuthor($user);
+            $post->setIsValidated(true);
+
+        }
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $post->setAuthor($this->getUser());
-            $post->setTopic($topic);
+            $parentId = $request->request->get('parent_id');
+            if ($parentId) {
+                $parent = $this->postRepository->find($parentId);
+                $post->setParent($parent);
+            }
+            
             $entityManager->persist($post);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_topic_show', ['id' => $topic->getId()]);
+            
+            if ($user) {
+                if ($request->isXmlHttpRequest()) {
+                    $commentHtml = $this->renderView('post/_post.html.twig', ['post' => $post]);
+                    return new JsonResponse(['success' => true, 'commentHtml' => $commentHtml]);
+                }
+
+                return $this->redirectToRoute('app_topic_show', ['id' => $topic->getId()]);
+            } else {
+                // Notify the admin for validation
+                $admins = $this->userRepository->findByRole('ROLE_ADMIN');
+                $this->notificationService->notifyAdminsOfNewComment($admins, $post);
+
+                $this->addFlash('info', 'Votre commentaire a été envoyé pour validation.');
+                return new JsonResponse(['success' => true, 'message' => 'Votre commentaire a été envoyé pour validation.']);
+            }
         }
 
-        return $this->renderForm('post/new.html.twig', [
-            'post' => $post,
-            'form' => $form,
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse(['success' => false, 'errors' => (string) $form->getErrors(true, false)]);
+        }
+
+        return $this->render('post/new.html.twig', [
+            'form' => $form->createView(),
         ]);
+    }
+
+    #[Route('/posts/{id}/validate', name: 'post_validate', methods: ['POST'])]
+    public function validate(Post $post, EntityManagerInterface $entityManager): Response
+    {
+        $post->setIsValidated(true);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Le commentaire a été validé avec succès.');
+
+        return $this->redirectToRoute('app_user_crud_index'); // Remplacez par la route appropriée
     }
 
     #[Route('/{id}', name: 'app_post_show', methods: ['GET'])]

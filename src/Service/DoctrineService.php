@@ -17,12 +17,7 @@ class DoctrineService
         $this->requestStack = $requestStack;
     }
 
-    public function persistEntities(
-        object $entity1, 
-        ?object $entity2 = null, 
-        ?string $message = null, 
-        ?string $type = null
-        ): void
+    public function persistEntities(object $entity1, ?object $entity2 = null, ?string $message = null, ?string $type = null): void
     {
         $this->em->persist($entity1);
         if ($entity2 !== null) {
@@ -32,11 +27,23 @@ class DoctrineService
         $this->em->flush();
 
         if ($message !== null && $type !== null) {
-            $session = $this->requestStack->getSession();
-            if ($session) {
-                $flashBag = $session->getBag('flashes');
-                $flashBag->add($type, $message);
-            }
+            $this->setSession($type, $message);
+        }
+    }
+
+    public function removeEntities(object $entity, ?string $message = null, ?string $type = null) : void
+    {
+        $this->em->persist($entity);
+
+        $this->em->flush();
+    }
+
+    private function setSession(string $type, string $message)
+    {
+        $session = $this->requestStack->getSession();
+        if ($session) {
+            $flashBag = $session->getBag('flashes');
+            $flashBag->add($type, $message);
         }
     }
 }

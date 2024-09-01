@@ -61,7 +61,7 @@ class AdminController extends AbstractController
         return $this->render('admin/map.html.twig');
     }
     #[Route('/index', name: 'app_index')]
-    public function app(EventRepository $eventRepository, TopicRepository $topicRepository): Response
+    public function app(): Response
     {
         if (!$this->security->isGranted('IS_AUTHENTICATED_FULLY')) {
             // Redirigez vers la page d'enregistrement si non authentifié
@@ -169,45 +169,4 @@ class AdminController extends AbstractController
         ], JsonResponse::HTTP_OK);
     
     }
-
-    #[Route('/single-post', name:'single-post')]
-    public function singlePost() : Response
-    {
-        return $this->render('page/single-post.html.twig',[
-            
-        ]);
-    }
-
-    #[Route('/category', name:'category')]
-    public function category() : Response
-    {
-        return $this->render('page/category.html.twig',[
-            
-        ]);
-    }
-
-    #[Route('/about', name:'about')]
-    public function about() : Response
-    {
-        return $this->render('page/about.html.twig',[
-            
-        ]);
-    }
-
-    #[Route('/contact', name:'contact')]
-    public function contact() : Response
-    {
-        return $this->render('page/contact.html.twig',[
-            
-        ]);
-    }
-
-    #[Route('/starter-page', name:'starter-page')]
-    public function starterPage() : Response
-    {
-        return $this->render('page/starter-page.html.twig',[
-            
-        ]);
-    }
-
 }

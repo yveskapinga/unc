@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Service\SecurityService;
 use App\Service\UploaderService;
+use App\Service\DoctrineService;
 use DateTimeImmutable;
 
 #[Route('/category')]
@@ -22,7 +23,9 @@ class CategoryController extends AbstractController
         private EntityManagerInterface $em,
         private UploaderService $uploaderService,
         private SecurityService $securityService,
-        private CategoryRepository $categoryRepository
+        private CategoryRepository $categoryRepository,
+        private DoctrineService $doctrineService
+
     ) {
     }
     #[Route('/', name: 'app_category_index', methods: ['GET'])]
@@ -61,8 +64,14 @@ class CategoryController extends AbstractController
                 $category->setImage($this->uploaderService->uploadPhoto($photo, $directory));
             }
             $category->setCreatedAt(new \DateTimeImmutable());
-            $this->em->persist($category);
-            $this->em->flush();
+            $this->doctrineService->persistEntities(
+                $category, 
+                null, 
+                'La catégorie a été créée', 
+                'success'
+            );
+            // $this->em->persist($category);
+            // $this->em->flush();
     
             return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -89,7 +98,13 @@ class CategoryController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            $this->doctrineService->persistEntities(
+                $category, 
+                null, 
+                'La catégorie a été modifiée', 
+                'success'
+            );
+            // $entityManager->flush();
 
             return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -104,8 +119,13 @@ class CategoryController extends AbstractController
     public function delete(Request $request, Category $category, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$category->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($category);
-            $entityManager->flush();
+            $this->doctrineService->removeEntities(
+                $category, 
+                'La catégorie a été supprimée', 
+                'success'
+            );
+            // $entityManager->remove($category);
+            // $entityManager->flush();
         }
 
         return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);

@@ -79,7 +79,8 @@ class EventController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->em->flush();
+            $this->doctrineService->persistEntities($event, null, 'votre évènement a été modifié avec succès','success');
+            // $this->em->flush();
 
             return $this->redirectToRoute('app_event_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -94,8 +95,13 @@ class EventController extends AbstractController
     public function delete(Request $request, Event $event): Response
     {
         if ($this->isCsrfTokenValid('delete'.$event->getId(), $request->request->get('_token'))) {
-            $this->em->remove($event);
-            $this->em->flush();
+            $this->doctrineService->removeEntities(
+                $event, 
+                'votre évènement a été supprimé', 
+                'success'
+            );
+            // $this->em->remove($event);
+            // $this->em->flush();
         }
 
         return $this->redirectToRoute('app_event_index', [], Response::HTTP_SEE_OTHER);
@@ -108,19 +114,24 @@ class EventController extends AbstractController
     public function registerForEventAction(Event $event): Response
     {
         $user = $this->securityService->getConnectedUser();
+
         $event->addParticipant($user);
+
         $message = $user->getUsername() . " a souscrit à l'évènement : "   . $event->getTitle();
+
         $this->notificationService->createNotification($user, 'Invitation', $message);
+
         $this->doctrineService->persistEntities($event,null,$message,'inscription');
+        
         return $this->redirectToRoute('app_event_show', ['id' => $event->getId()]);
     }
 
     #[Route('/unregister/{id}', name: 'app_unregister_for_event')]
-    public function unregisterForEventAction(Event $event, UserInterface $user, EntityManagerInterface $em): Response
+    public function unregisterForEventAction(Event $event): Response
     {
         $user = $this->securityService->getConnectedUser();
         $event->removeParticipant($user);
-        $message = $user->getUsername() . " s'est soustrait à l'évènement : "   . $event->getTitle();
+        $message = $user->getUsername() . " s'est rétiré de l'évènement : "   . $event->getTitle();
         $this->notificationService->createNotification($user, 'Désinscription', $message);
         $this->doctrineService->persistEntities($event,null,$message,'Desinscription');
 
@@ -131,7 +142,7 @@ class EventController extends AbstractController
     /**
      * Cette méthode permet à un organisateur d'inviter des membres à un évènement
      */
-    #[Route('/event/{id}/invite', name: 'event_invite')]
+    #[Route('/{id}/invite', name: 'event_invite')]
     public function invite(Event $event, Request $request, EntityManagerInterface $em): Response
     {
         $participant = new User;
@@ -142,12 +153,11 @@ class EventController extends AbstractController
             $participant = $form->get('email')->getData();
             foreach ($participant as $user) {
                 $event->addParticipant($user);
-                $notification = new Notification();
-                $notification->setTheUser($user);
-                $notification->setType('Invitation');
-                $notification->setContent('Vous avez été invité à l\'événement : ' . $event->getTitle());
-                $notification->setCreatedAt(new \DateTime());
-                $em->persist($notification);
+                $message = 'Vous avez été invité à l\'événement : ' . $event->getTitle();
+
+                $this->notificationService->createNotifications($user, 'Invitation', $message);
+
+                $em->persist($event);
                 //dd($notification);
             }
             $em->flush();
@@ -162,10 +172,10 @@ class EventController extends AbstractController
         ]);
     }
 
-    #[Route('/events/organized', name: 'app_event_organized')]
+    #[Route('/organized', name: 'app_event_organized')]
     public function organizedEvents(EventRepository $eventRepository, Security $security): Response
     {
-        $user = $security->getUser();
+        $user = $this->securityService->getConnectedUser();
         $organizedEvents = $eventRepository->findBy(['organizer' => $user]);
 
         return $this->render('event/organized.html.twig', [
@@ -173,10 +183,10 @@ class EventController extends AbstractController
         ]);
     }
 
-    #[Route('/events/participated', name: 'app_event_participated')]
+    #[Route('/participated', name: 'app_event_participated')]
     public function participatedEvents(EventRepository $eventRepository, Security $security): Response
     {
-        $user = $security->getUser();
+        $user = $this->securityService->getConnectedUser();
         $participatedEvents = $eventRepository->findByParticipant($user);
 
         return $this->render('event/participated.html.twig', [

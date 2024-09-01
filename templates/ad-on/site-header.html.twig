@@ -1,7 +1,13 @@
 
 
 <body class="index-page">
-
+    {% for label, messages in app.flashes %}
+        <div class="flash-{{ label }}">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endfor %}
   <header id="header" class="header d-flex align-items-center sticky-top">
     <div class="container position-relative d-flex align-items-center justify-content-between">
 
@@ -14,9 +20,10 @@
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="{{path('app_index')}}" class="active">UNC - app</a></li>
-          <li><a href="{{path('about')}}">A propos</a></li>
-          <li><a href="{{path('single-post')}}">Actualité</a></li>
-          <li class="dropdown"><a href="#"><span>Categories</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+          {# <li><a href="{{path('about')}}">A propos</a></li> #}
+          <li><a href="{{path('page_topic')}}">Forum</a></li>
+          {# <li><a href="{{path('single-post')}}">Discussion</a></li> #}
+          {# <li class="dropdown"><a href="#"><span>Categories</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
               <li><a href="{{path('category')}}">Category 1</a></li>
               <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
@@ -32,8 +39,15 @@
               <li><a href="{{path('category')}}">Category 3</a></li>
               <li><a href="{{path('category')}}">Category 4</a></li>
             </ul>
-          </li>
+          </li> #}
           <li><a href="{{path('contact')}}">Contact</a></li>
+          <li>
+            {% if app.user %}
+              <li class="fas fa-user">Hi {{app.user.firstname}} ! </li>
+            {% else %}
+              Visiteur !
+            {% endif %}
+          </li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>

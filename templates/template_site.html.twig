@@ -12,7 +12,7 @@
   {% if topic is defined %}
     <meta property="og:title" content="{{ topic.title }}" />
     <meta property="og:description" content="{{ topic.description }}" />
-    <meta property="og:image" content="{{ topic.image }}" />
+    <meta property="og:image" content="{{ topic.category.image }}" />
     <meta property="og:url" content="{{ app.request.uri }}" />
   {% endif %}
   <!-- Favicons -->
@@ -36,6 +36,7 @@
   <!-- Main CSS File -->
   <link href="{{asset('zenblog/assets/css/main.css')}}" rel="stylesheet">
   {% block stylesheets %}{% endblock %}
+  {% block javascripts %}{% endblock %}
   <!-- =======================================================
   * Template Name: ZenBlog
   * Template URL: https://bootstrapmade.com/zenblog-bootstrap-blog-template/

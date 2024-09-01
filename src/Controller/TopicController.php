@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Category;
 use App\Entity\Topic;
 use App\Form\TopicType;
 use App\Repository\TopicRepository;
@@ -22,10 +23,12 @@ class TopicController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_topic_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/new/{id}', name: 'app_topic_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, Category $category, EntityManagerInterface $entityManager): Response
     {
+        
         $topic = new Topic();
+        $topic->setCategory($category);
         $form = $this->createForm(TopicType::class, $topic);
         $form->handleRequest($request);
 

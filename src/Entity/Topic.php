@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\TopicRepository;
-use App\Trait\TimestampableTrait;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Trait\TimestampableTrait;
+use App\Repository\TopicRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: TopicRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -36,6 +36,9 @@ class Topic
     
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $slug = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $content = null;
 
     public function __construct()
     {
@@ -136,4 +139,17 @@ class Topic
 
         return $this;
     }
+
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
+
+    public function setContent(?string $content): self
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
 }

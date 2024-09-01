@@ -32,6 +32,21 @@ class TopicRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findBestAuthor()
+    {
+        return $this->createQueryBuilder('t')
+            ->select('a.id, a.username, COUNT(DISTINCT t.id) as articleCount, COUNT(p.id) as commentCount')
+            ->join('t.author', 'a')
+            ->leftJoin('t.posts', 'p')
+            ->groupBy('a.id')
+            ->orderBy('commentCount', 'DESC')
+            ->addOrderBy('articleCount', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+    
+
 
 //    /**
 //     * @return Topic[] Returns an array of Topic objects
