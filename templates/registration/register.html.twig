@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{# {% extends 'base.html.twig' %}
 
 {% block title %}Créer un compte{% endblock %}
 
@@ -18,3 +18,425 @@
         <button type="submit" class="btn btn-primary">S'enregistrer</button>
     {{ form_end(registrationForm) }}
 {% endblock %}
+ #}
+
+ {# templates/registration/register.html.twig #}
+{# {% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Register</h1>
+
+    {{ form_start(registrationForm, {'attr': {'id': 'userForm'}}) }}
+        <div class="form-group">
+            {{ form_row(registrationForm.email) }}
+        </div>
+        <div class="form-group" id="password-group" >
+            {{ form_row(registrationForm.plainPassword.first, {
+            label: 'Password'
+        }) }}
+            {{ form_row(registrationForm.plainPassword.second, {
+            label: 'Repeat password'
+        }) }}
+        </div>
+        <div class="form-group" id="username-group" >
+            {{ form_row(registrationForm.username) }}
+        </div>
+        <div class="form-group" id="name-group" >
+            {{ form_row(registrationForm.name) }}
+        </div>
+        <div class="form-group" id="firstName-group">
+            {{ form_row(registrationForm.firstName) }}
+        </div>
+        <div class="form-group" id="phoneNumber-group">
+            {{ form_row(registrationForm.phoneNumber) }}
+        </div>
+        <div class="form-group" id="nationality-group">
+            {{ form_row(registrationForm.nationality) }}
+        </div>
+        <div class="form-group" id="address-group">
+            {{ form_row(registrationForm.address.number) }}
+            {{ form_row(registrationForm.address.street) }}
+            {{ form_row(registrationForm.address.city) }}
+            {{ form_row(registrationForm.address.country) }}
+            {{ form_row(registrationForm.address.postalCode) }}
+        </div>
+        <div class="form-group" id="membership-group">
+            {{ form_row(registrationForm.membership.level) }}
+            {{ form_row(registrationForm.membership.feeAmount) }}
+            {{ form_row(registrationForm.membership.currency) }}
+            {{ form_row(registrationForm.membership.fonction) }}
+            {{ form_row(registrationForm.membership.membershipType) }}
+        </div>
+
+        <input type="hidden" id="latitude" name="latitude">
+        <input type="hidden" id="longitude" name="longitude">
+
+        <button type="submit">Register</button>
+    {{ form_end(registrationForm) }}
+
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError, {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                });
+            } else {
+                console.error("La géolocalisation n'est pas supportée par ce navigateur.");
+            }
+        }
+
+        function showPosition(position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+
+            // Mettre à jour les champs cachés du formulaire
+            document.getElementById('latitude').value = latitude;
+            document.getElementById('longitude').value = longitude;
+
+            // Soumettre le formulaire après avoir défini les coordonnées
+            document.getElementById('userForm').submit();
+        }
+
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    console.error("L'utilisateur a refusé la demande de géolocalisation.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    console.error("Les informations de localisation ne sont pas disponibles.");
+                    break;
+                case error.TIMEOUT:
+                    console.error("La demande de localisation a expiré.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    console.error("Une erreur inconnue est survenue.");
+                    break;
+            }
+        }
+
+        document.getElementById('userForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Empêche la soumission du formulaire initiale
+            getLocation(); // Appelle la fonction pour obtenir la position
+        });
+
+        // Script pour afficher dynamiquement les champs de formulaire
+        document.getElementById('registrationForm_email').addEventListener('input', function() {
+            if (this.value) {
+                document.getElementById('password-group').style.display = 'block';
+            }
+        });
+
+        document.getElementById('registrationForm_password_first').addEventListener('input', function() {
+            if (this.value) {
+                document.getElementById('username-group').style.display = 'block';
+            }
+        });
+
+        document.getElementById('registrationForm_username').addEventListener('input', function() {
+            if (this.value) {
+                document.getElementById('name-group').style.display = 'block';
+            }
+        });
+
+        document.getElementById('registrationForm_name').addEventListener('input', function() {
+            if (this.value) {
+                document.getElementById('firstName-group').style.display = 'block';
+            }
+        });
+
+        document.getElementById('registrationForm_firstName').addEventListener('input', function() {
+            if (this.value) {
+                document.getElementById('phoneNumber-group').style.display = 'block';
+            }
+        });
+
+        document.getElementById('registrationForm_phoneNumber').addEventListener('input', function() {
+            if (this.value) {
+                document.getElementById('nationality-group').style.display = 'block';
+            }
+        });
+
+        document.getElementById('registrationForm_nationality').addEventListener('input', function() {
+            if (this.value) {
+                document.getElementById('address-group').style.display = 'block';
+            }
+        });
+
+        document.getElementById('registrationForm_address_city').addEventListener('input', function() {
+            if (this.value) {
+                document.getElementById('membership-group').style.display = 'block';
+            }
+        });
+
+        // Validation des données côté client
+        document.getElementById('userForm').addEventListener('input', function(event) {
+            var form = event.target.form;
+            var isValid = form.checkValidity();
+            form.querySelector('button[type="submit"]').disabled = !isValid;
+        });
+    </script>
+
+    <style>
+        .form-group {
+            margin-bottom: 15px;
+        }
+    </style>
+{% endblock %} #}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demande d'adhésion</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: inline-block;
+            width: 150px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            display: inline-block;
+            width: calc(100% - 160px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        .form-section-title {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #555;
+        }
+        .btn-primary {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto 20px;
+            max-width: 100px;
+        }
+        .error-message {
+            color: red;
+            font-size: 0.875em;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <img src="{{ asset('zenblog/assets/img/apple-touch-icon.jpg') }}" alt="Logo de l'association" class="logo">
+        {{ form_start(registrationForm, {'attr': {'id': 'userForm'}}) }}
+            <h2 class="form-title">Demande d'adhésion</h2>
+            
+            <div class="form-section">
+                <h3 class="form-section-title">Créer un compte</h3>
+                <div class="form-group">
+                    {{ form_row(registrationForm.username) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(registrationForm.email) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(registrationForm.plainPassword.first, { label: 'Mot de passe' }) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(registrationForm.plainPassword.second, { label: 'Répétez le mot de passe' }) }}
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="form-section-title">Informations Personnelles</h3>
+                <div class="form-group">
+                    {{ form_row(registrationForm.name) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(registrationForm.firstName) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(registrationForm.phoneNumber) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(registrationForm.nationality) }}
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="form-section-title">Adresse</h3>
+                <div class="form-group">
+                    {{ form_row(registrationForm.address.number) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(registrationForm.address.street) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(registrationForm.address.city) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(registrationForm.address.country) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(registrationForm.address.postalCode) }}
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="form-section-title">Informations d'Adhésion</h3>
+                <div class="form-group">
+                    {{ form_row(registrationForm.membership.level) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(registrationForm.membership.feeAmount) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(registrationForm.membership.currency) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(registrationForm.membership.fonction) }}
+                </div>
+                <div class="form-group">
+                    {{ form_row(registrationForm.membership.membershipType) }}
+                </div>
+            </div>
+
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+            <button type="submit" class="btn btn-primary">S'inscrire</button>
+        {{ form_end(registrationForm) }}
+    </div>
+
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError, {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                });
+            } else {
+                console.error("La géolocalisation n'est pas supportée par ce navigateur.");
+            }
+        }
+
+        function showPosition(position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+
+            // Mettre à jour les champs cachés du formulaire
+            document.getElementById('latitude').value = latitude;
+            document.getElementById('longitude').value = longitude;
+
+            // Soumettre le formulaire après avoir défini les coordonnées
+            document.getElementById('userForm').submit();
+        }
+
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    console.error("L'utilisateur a refusé la demande de géolocalisation.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    console.error("Les informations de localisation ne sont pas disponibles.");
+                    break;
+                case error.TIMEOUT:
+                    console.error("La demande de localisation a expiré.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    console.error("Une erreur inconnue est survenue.");
+                    break;
+            }
+        }
+
+        document.getElementById('userForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Empêche la soumission du formulaire initiale
+             // Appelle la fonction pour obtenir la position getLocation();
+        });
+
+        // Validation côté client
+        document.querySelectorAll('#userForm input').forEach(function(input) {
+            input.addEventListener('blur', validateField);
+            input.addEventListener('input', clearError);
+        });
+
+        function validateField(event) {
+            var field = event.target;
+            var value = field.value.trim();
+            var name = field.name;
+
+            // Réinitialiser les messages d'erreur
+            clearError({ target: field });
+
+            if (name.includes('username') && value === '') {
+                showError(field, 'Veuillez saisir un nom d\'utilisateur.');
+            } else if (name.includes('email') && !validateEmail(value)) {
+                showError(field, 'Veuillez saisir une adresse email valide.');
+            } else if (name.includes('plainPassword') && name.includes('first') && value === '') {
+                showError(field, 'Veuillez saisir un mot de passe.');
+            } else if (name.includes('plainPassword') && name.includes('second') && value !== document.querySelector('[name="registrationForm[plainPassword][first]"]').value) {
+                showError(field, 'Les mots de passe ne correspondent pas.');
+            }
+        }
+
+        function clearError(event) {
+            var field = event.target;
+            var error = field.parentNode.querySelector('.error-message');
+            if (error) {
+                error.remove();
+            }
+        }
+
+        function showError(element, message) {
+            var error = document.createElement('div');
+            error.className = 'error-message';
+            error.textContent = message;
+            element.parentNode.appendChild(error);
+        }
+
+        function validateEmail(email) {
+            var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+    </script>
+</body>
+</html>
+
+
+
+

@@ -37,6 +37,9 @@ class Address
     #[ORM\OneToOne(mappedBy: 'siege', cascade: ['persist', 'remove'])]
     private ?Interfederation $interfederation = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $postalCode = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -149,6 +152,19 @@ class Address
         }
 
         $this->interfederation = $interfederation;
+
+        return $this;
+    }
+
+    // Getters and setters for new fields
+    public function getPostalCode(): ?string
+    {
+        return $this->postalCode;
+    }
+
+    public function setPostalCode(?string $postalCode): self
+    {
+        $this->postalCode = $postalCode;
 
         return $this;
     }

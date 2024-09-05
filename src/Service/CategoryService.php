@@ -22,6 +22,7 @@ class CategoryService
             'mainCategory' => $mainCategory,
             'firstTwoCategories' => $firstTwoCategories,
             'lastTwoCategories' => $lastTwoCategories,
+            'categories' => $this->categoryRepository->findAll(),
         ];
     }
 }

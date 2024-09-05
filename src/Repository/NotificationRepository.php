@@ -3,9 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Notification;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Security\Core\User\UserInterface;
+// use Symfony\Component\Security\Core\User\UserInterface;
 
 
 /**
@@ -23,7 +24,7 @@ class NotificationRepository extends ServiceEntityRepository
         parent::__construct($registry, Notification::class);
     }
     
-    public function findUnreadByUser(UserInterface $user)
+    public function findUnreadByUser(User $user)
     {
         return $this->createQueryBuilder('n')
             ->andWhere('n.theUser = :user')

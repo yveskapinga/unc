@@ -5,14 +5,13 @@
 
               <div class="d-flex flex-column align-items-center">
               
-                <img src="{{ asset('uploads/photos/' ~ user.photo) }}" class="rounded-circle flex-shrink-0" alt="profile">
+                <img src="{{ asset('uploads/photos/' ~ (user.photo | default('default.jpg'))) }}" class="rounded-circle flex-shrink-0" alt="profile">
                 <h4>Meilleur Auteur :</h4>
                 <div class="social-links">
                   {# templates/topic/best_author.html.twig #}
-
-                  <h1>{{ user ? user.username : 'Aucun auteur trouvé' }}</h1>
-                  <p>Nombre d'articles : {{ user ? articleCount : 0 }}</p>
-                  <p>Nombre de commentaires : {{ user ? commentCount : 0 }}</p>
+                  <h1>{{ user.username | default('Aucun auteur trouvé') }}</h1>
+                  <p>Nombre d'articles : {{ articleCount | default(0) }}</p>
+                  <p>Nombre de commentaires : {{ commentCount | default(0) }}</p>
 
                 </div>
 

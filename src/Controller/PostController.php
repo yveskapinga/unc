@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Post;
 use App\Entity\Topic;
+use App\Form\AnonymousPostType;
 use App\Form\PostType;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
@@ -36,7 +37,7 @@ class PostController extends AbstractController
         ]);
     }
 
-    #[Route('/topic/{id}/post/new', name: 'app_post_new', methods: ['GET', 'POST'])]
+/*     #[Route('/topic/{id}/post/new', name: 'app_post_new', methods: ['GET', 'POST'])]
     public function new(Topic $topic, Request $request, EntityManagerInterface $entityManager): Response
     {
         $post = new Post();
@@ -45,9 +46,11 @@ class PostController extends AbstractController
         if ($user) {
             $post->setAuthor($user);
             $post->setIsValidated(true);
-
+            $form = $this->createForm(PostType::class, $post);
+        }else{
+            $form=$this->createForm(AnonymousPostType::class); 
         }
-        $form = $this->createForm(PostType::class, $post);
+        
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -85,7 +88,55 @@ class PostController extends AbstractController
         return $this->render('post/new.html.twig', [
             'form' => $form->createView(),
         ]);
+    } */
+
+    /**
+     * Code ajouté le 04 sept 2024 à 00h49 à KCC, qui remplace le code en commentaire
+     */
+    #[Route('/topic/{id}/post/new', name: 'app_post_new', methods: ['GET', 'POST'])]
+    public function new(Topic $topic, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $post = new Post();
+        $post->setTopic($topic);
+        $user = $this->securityService->getConnectedUser();
+        if ($user) {
+            $post->setAuthor($user);
+            $post->setIsValidated(true);
+            $form = $this->createForm(PostType::class, $post);
+        } else {
+            $form = $this->createForm(AnonymousPostType::class);
+        }
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $parentId = $request->request->get('parent_id');
+            if ($parentId) {
+                $parent = $this->postRepository->find($parentId);
+                $post->setParent($parent);
+            }
+            $entityManager->persist($post);
+            $entityManager->flush();
+            if ($user) {
+                if ($request->isXmlHttpRequest()) {
+                    $commentHtml = $this->renderView('post/_post.html.twig', ['post' => $post]);
+                    return new JsonResponse(['success' => true, 'commentHtml' => $commentHtml]);
+                }
+                return $this->redirectToRoute('app_topic_show', ['id' => $topic->getId()]);
+            } else {
+                // Notify the admin for validation
+                $admins = $this->userRepository->findByRole('ROLE_ADMIN');
+                $this->notificationService->notifyAdminsOfNewComment($admins, $post);
+                $this->addFlash('info', 'Votre commentaire a été envoyé pour validation.');
+                return new JsonResponse(['success' => true, 'message' => 'Votre commentaire a été envoyé pour validation.']);
+            }
+        }
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse(['success' => false, 'errors' => (string) $form->getErrors(true, false)]);
+        }
+        return $this->render('post/new.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
+
 
     #[Route('/posts/{id}/validate', name: 'post_validate', methods: ['POST'])]
     public function validate(Post $post, EntityManagerInterface $entityManager): Response

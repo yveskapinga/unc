@@ -43,9 +43,9 @@
           <li><a href="{{path('contact')}}">Contact</a></li>
           <li>
             {% if app.user %}
-              <li class="fas fa-user">Hi {{app.user.firstname}} ! </li>
+              <a href="{{path('app_user_crud_show',{'id':app.user.id} )}}" title = "profil"><li class="bi bi-person-check-fill"></li>Hi {{app.user.firstname}} ! </a>
             {% else %}
-              Visiteur !
+              <a href="{{path('app_login')}}"><i class="bi bi-person-x-fill" title="pas connecté"></i></a>
             {% endif %}
           </li>
         </ul>

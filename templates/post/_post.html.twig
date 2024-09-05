@@ -1,0 +1,25 @@
+{% set depth = depth|default(0) %}
+<div class="comment">
+    <div class="d-flex">
+        <div class="comment-img">
+            <img src="{{ post.author.photo }}" alt="{{ post.author.username }}">
+        </div>
+        <div>
+            <h5 style="display: inline;">
+                <a href="{{ path('app_user_crud_show', { 'id': post.author.id }) }}">{{ post.author.username }}</a>
+                {% if depth < 3 %}
+                    <a href="#" class="reply" data-parent-id="{{ post.id }}"><i class="bi bi-reply-fill"></i> Reply</a>
+                {% endif %}
+            </h5>
+            <time datetime="{{ post.createdAt|date('Y-m-d') }}">{{ post.createdAt|date('F j, Y, g:i a') }}</time>
+            <p>{{ post.content }}</p>
+        </div>
+    </div>
+    {% if post.replies|length > 0 and depth < 3 %}
+        <div class="replies">
+            {% for reply in post.replies %}
+                {{ include('post/_post.html.twig', { post: reply, depth: depth + 1 }) }}
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>

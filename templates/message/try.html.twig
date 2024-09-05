@@ -1,6 +1,6 @@
 {# templates/messages/index.html.twig #}
 {% extends 'base.html.twig' %}
-
+{% block title %}message{% endblock %}
 {% block body %}
 <div class="body">
     <div class="container">
@@ -8,14 +8,14 @@
             <ul>
                 {% for senderId, messages in senders %}
                     {% set sender = messages[0].getSender().getId() == app.user.id ? messages[0].getRecipient() : messages[0].getSender() %}
-                    <li class="sender-item {{ cycle(['odd', 'even'], loop.index) }}" data-sender-id="{{ senderId }}">
+                    <li class="sender-item " data-sender-id="{{ senderId }}">
                         <img style="width: 50px; height: 50px;" src="{{ asset('uploads/photos/' ~ sender.getPhoto()) }}" alt="profile">
                         <div>
                             <strong>{{ sender.getUsername() }}</strong><br>
                             {# <small>{{ messages|length }} messages</small> #}
                         </div>
                     </li>
-                    <li class="divider"></li>
+                        <hr class="dropdown-divider">
                 {% endfor %}
             </ul>
         </div>
@@ -67,8 +67,8 @@
                         messageDiv.classList.add('mon-message');
                         messageDiv.classList.add(message.isSent ? 'sent' : 'received');
                         messageDiv.innerHTML = `
-                            <p>${message.content}</p>
-                            <small>${message.createdAt}</small>
+                            <p>${message.content}<small>${message.createdAt}</small></p>
+                            
                         `;
                         conversationDiv.appendChild(messageDiv);
                     });
@@ -93,8 +93,10 @@
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('mon-message', 'sent');
             messageDiv.innerHTML = `
-                <p>${data.content}</p>
+                <p>${data.content}<br>
                 <small>${data.createdAt}</small>
+                </p>
+                
             `;
             conversationDiv.appendChild(messageDiv);
             conversationDiv.scrollTop = conversationDiv.scrollHeight;

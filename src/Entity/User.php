@@ -96,6 +96,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: self::class, mappedBy: 'referredBy')]
     private Collection $referrers;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $phoneNumber = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $nationality = null;
+
+    #[ORM\OneToOne(mappedBy: 'theUser', cascade: ['persist', 'remove'])]
+    private ?Membership $membership = null;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
@@ -669,5 +678,52 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+        // Getters and setters for new fields
+        public function getPhoneNumber(): ?string
+        {
+            return $this->phoneNumber;
+        }
+    
+        public function setPhoneNumber(?string $phoneNumber): self
+        {
+            $this->phoneNumber = $phoneNumber;
+    
+            return $this;
+        }
+    
+        public function getNationality(): ?string
+        {
+            return $this->nationality;
+        }
+    
+        public function setNationality(?string $nationality): self
+        {
+            $this->nationality = $nationality;
+    
+            return $this;
+        }
+
+        public function getMembership(): ?Membership
+        {
+            return $this->membership;
+        }
+
+        public function setMembership(?Membership $membership): static
+        {
+            // unset the owning side of the relation if necessary
+            if ($membership === null && $this->membership !== null) {
+                $this->membership->setTheUser(null);
+            }
+
+            // set the owning side of the relation if necessary
+            if ($membership !== null && $membership->getTheUser() !== $this) {
+                $membership->setTheUser($this);
+            }
+
+            $this->membership = $membership;
+
+            return $this;
+        }
 
 }

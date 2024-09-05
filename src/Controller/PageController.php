@@ -7,6 +7,8 @@ use App\Entity\Post;
 use App\Entity\Topic;
 use App\Form\PostType;
 use App\Entity\Category;
+use App\Form\AnonymousPostType;
+use App\Service\SecurityService;
 use App\Repository\UserRepository;
 use App\Repository\TopicRepository;
 use App\Repository\CategoryRepository;
@@ -23,7 +25,8 @@ class PageController extends AbstractController
     public function __construct(
         private TopicRepository $topicRepository,
         private CategoryRepository $categoryRepository,
-        private UserRepository $userRepository
+        private UserRepository $userRepository,
+        private SecurityService $securityService
         )
     {
         
@@ -43,7 +46,15 @@ class PageController extends AbstractController
     public function singlePost(Topic $topic, Request $request, EntityManagerInterface $entityManager) : Response
     {
         $post = new Post();
-        $form = $this->createForm(PostType::class, $post);
+        $post->setTopic($topic);
+        $user = $this->securityService->getConnectedUser();
+        if ($user) {
+            $post->setAuthor($user);
+            $post->setIsValidated(true);
+            $form = $this->createForm(PostType::class, $post);
+        }else{
+            $form=$this->createForm(AnonymousPostType::class); 
+        }
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -53,41 +64,41 @@ class PageController extends AbstractController
                 'id'=>$topic->getId()
             ], Response::HTTP_SEE_OTHER);
         }
-        $bestAuthorData = $this->topicRepository->findBestAuthor();
-        if ($bestAuthorData) {
-            // Récupérer l'utilisateur à partir de l'ID
-            $user = $this->userRepository->find($bestAuthorData['id']) ? $this->userRepository->find($bestAuthorData['id']) : null;
-            $articleCount = $bestAuthorData['articleCount'] ? $bestAuthorData['articleCount'] : null;
-            $commentCount = $bestAuthorData['commentCount'] ? $bestAuthorData['commentCount'] : null;
-        }
+        // $bestAuthorData = $this->topicRepository->findBestAuthor();
+        // if ($bestAuthorData) {
+        //     // Récupérer l'utilisateur à partir de l'ID
+        //     $user = $this->userRepository->find($bestAuthorData['id']) ? $this->userRepository->find($bestAuthorData['id']) : null;
+        //     $articleCount = $bestAuthorData['articleCount'] ? $bestAuthorData['articleCount'] : null;
+        //     $commentCount = $bestAuthorData['commentCount'] ? $bestAuthorData['commentCount'] : null;
+        // }
         
         return $this->render('page/single-post.html.twig',[
             'topic'=>$topic,
             'form'=>$form->createView(),
-            'topics'=>$this->topicRepository->findAll(),
-            'categories'=>$this->categoryRepository->findAll(),
-            'user' => $user,
-            'articleCount' => $articleCount,
-            'commentCount' => $commentCount,
+            // 'topics'=>$this->topicRepository->findAll(),
+            // 'categories'=>$this->categoryRepository->findAll(),
+            // 'user' => $user,
+            // 'articleCount' => $articleCount,
+            // 'commentCount' => $commentCount,
         ]);
     }
 
     #[Route('/topic', name:'page_topic')]
     public function topic() : Response
     {
-        $bestAuthorData = $this->topicRepository->findBestAuthor();
-        if ($bestAuthorData) {
-            // Récupérer l'utilisateur à partir de l'ID
-            $user = $this->userRepository->find($bestAuthorData['id']) ? $this->userRepository->find($bestAuthorData['id']) : null;
-            $articleCount = $bestAuthorData['articleCount'] ? $bestAuthorData['articleCount'] : null;
-            $commentCount = $bestAuthorData['commentCount'] ? $bestAuthorData['commentCount'] : null;
-        }
+        // $bestAuthorData = $this->topicRepository->findBestAuthor();
+        // if ($bestAuthorData) {
+        //     // Récupérer l'utilisateur à partir de l'ID
+        //     $user = $this->userRepository->find($bestAuthorData['id']) ? $this->userRepository->find($bestAuthorData['id']) : null;
+        //     $articleCount = $bestAuthorData['articleCount'] ? $bestAuthorData['articleCount'] : null;
+        //     $commentCount = $bestAuthorData['commentCount'] ? $bestAuthorData['commentCount'] : null;
+        // }
         return $this->render('page/topic.html.twig',[
-            'topics'=>$this->topicRepository->findAll(),
-            'categories'=>$this->categoryRepository->findAll(),
-            'user' => $user,
-            'articleCount' => $articleCount,
-            'commentCount' => $commentCount,
+            // 'topics'=>$this->topicRepository->findAll(),
+            // 'categories'=>$this->categoryRepository->findAll(),
+            // 'user' => $user,
+            // 'articleCount' => $articleCount,
+            // 'commentCount' => $commentCount,
         ]);
         
     }

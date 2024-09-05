@@ -3,19 +3,21 @@
 namespace App\Form;
 
 use App\Entity\User;
+use App\Form\AddressType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Validator\Constraints\Email;
-use Symfony\Component\Validator\Constraints\Regex;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\CountryType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 
 class RegistrationFormType extends AbstractType
 {
@@ -33,12 +35,51 @@ class RegistrationFormType extends AbstractType
                     ]),
                 ],
             ])
+            ->add('name', TextType::class, [
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Veuillez saisir votre nom ',
+                    ]),
+                ],
+            ])
+            ->add('firstName', TextType::class, [
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Veuillez saisir votre nom ',
+                    ]),
+                ],
+            ])
+            ->add('phoneNumber', TextType::class, [
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Veuillez saisir votre numéro de téléphone.',
+                    ]),
+                    new Regex([
+                        'pattern' => '/^\+?[0-9\s\-]{7,15}$/',
+                        'message' => 'Veuillez saisir un numéro de téléphone valide.',
+                    ]),
+                ],
+            ])
+            ->add('nationality', CountryType::class, [
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Veuillez sélectionner votre nationalité.',
+                    ]),
+                ],
+                'placeholder' => 'Sélectionnez votre pays',
+            ])
             ->add('email', EmailType::class, [
                 'constraints' => [
                     new Email([
                         'message' => 'L\'adresse e-mail "{{ value }}" n\'est pas valide.',
                     ]),
                 ],
+            ])
+            ->add('address', AddressType::class, [
+                'label' => false, // Optionnel, pour ne pas afficher de label supplémentaire
+            ])
+            ->add('membership', MembershipType::class, [
+                'label' => false, // Optionnel, pour ne pas afficher de label supplémentaire
             ])
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
@@ -81,3 +122,6 @@ class RegistrationFormType extends AbstractType
         ]);
     }
 }
+
+
+

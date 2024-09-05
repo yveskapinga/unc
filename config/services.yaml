@@ -39,7 +39,7 @@ services:
 
   App\Service\UserService:
     arguments:
-      $security: "@security.helper"
+      $securityService: '@App\Service\SecurityService'
       $membershipRepository: '@App\Repository\MembershipRepository'
       $notificationRepository: '@App\Repository\NotificationRepository'
       $messageRepository: '@App\Repository\MessageRepository'

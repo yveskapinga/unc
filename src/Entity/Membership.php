@@ -23,9 +23,6 @@ class Membership
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $feePaidAt = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?User $theUser = null;
-
     #[ORM\Column(length: 10)]
     private ?string $currency = null;
 
@@ -35,6 +32,12 @@ class Membership
     #[ORM\ManyToOne(inversedBy: 'memberships')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Interfederation $interfederation = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $membershipType = null;
+
+    #[ORM\OneToOne(inversedBy: 'membership', cascade: ['persist', 'remove'])]
+    private ?User $theUser = null;
 
     public function getId(): ?int
     {
@@ -73,18 +76,6 @@ class Membership
     public function setFeePaidAt(?\DateTimeInterface $feePaidAt): static
     {
         $this->feePaidAt = $feePaidAt;
-
-        return $this;
-    }
-
-    public function getTheUser(): ?User
-    {
-        return $this->theUser;
-    }
-
-    public function setTheUser(?User $theUser): static
-    {
-        $this->theUser = $theUser;
 
         return $this;
     }
@@ -131,5 +122,30 @@ class Membership
 
         return $this;
     }
+
+        // Getters and setters for new fields
+        public function getMembershipType(): ?string
+        {
+            return $this->membershipType;
+        }
+    
+        public function setMembershipType(?string $membershipType): self
+        {
+            $this->membershipType = $membershipType;
+    
+            return $this;
+        }
+
+        public function getTheUser(): ?User
+        {
+            return $this->theUser;
+        }
+
+        public function setTheUser(?User $theUser): static
+        {
+            $this->theUser = $theUser;
+
+            return $this;
+        }
 }
 

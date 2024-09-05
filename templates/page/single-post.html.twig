@@ -8,6 +8,9 @@
 {% endblock %}
 
 {% block body %}
+
+    {% set categoriesData = category_service.getTopCategories() %}
+    {% set TopicsData = topic_service.getBestAuthorData() %}
     <!-- Page Title -->
     <div class="page-title">
       <div class="container d-lg-flex justify-content-between align-items-center">
@@ -74,54 +77,56 @@
 
           <!-- Blog Comments Section -->
           <section id="blog-comments" class="blog-comments section">
-            <div class="container">
-              <h4 class="comments-count">{{ topic.posts|length }} Comments</h4>
+              <div class="container">
+                  <h4 class="comments-count">{{ topic.posts|length }} Comments</h4>
 
-              <div id="comments">
-                  {% for post in topic.posts | filter(post => post.isValidated) %}
-                      {{ include('post/_post.html.twig', { post: post }) }}
-                  {% endfor %}
+                  <div id="comments">
+                   {# | filter(post => post.isValidated) #}
+                      {% for post in topic.posts %}
+                        {{ include('post/_post.html.twig', { post: post }) }}
+                      {% endfor %}
+                  </div>
+
+                  <!-- Comment Form Section -->
+                  <section id="comment-form" class="comment-form section">
+                      <div class="container">
+                          <button id="comment-button" class="btn btn-primary">Comment</button>
+                          <div id="comment-form-container"></div>
+                      </div>
+                  </section><!-- /Comment Form Section -->
+
+                  <template id="comment-form-template">
+                      {{ form_start(form, { 'attr': { 'id': 'comment-form' } }) }}
+                          <h4>Post Comment</h4>
+                          <p>Your email address will not be published. Required fields are marked * </p>
+                          {% if not app.user %}
+                              <div class="row">
+                                  <div class="col-md-6 form-group">
+                                      {{ form_row(form.name) }}
+                                  </div>
+                                  <div class="col-md-6 form-group">
+                                      {{ form_row(form.email) }}
+                                  </div>
+                              </div>
+                              <div class="row">
+                                  <div class="col form-group">
+                                      {{ form_row(form.website) }}
+                                  </div>
+                              </div>
+                          {% endif %}
+                          <div class="row">
+                              <div class="col form-group">
+                                  {{ form_row(form.content) }}
+                              </div>
+                          </div>
+                          <div class="text-center">
+                              <button type="submit" class="btn btn-primary">Post Comment</button>
+                          </div>
+                      {{ form_end(form) }}
+                  </template>
               </div>
-
-
-              <!-- Comment Form Section -->
-              <section id="comment-form" class="comment-form section">
-                <div class="container">
-
-                  {{ form_start(form, { 'attr': { 'id': 'comment-form' } }) }}
-                    <h4>Post Comment</h4>
-                    <p>Your email address will not be published. Required fields are marked * </p>
-                    {% if not app.user %}
-                      <div class="row">
-                        <div class="col-md-6 form-group">
-                          {{ form_row(form.name) }}
-                        </div>
-                        <div class="col-md-6 form-group">
-                          {{ form_row(form.email) }}
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col form-group">
-                          {{ form_row(form.website) }}
-                        </div>
-                      </div>
-                    {% endif %}
-                    <div class="row">
-                      <div class="col form-group">
-                        {{ form_row(form.content) }}
-                      </div>
-                    </div>
-
-                    <div class="text-center">
-                      <button type="submit" class="btn btn-primary">Post Comment</button>
-                    </div>
-                  {{ form_end(form) }}
-
-                </div>
-              </section><!-- /Comment Form Section -->
-
-            </div>
           </section><!-- /Blog Comments Section -->
+
 
         </div>
 
@@ -129,7 +134,13 @@
 
           <div class="widgets-container">
 
-            {{ include('topic/_forum_aside.html.twig', { categories: categories, topics: topics, user: user }) }}
+            {{ include('topic/_forum_aside.html.twig', { 
+              categories: categoriesData.categories, 
+              topics: TopicsData.topics, 
+              user: TopicsData.bestAuthor,
+              articleCount : TopicsData.articleCount,
+              commentCount : TopicsData.commentCount
+              }) }}
 
           </div>
 
@@ -137,4 +148,55 @@
 
       </div>
     </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.reply').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const parentId = this.getAttribute('data-parent-id');
+                const form = document.querySelector('#comment-form-template').content.cloneNode(true);
+                form.querySelector('form').setAttribute('data-parent-id', parentId);
+                this.closest('.comment').appendChild(form);
+            });
+        });
+
+        document.getElementById('comment-button').addEventListener('click', function() {
+            const form = document.querySelector('#comment-form-template').content.cloneNode(true);
+            document.getElementById('comment-form-container').appendChild(form);
+        });
+
+        document.addEventListener('submit', function(event) {
+            if (event.target.matches('#comment-form')) {
+                event.preventDefault();
+                const form = event.target;
+                const parentId = form.getAttribute('data-parent-id');
+                const formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const commentHtml = data.commentHtml;
+                        if (parentId) {
+                            document.querySelector(`[data-parent-id="${parentId}"]`).closest('.comment').querySelector('.replies').innerHTML += commentHtml;
+                        } else {
+                            document.querySelector('#comments').innerHTML += commentHtml;
+                        }
+                        form.remove();
+                    } else {
+                        alert('Error: ' + data.errors);
+                    }
+                });
+            }
+        });
+      });
+    </script>
+
 {% endblock %}

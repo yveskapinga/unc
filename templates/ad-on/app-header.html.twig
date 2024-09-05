@@ -27,19 +27,6 @@
           <li class="nav-item dropdown">
             {% set unreadNotifications = user_service.getNotification() %}
             {% set unreadMessages = user_service.getMessage() %}
-            {# {% set sortedUnreadNotifications = [] %}
-            {% set sortedUnreadMessages = [] %}
-            {% set lastFourUnreadMessages = [] %}
-            {% set lastFourUnreadNotifications = [] %}
-
-            {% if app.user %}
-                {% set unreadNotifications = app.user.notifications|filter(notification => not notification.isRead) %}
-                {% set unreadMessages = app.user.messages|filter(messages => not messages.isRead) %}
-                {% set sortedUnreadNotifications = unreadNotifications|sort((a, b) => b.createdAt <=> a.createdAt) %}
-                {% set sortedUnreadMessages = unreadMessages|sort((a, b) => b.createdAt <=> a.createdAt) %}
-                {% set lastFourUnreadMessages = sortedUnreadMessages|slice(0, 4) %}
-                {% set lastFourUnreadNotifications = sortedUnreadNotifications|slice(0, 4) %}
-            {% endif %} #}
 
             <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
               <i class="bi bi-bell"></i>

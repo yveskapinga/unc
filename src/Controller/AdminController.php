@@ -83,18 +83,7 @@ class AdminController extends AbstractController
     
     #[Route('/test/save-location', name: 'test_save_location')]
     public function saveLocation(Request $request): Response
-    {
-        // $data = json_decode($request->getContent(), true);
-        // $latitude = $data['latitude'];
-        // $longitude = $data['longitude'];
-        
-        // return new Response(sprintf(
-        // 'Adresse: %s<br>Latitude: %s<br>Longitude: %s',
-        //     //$address,
-        //     $latitude,
-        //     $longitude
-        //     ));
-            
+    {           
         $addresses = $this->addressRepo->findAll();
         $data = [];
 

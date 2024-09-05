@@ -2,6 +2,9 @@
 {% block title %}Article{% endblock %}
 
 {% block body %}
+
+    {% set categoriesData = category_service.getTopCategories() %}
+    {% set TopicsData = topic_service.getBestAuthorData() %}
     <!-- Page Title -->
     <div class="page-title position-relative">
       <div class="container d-lg-flex justify-content-between align-items-center">
@@ -25,14 +28,14 @@
 
             <div class="container">
               <div class="row gy-4">
-              {% for topic in topics %}
+              {% for topic in TopicsData.topics %}
                 
               
                 <div class="col-lg-6">
                   <article class="position-relative h-100">
 
                     <div class="post-img position-relative overflow-hidden">
-                      <img src="{{ asset('uploads/pictures/' ~ topic.category.image) }}" class="img-fluid" alt="">
+                      <img src="{{ asset('uploads/pictures/' ~ topic.category.image) }}" class="img-fluid" alt="<i class="bi bi-image-alt"></i>">
                       <span class="post-date">{{topic.createdAt | date('d-m-Y à H:i')}}</span>
                     </div>
 
@@ -94,9 +97,14 @@
         <div class="col-lg-4 sidebar">
 
           <div class="widgets-container">
-            {{ include('topic/_forum_aside.html.twig', { categories: categories, topics: topics, user: user }) }}
+            {{ include('topic/_forum_aside.html.twig', { 
+              categories: categoriesData.categories, 
+              topics: TopicsData.topics, 
+              user: TopicsData.bestAuthor,
+              articleCount : TopicsData.articleCount,
+              commentCount : TopicsData.commentCount
+              }) }}          
           </div>
-
         </div>
 
       </div>

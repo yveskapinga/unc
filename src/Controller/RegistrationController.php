@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+/* namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
@@ -49,4 +49,55 @@ class RegistrationController extends AbstractController
             'registrationForm' => $form->createView(),
         ]);
     }
+} */
+
+// src/Controller/RegistrationController.php
+namespace App\Controller;
+
+use App\Entity\User;
+use App\Entity\Address;
+use App\Entity\Membership;
+use App\Form\RegistrationFormType;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class RegistrationController extends AbstractController
+{
+    #[Route('/register', name: 'app_register')]
+    public function register(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $user = new User();
+        $address = new Address();
+        $membership = new Membership();
+
+        $form = $this->createForm(RegistrationFormType::class, $user);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Set Address and Membership
+            $user->setAddress($address);
+            $user->setMembership($membership);
+            // Set latitude and longitude
+            $latitude = $request->request->get('latitude');
+            $longitude = $request->request->get('longitude');
+            $address->setLatitude($latitude);
+            $address->setLongitude($longitude);
+            dd($user);
+            $entityManager->persist($user);
+            $entityManager->persist($address);
+            $entityManager->persist($membership);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_success');
+        }
+
+        return $this->render('registration/register.html.twig', [
+            'registrationForm' => $form->createView(),
+        ]);
+    }
 }
+

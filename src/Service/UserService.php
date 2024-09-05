@@ -2,17 +2,18 @@
 
 namespace App\Service;
 
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Security\Core\Security;
-use App\Repository\MembershipRepository;
+use App\Service\SecurityService;
 use App\Repository\MessageRepository;
+use App\Repository\MembershipRepository;
 use App\Repository\NotificationRepository;
+use Symfony\Component\Security\Core\Security;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class UserService
 {
 
     public function __construct(
-        private Security $security,
+        private SecurityService $securityService,
         private MembershipRepository $membershipRepository,
         private NotificationRepository $notificationRepository,
         private MessageRepository $messageRepository,
@@ -31,7 +32,7 @@ class UserService
             $interval = $now->diff($lastActivityAt);
 
             if ($interval->i < $timeDiff) { // Vérifie si l'utilisateur a été actif dans les 5 dernières minutes
-                $activeUsers[] = $this->security->getUser();
+                $activeUsers[] = $this->securityService->getConnectedUser();
             }
         }
 
@@ -48,26 +49,20 @@ class UserService
 
     public function getMessage()
     {
-        $this->testUser();
-        $unreadMessages = $this->messageRepository->findUnreadMessagesByRecipient($this->security->getUser());
-        // foreach ($unreadMessages as $message) {
-        //     // $message->decryptContent();
-        //     $unreadMessages [] = $message;
-        // }
-        // dd($unreadMessages);      
-        return $unreadMessages;
+        $user = $this->testUser();
+        return $user ? $this->messageRepository->findUnreadMessagesByRecipient($user) : null;
     }
 
     public function getNotification()
     {
-        $this->testUser();
-        $unreadNotifications = $this->notificationRepository->findUnreadByUser($this->security->getUser());
-        return  $unreadNotifications;
+        $user = $this->testUser();
+
+        return $user ? $this->notificationRepository->findUnreadByUser($user) : null ;
     }
 
     private function testUser()
     {
-        $user = $this->security->getUser();
+        $user = $this->securityService->getConnectedUser();
         if (!$user) {
             return null;
         }else{

@@ -1,5 +1,5 @@
 // public/js/comments.js
-document.addEventListener('DOMContentLoaded', function() {
+/* document.addEventListener('DOMContentLoaded', function() {
     const commentForm = document.querySelector('#comment-form');
     const replyLinks = document.querySelectorAll('.reply');
 
@@ -74,4 +74,57 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => console.error('Erreur:', error));
         });
     }
+}); */
+
+/**
+ * Code ajouté le 04 sept 2024 à 00h49 à KCC, qui remplace le code en commentaire
+ */
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.reply').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            const parentId = this.getAttribute('data-parent-id');
+            const form = document.querySelector('#comment-form-template').content.cloneNode(true);
+            form.querySelector('form').setAttribute('data-parent-id', parentId);
+            this.closest('.comment').appendChild(form);
+        });
+    });
+
+    document.getElementById('comment-button').addEventListener('click', function() {
+        const form = document.querySelector('#comment-form-template').content.cloneNode(true);
+        document.getElementById('comment-form-container').appendChild(form);
+    });
+
+    document.addEventListener('submit', function(event) {
+        if (event.target.matches('#comment-form')) {
+            event.preventDefault();
+            const form = event.target;
+            const parentId = form.getAttribute('data-parent-id');
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const commentHtml = data.commentHtml;
+                    if (parentId) {
+                        document.querySelector(`[data-parent-id="${parentId}"]`).closest('.comment').querySelector('.replies').innerHTML += commentHtml;
+                    } else {
+                        document.querySelector('#comments').innerHTML += commentHtml;
+                    }
+                    form.remove();
+                } else {
+                    alert('Error: ' + data.errors);
+                }
+            });
+        }
+    });
 });
+
