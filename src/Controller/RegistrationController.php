@@ -73,14 +73,15 @@ class RegistrationController extends AbstractController
         $address = new Address();
         $membership = new Membership();
 
+        $user
+            ->setAddress($address)
+            ->setMembership($membership);
         $form = $this->createForm(RegistrationFormType::class, $user);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             // Set Address and Membership
-            $user->setAddress($address);
-            $user->setMembership($membership);
             // Set latitude and longitude
             $latitude = $request->request->get('latitude');
             $longitude = $request->request->get('longitude');

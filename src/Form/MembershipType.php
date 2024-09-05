@@ -108,12 +108,13 @@ class MembershipType extends AbstractType
                 'constraints' => [
                     new NotBlank(),
                 ],
+                'label' => 'Niveau',
             ])
-            ->add('feeAmount', MoneyType::class, [
-                'constraints' => [
-                    new NotBlank(),
-                ],
-            ])
+            // ->add('feeAmount', MoneyType::class, [
+            //     'constraints' => [
+            //         new NotBlank(),
+            //     ],
+            // ])
             ->add('currency', TextType::class, [
                 'constraints' => [
                     new NotBlank(),
@@ -123,11 +124,13 @@ class MembershipType extends AbstractType
                 'constraints' => [
                     new NotBlank(),
                 ],
+                'label' => 'Votre fonction',
             ])
             ->add('membershipType', TextType::class, [
                 'constraints' => [
                     new NotBlank(),
                 ],
+                'label' => 'Type de membre',
             ]);
     }
 

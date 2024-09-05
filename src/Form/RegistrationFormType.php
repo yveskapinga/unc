@@ -34,6 +34,7 @@ class RegistrationFormType extends AbstractType
                         'message' => 'Le nom d\'utilisateur ne peut pas contenir d\'espaces',
                     ]),
                 ],
+                'label' => 'pseudo',
             ])
             ->add('name', TextType::class, [
                 'constraints' => [
@@ -41,6 +42,7 @@ class RegistrationFormType extends AbstractType
                         'message' => 'Veuillez saisir votre nom ',
                     ]),
                 ],
+                'label' => 'votre nom',
             ])
             ->add('firstName', TextType::class, [
                 'constraints' => [
@@ -48,6 +50,7 @@ class RegistrationFormType extends AbstractType
                         'message' => 'Veuillez saisir votre nom ',
                     ]),
                 ],
+                'label' => 'votre prénom',
             ])
             ->add('phoneNumber', TextType::class, [
                 'constraints' => [
@@ -59,6 +62,7 @@ class RegistrationFormType extends AbstractType
                         'message' => 'Veuillez saisir un numéro de téléphone valide.',
                     ]),
                 ],
+                'label' => 'Tél',
             ])
             ->add('nationality', CountryType::class, [
                 'constraints' => [
@@ -66,7 +70,11 @@ class RegistrationFormType extends AbstractType
                         'message' => 'Veuillez sélectionner votre nationalité.',
                     ]),
                 ],
+                'data' => 'CD', // Code ISO 3166-1 alpha-2 pour la République Démocratique du Congo
+
                 'placeholder' => 'Sélectionnez votre pays',
+
+                'label' => 'Nationalité',
             ])
             ->add('email', EmailType::class, [
                 'constraints' => [
@@ -74,6 +82,7 @@ class RegistrationFormType extends AbstractType
                         'message' => 'L\'adresse e-mail "{{ value }}" n\'est pas valide.',
                     ]),
                 ],
+                'label' => 'Email',
             ])
             ->add('address', AddressType::class, [
                 'label' => false, // Optionnel, pour ne pas afficher de label supplémentaire

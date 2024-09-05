@@ -81,6 +81,7 @@ namespace App\Form;
 
 use App\Entity\Address;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -95,26 +96,33 @@ class AddressType extends AbstractType
                 'constraints' => [
                     new NotBlank(),
                 ],
+                'label' => 'Numéro',
             ])
             ->add('street', TextType::class, [
                 'constraints' => [
                     new NotBlank(),
                 ],
+                'label' => 'Rue',
             ])
             ->add('city', TextType::class, [
                 'constraints' => [
                     new NotBlank(),
                 ],
+                'label' => 'Ville',
             ])
-            ->add('country', TextType::class, [
+            ->add('country', CountryType::class, [
                 'constraints' => [
                     new NotBlank(),
                 ],
+                'data' => 'CD', // Code ISO 3166-1 alpha-2 pour la République Démocratique du Congo
+                'label' => 'Pays de résidence',
+
             ])
             ->add('postalCode', TextType::class, [
                 'constraints' => [
                     new NotBlank(),
                 ],
+                'label' => 'Code postal',
             ]);
     }
 
