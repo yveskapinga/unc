@@ -80,51 +80,100 @@
  * Code ajouté le 04 sept 2024 à 00h49 à KCC, qui remplace le code en commentaire
  */
 
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.reply').forEach(button => {
-        button.addEventListener('click', function(event) {
-            event.preventDefault();
-            const parentId = this.getAttribute('data-parent-id');
-            const form = document.querySelector('#comment-form-template').content.cloneNode(true);
-            form.querySelector('form').setAttribute('data-parent-id', parentId);
-            this.closest('.comment').appendChild(form);
-        });
-    });
+// document.addEventListener('DOMContentLoaded', function() {
+//     document.querySelectorAll('.reply').forEach(button => {
+//         button.addEventListener('click', function(event) {
+//             event.preventDefault();
+//             const parentId = this.getAttribute('data-parent-id');
+//             const form = document.querySelector('#comment-form-template').content.cloneNode(true);
+//             form.querySelector('form').setAttribute('data-parent-id', parentId);
+//             this.closest('.comment').appendChild(form);
+//         });
+//     });
 
-    document.getElementById('comment-button').addEventListener('click', function() {
-        const form = document.querySelector('#comment-form-template').content.cloneNode(true);
-        document.getElementById('comment-form-container').appendChild(form);
-    });
+//     document.getElementById('comment-button').addEventListener('click', function() {
+//         const form = document.querySelector('#comment-form-template').content.cloneNode(true);
+//         document.getElementById('comment-form-container').appendChild(form);
+//     });
 
-    document.addEventListener('submit', function(event) {
-        if (event.target.matches('#comment-form')) {
-            event.preventDefault();
-            const form = event.target;
-            const parentId = form.getAttribute('data-parent-id');
-            const formData = new FormData(form);
+//     document.addEventListener('submit', function(event) {
+//         if (event.target.matches('#comment-form')) {
+//             event.preventDefault();
+//             const form = event.target;
+//             const parentId = form.getAttribute('data-parent-id');
+//             const formData = new FormData(form);
 
-            fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
+//             fetch(form.action, {
+//                 method: 'POST',
+//                 body: formData,
+//                 headers: {
+//                     'X-Requested-With': 'XMLHttpRequest'
+//                 }
+//             })
+//             .then(response => response.json())
+//             .then(data => {
+//                 if (data.success) {
+//                     const commentHtml = data.commentHtml;
+//                     if (parentId) {
+//                         document.querySelector(`[data-parent-id="${parentId}"]`).closest('.comment').querySelector('.replies').innerHTML += commentHtml;
+//                     } else {
+//                         document.querySelector('#comments').innerHTML += commentHtml;
+//                     }
+//                     form.remove();
+//                 } else {
+//                     alert('Error: ' + data.errors);
+//                 }
+//             });
+//         }
+//     });
+// });
+
+document.addEventListener('submit', function (event) {
+    if (event.target.matches('#comment-form')) {
+        event.preventDefault();
+        const form = event.target;
+        const parentId = form.getAttribute('data-parent-id');
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     const commentHtml = data.commentHtml;
                     if (parentId) {
-                        document.querySelector(`[data-parent-id="${parentId}"]`).closest('.comment').querySelector('.replies').innerHTML += commentHtml;
+                        const parentElement = document.querySelector(`[data-parent-id="${parentId}"]`).closest('.comment').querySelector('.replies');
+                        if (parentElement) {
+                            parentElement.innerHTML += commentHtml;
+                        } else {
+                            console.error('Parent element not found');
+                        }
                     } else {
-                        document.querySelector('#comments').innerHTML += commentHtml;
+                        const commentsElement = document.querySelector('#comments');
+                        if (commentsElement) {
+                            commentsElement.innerHTML += commentHtml;
+                        } else {
+                            console.error('Comments element not found');
+                        }
                     }
                     form.remove();
+                    console.log('Comment added successfully');
                 } else {
-                    alert('Error: ' + data.errors);
+                    alert('Erreur : ' + data.errors);
+                    console.log('Error:', data.errors);
                 }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Une erreur est survenue lors de l\'envoi du commentaire.');
             });
-        }
-    });
+    }
 });
+
+
 

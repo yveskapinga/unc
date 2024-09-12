@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Interfederation{% endblock %}
+
+{% block body %}
+    <h1>Interfederation</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ interfederation.id }}</td>
+            </tr>
+            <tr>
+                <th>Designation</th>
+                <td>{{ interfederation.designation }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_interfederation_index') }}">back to list</a>
+
+    <a href="{{ path('app_interfederation_edit', {'id': interfederation.id}) }}">edit</a>
+
+    {{ include('interfederation/_delete_form.html.twig') }}
+{% endblock %}

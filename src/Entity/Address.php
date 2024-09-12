@@ -28,7 +28,7 @@ class Address
     #[ORM\Column(nullable: true)]
     private ?float $longitude = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 50)]
     private ?string $city = null;
 
     #[ORM\OneToOne(mappedBy: 'address', cascade: ['persist', 'remove'])]
@@ -37,8 +37,11 @@ class Address
     #[ORM\OneToOne(mappedBy: 'siege', cascade: ['persist', 'remove'])]
     private ?Interfederation $interfederation = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 50, nullable: true)]
     private ?string $postalCode = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $province = null;
 
     public function getId(): ?int
     {
@@ -165,6 +168,18 @@ class Address
     public function setPostalCode(?string $postalCode): self
     {
         $this->postalCode = $postalCode;
+
+        return $this;
+    }
+
+    public function getProvince(): ?string
+    {
+        return $this->province;
+    }
+
+    public function setProvince(string $province): static
+    {
+        $this->province = $province;
 
         return $this;
     }

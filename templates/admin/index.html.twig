@@ -50,7 +50,7 @@
                     </div>
                     <div class="ps-3">
                       <h6>{{ recentUsers|length }}</h6>
-                       <span class="text-muted small pt-2 ps-1">Evolution</span><span class="text-success small pt-1 fw-bold">12%</span>
+                       {# <span class="text-muted small pt-2 ps-1">Evolution</span><span class="text-success small pt-1 fw-bold">12%</span> #}
 
                     </div>
                   </div>
@@ -85,7 +85,7 @@
                     </div>
                     <div class="ps-3">
                       <h6>{{ activeUsers|length }}</h6>
-                       <span class="text-muted small pt-2 ps-1">Evolution</span><span class="text-success small pt-1 fw-bold">8%</span>
+                       {# <span class="text-muted small pt-2 ps-1">Evolution</span><span class="text-success small pt-1 fw-bold">8%</span> #}
 
                     </div>
                   </div>
@@ -121,7 +121,7 @@
                     </div>
                     <div class="ps-3">
                       <h6>{{ totalUsers }}</h6>
-                      <span class="text-muted small pt-2 ps-1">Evolution</span><span class="text-danger small pt-1 fw-bold">12%</span> 
+                      {# <span class="text-muted small pt-2 ps-1">Evolution</span><span class="text-danger small pt-1 fw-bold">12%</span>  #}
 
                     </div>
                   </div>
@@ -231,7 +231,7 @@
                 {#</div>#}
 
                 <div class="card-body">
-                  <h5 class="card-title">Tableau des interfédérations <span>| Total 15 interfédérations</span></h5>
+                  <h5 class="card-title">Tableau des interfédérations <span>| Total {{interfederations|length}} interfédérations </span></h5>
 
                   <table class="table table-borderless datatable">
                     <thead>
@@ -239,46 +239,39 @@
                         <th scope="col">#</th>
                         <th scope="col">Interfédération</th>
                         <th scope="col">SIF</th>
-                        <th scope="col"># membres</th>
                         <th scope="col">Contact</th>
+                        <th scope="col"># membres</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <th scope="row"><a href="#">#1</a></th>
-                        <td>Lualaba</td>
-                        <td><a href="#" class="text-primary">Christian Masudi</a></td>
-                        <td>164</td>
-                        <td><span class="badge bg-success">cmasudi@unc.com</span></td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#">#2</a></th>
-                        <td>Haut Katanga</td>
-                        <td><a href="#" class="text-primary">Christine Riziki</a></td>
-                        <td>147</td>
-                        <td><span class="badge bg-warning">criziki@unc.com</span></td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#">#3</a></th>
-                        <td>Paris</td>
-                        <td><a href="#" class="text-primary">Jean Hubert</a></td>
-                        <td>47</td>
-                        <td><span class="badge bg-success">jhubert@unc.com</span></td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#">#4</a></th>
-                        <td>USA</td>
-                        <td><a href="#" class="text-primar">Josh Kazembe</a></td>
-                        <td>67</td>
-                        <td><span class="badge bg-danger">jkazembe@unc.com</span></td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#">#5</a></th>
-                        <td>Lemba</td>
-                        <td><a href="#" class="text-primary">Boniface Kitungwa</a></td>
-                        <td>265</td>
-                        <td><a href="#" class="badge bg-success">bkitungwa@unc.com</a></td>
-                      </tr>
+                      {% if interfederations is defined %}
+                        {% for interfederation in interfederations %}
+                          
+                            <tr>
+                              <th scope="row"><a href="#">{{loop.index}}</a></th>
+                              <td>{{ interfederation.designation }}</td>
+                              <td>
+                                <a href="#" class="text-primary">
+                                  {% if interfederation.sif is defined  and interfederation.sif %}
+                                    {{interfederation.sif.theUser.firstName}} {{interfederation.sif.theUser.name}}
+                                  {% else %}
+                                    sif pas encore nommé.                     
+                                  {% endif %}
+                                </a>
+                              </td>
+                              <td>
+                                <span class="badge bg-success">
+                                  {% if interfederation.sif is defined  and interfederation.sif %}
+                                    {{ interfederation.sif.theUser.email }}
+                                  {% else %}
+                                    sif pas encore nommé.                     
+                                  {% endif %}
+                                </span>
+                              </td>
+                              <td>{{ interfederation.memberships|length }}</td>
+                            </tr>                        
+                        {% endfor %} 
+                      {% endif %}
                     </tbody>
                   </table>
 
@@ -475,82 +468,72 @@
           </div><!-- End Budget Report -->
 
           <!-- Website Traffic -->
+<!-- templates/admin/index.html.twig -->
+
           <div class="card">
-            <div class="filter">
-              <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                <li class="dropdown-header text-start">
-                  <h6>Filter</h6>
-                </li>
+              {# <div class="filter">
+                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                      <li class="dropdown-header text-start">
+                          <h6>Filter</h6>
+                      </li>
+                      <li><a class="dropdown-item" href="#">Today</a></li>
+                      <li><a class="dropdown-item" href="#">This Month</a></li>
+                      <li><a class="dropdown-item" href="#">This Year</a></li>
+                  </ul>
+              </div> #}
 
-                <li><a class="dropdown-item" href="#">Today</a></li>
-                <li><a class="dropdown-item" href="#">This Month</a></li>
-                <li><a class="dropdown-item" href="#">This Year</a></li>
-              </ul>
-            </div>
+              <div class="card-body pb-0">
+                  <h5 class="card-title">Traffic sur le site</h5>
 
-            <div class="card-body pb-0">
-              <h5 class="card-title">Website Traffic <span>| Today</span></h5>
+                  <div id="trafficChart" style="min-height: 400px;" class="echart"></div>
 
-              <div id="trafficChart" style="min-height: 400px;" class="echart"></div>
+                  <script>
+                      document.addEventListener("DOMContentLoaded", () => {
+                          const visitsToday = {{ visitsToday }};
+                          const visitsThisMonth = {{ visitsThisMonth }};
+                          const visitsThisYear = {{ visitsThisYear }};
 
-              <script>
-                document.addEventListener("DOMContentLoaded", () => {
-                  echarts.init(document.querySelector("#trafficChart")).setOption({
-                    tooltip: {
-                      trigger: 'item'
-                    },
-                    legend: {
-                      top: '5%',
-                      left: 'center'
-                    },
-                    series: [{
-                      name: 'Access From',
-                      type: 'pie',
-                      radius: ['40%', '70%'],
-                      avoidLabelOverlap: false,
-                      label: {
-                        show: false,
-                        position: 'center'
-                      },
-                      emphasis: {
-                        label: {
-                          show: true,
-                          fontSize: '18',
-                          fontWeight: 'bold'
-                        }
-                      },
-                      labelLine: {
-                        show: false
-                      },
-                      data: [{
-                          value: 1048,
-                          name: 'Search Engine'
-                        },
-                        {
-                          value: 735,
-                          name: 'Direct'
-                        },
-                        {
-                          value: 580,
-                          name: 'Email'
-                        },
-                        {
-                          value: 484,
-                          name: 'Union Ads'
-                        },
-                        {
-                          value: 300,
-                          name: 'Video Ads'
-                        }
-                      ]
-                    }]
-                  });
-                });
-              </script>
+                          echarts.init(document.querySelector("#trafficChart")).setOption({
+                              tooltip: {
+                                  trigger: 'item'
+                              },
+                              legend: {
+                                  top: '5%',
+                                  left: 'center'
+                              },
+                              series: [{
+                                  name: 'Visits',
+                                  type: 'pie',
+                                  radius: ['40%', '70%'],
+                                  avoidLabelOverlap: false,
+                                  label: {
+                                      show: false,
+                                      position: 'center'
+                                  },
+                                  emphasis: {
+                                      label: {
+                                          show: true,
+                                          fontSize: '18',
+                                          fontWeight: 'bold'
+                                      }
+                                  },
+                                  labelLine: {
+                                      show: false
+                                  },
+                                  data: [
+                                      { value: visitsToday, name: 'Today' },
+                                      { value: visitsThisMonth, name: 'This Month' },
+                                      { value: visitsThisYear, name: 'This Year' }
+                                  ]
+                              }]
+                          });
+                      });
+                  </script>
+              </div>
+          </div>
 
-            </div>
-          </div><!-- End Website Traffic -->
+          <!-- End Website Traffic -->
 
           <!-- News & Updates Traffic -->
           {#<div class="card">#}

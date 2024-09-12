@@ -96,6 +96,7 @@ class PostController extends AbstractController
     #[Route('/topic/{id}/post/new', name: 'app_post_new', methods: ['GET', 'POST'])]
     public function new(Topic $topic, Request $request, EntityManagerInterface $entityManager): Response
     {
+        dd('je suis ici');
         $post = new Post();
         $post->setTopic($topic);
         $user = $this->securityService->getConnectedUser();
@@ -132,7 +133,7 @@ class PostController extends AbstractController
         if ($request->isXmlHttpRequest()) {
             return new JsonResponse(['success' => false, 'errors' => (string) $form->getErrors(true, false)]);
         }
-        return $this->render('post/new.html.twig', [
+        return $this->render('page/single-post.html.twig', [
             'form' => $form->createView(),
         ]);
     }

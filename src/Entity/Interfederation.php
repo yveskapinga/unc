@@ -18,16 +18,21 @@ class Interfederation
     #[ORM\Column(length: 255)]
     private ?string $designation = null;
 
-    #[ORM\OneToOne(inversedBy: 'interfederation', cascade: ['persist'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $sif = null;
+    // #[ORM\OneToOne(inversedBy: 'interfederation', cascade: ['persist'])]
+    // #[ORM\JoinColumn(nullable: true)]
+    // private ?Membership $sif = null;
 
     #[ORM\OneToOne(inversedBy: 'interfederation', cascade: ['persist'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Address $siege = null;
 
     #[ORM\OneToMany(mappedBy: 'interfederation', targetEntity: Membership::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private Collection $memberships;
+
+    #[ORM\OneToOne(inversedBy: 'leader', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Membership $sif = null;
 
     public function __construct()
     {
@@ -51,17 +56,17 @@ class Interfederation
         return $this;
     }
 
-    public function getSif(): ?User
-    {
-        return $this->sif;
-    }
+    // public function getSif(): ?User
+    // {
+    //     return $this->sif;
+    // }
 
-    public function setSif(User $sif): static
-    {
-        $this->sif = $sif;
+    // public function setSif(Membership $sif): static
+    // {
+    //     $this->sif = $sif;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     public function getSiege(): ?Address
     {
@@ -101,6 +106,23 @@ class Interfederation
                 $membership->setInterfederation(null);
             }
         }
+
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->designation;
+    }
+
+    public function getSif(): ?Membership
+    {
+        return $this->sif;
+    }
+
+    public function setSif(Membership $sif): static
+    {
+        $this->sif = $sif;
 
         return $this;
     }

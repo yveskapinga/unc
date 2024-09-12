@@ -61,6 +61,27 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getQuery()
             ->getResult();
     }
+
+    public function countVisitsByDate(\DateTime $date): int
+    {
+        $qb = $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->where('u.lastActivityAt >= :date')
+            ->setParameter('date', $date->format('Y-m-d H:i:s'));
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    public function countUsersByDateRange(\DateTime $startDate, \DateTime $endDate): int
+    {
+        $qb = $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->where('u.createdAt BETWEEN :startDate AND :endDate')
+            ->setParameter('startDate', $startDate->format('Y-m-d H:i:s'))
+            ->setParameter('endDate', $endDate->format('Y-m-d H:i:s'));
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
     
 
 //    /**

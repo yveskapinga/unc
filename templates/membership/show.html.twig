@@ -16,12 +16,16 @@
                 <td>{{ membership.level }}</td>
             </tr>
             <tr>
-                <th>FeeAmount</th>
-                <td>{{ membership.feeAmount }}</td>
+                <th>Fonction</th>
+                <td>{{ membership.fonction }}</td>
             </tr>
             <tr>
-                <th>FeePaidAt</th>
-                <td>{{ membership.feePaidAt ? membership.feePaidAt|date('Y-m-d H:i:s') : '' }}</td>
+                <th>Catégorie</th>
+                <td>{{ membership.membershipType }}</td>
+            </tr>
+            <tr>
+                <th>Votre interfédération</th>
+                <td>{{ membership.interfederation}}</td>
             </tr>
         </tbody>
     </table>

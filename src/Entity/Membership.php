@@ -17,15 +17,6 @@ class Membership
     #[ORM\Column(length: 255)]
     private ?string $level = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: '0', nullable: true)]
-    private ?string $feeAmount = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $feePaidAt = null;
-
-    #[ORM\Column(length: 10)]
-    private ?string $currency = null;
-
     #[ORM\Column(length: 255)]
     private ?string $fonction = null;
 
@@ -38,6 +29,9 @@ class Membership
 
     #[ORM\OneToOne(inversedBy: 'membership', cascade: ['persist', 'remove'])]
     private ?User $theUser = null;
+
+    #[ORM\OneToOne(mappedBy: 'sif', cascade: ['persist', 'remove'])]
+    private ?Interfederation $leader = null;
 
     public function getId(): ?int
     {
@@ -52,42 +46,6 @@ class Membership
     public function setLevel(string $level): static
     {
         $this->level = $level;
-
-        return $this;
-    }
-
-    public function getFeeAmount(): ?string
-    {
-        return $this->feeAmount;
-    }
-
-    public function setFeeAmount(?string $feeAmount): static
-    {
-        $this->feeAmount = $feeAmount;
-
-        return $this;
-    }
-
-    public function getFeePaidAt(): ?\DateTimeInterface
-    {
-        return $this->feePaidAt;
-    }
-
-    public function setFeePaidAt(?\DateTimeInterface $feePaidAt): static
-    {
-        $this->feePaidAt = $feePaidAt;
-
-        return $this;
-    }
-
-    public function getCurrency(): ?string
-    {
-        return $this->currency;
-    }
-
-    public function setCurrency(string $currency): static
-    {
-        $this->currency = $currency;
 
         return $this;
     }
@@ -144,6 +102,29 @@ class Membership
         public function setTheUser(?User $theUser): static
         {
             $this->theUser = $theUser;
+
+            return $this;
+        }
+
+        public function __toString()
+        {
+            return 
+                $this->getTheUser()->getUsername();
+        }
+
+        public function getLeader(): ?Interfederation
+        {
+            return $this->leader;
+        }
+
+        public function setLeader(Interfederation $leader): static
+        {
+            // set the owning side of the relation if necessary
+            if ($leader->getSif() !== $this) {
+                $leader->setSif($this);
+            }
+
+            $this->leader = $leader;
 
             return $this;
         }

@@ -6,6 +6,7 @@ use App\Repository\UserRepository;
 use App\Repository\EventRepository;
 use App\Repository\TopicRepository;
 use App\Repository\AddressRepository;
+use App\Repository\InterfederationRepository;
 use App\Repository\MembershipRepository;
 use App\Repository\MessageRepository;
 use App\Repository\NotificationRepository;
@@ -40,8 +41,21 @@ class AdminController extends AbstractController
         private AddressRepository $addressRepo,
         private UserRepository $userRepo,
         private MessageRepository $messageRepo,
+        private InterfederationRepository $interfederationRepo
 
     ){
+    }
+
+    #[Route('/statistics', name: 'app_statistics')]
+    public function index(): Response
+    {
+        return $this->render('admin/index.html.twig', [
+        ]);
+    }
+
+    #[Route('/promote/user', name: 'promote_user')]
+    public function promoteUser(){
+        
     }
 
     #[Route('/set-timezone', name: 'set_timezone', methods: ['POST'])]
@@ -60,25 +74,25 @@ class AdminController extends AbstractController
     {
         return $this->render('admin/map.html.twig');
     }
+
     #[Route('/index', name: 'app_index')]
     public function app(): Response
     {
         if (!$this->security->isGranted('IS_AUTHENTICATED_FULLY')) {
-            // Redirigez vers la page d'enregistrement si non authentifié
-            return new RedirectResponse($this->generateUrl('app_login'));
+            return $this->redirectToRoute('app_login');
         }
-        // $notifications = $this->notificationRepo->findBy(['theUser'=>$this->security->getUser()]);
-        // $message = $this->messageRepo->findBy(['recipient'=>$this->security->getUser()]);       
-        return $this->render('admin/index.html.twig'
-        , [
+            $visitsToday = $this->userRepo->countVisitsByDate(new \DateTime('today'));
+            $visitsThisMonth = $this->userRepo->countVisitsByDate(new \DateTime('first day of this month'));
+            $visitsThisYear = $this->userRepo->countVisitsByDate(new \DateTime('first day of January'));
+
+        return $this->render('admin/index.html.twig', [
             'users' => $this->userRepo->findAll(),
-        //     'topics' => $this->topicRepo->findAll(),
-        //     'notifications' => $notifications,
-        //     'messages' => $message,
-        //     'membership' => $this->memberRepo->findAll(),
+            'visitsToday' => $visitsToday,
+            'visitsThisMonth' => $visitsThisMonth,
+            'visitsThisYear' => $visitsThisYear,
+            'interfederations'=> $this->interfederationRepo->findAll(),
             'events'=> $this->eventRepo->findAll()
-        ]
-        );
+        ]);
     }
     
     #[Route('/test/save-location', name: 'test_save_location')]

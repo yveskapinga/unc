@@ -16,6 +16,7 @@ use App\Service\SecurityService;
 use App\Service\UploaderService;
 use App\Repository\UserRepository;
 use App\Service\NotificationService;
+use App\Service\ReferralService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,7 +36,8 @@ class UserCrudController extends AbstractController
         private SecurityService $securityService,
         private NotificationService $notificationService,
         private UserRepository $userRepository,
-        private Security $security
+        private Security $security,
+        private ReferralService $referralService
     ) {
     }
     #[Route('/', name: 'app_user_crud_index', methods: ['GET'])]
@@ -84,6 +86,7 @@ class UserCrudController extends AbstractController
     {
         return $this->render('user_crud/show.html.twig', [
             'user' => $user,
+            'referralLink'=>$this->referralService->generateReferralLink($user)
         ]);
     }
 

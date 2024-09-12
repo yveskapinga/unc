@@ -87,8 +87,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'author')]
     private Collection $categories;
 
-    #[ORM\OneToOne(mappedBy: 'sif', cascade: ['persist', 'remove'])]
-    private ?Interfederation $interfederation = null;
+    // #[ORM\OneToOne(mappedBy: 'sif', cascade: ['persist', 'remove'])]
+    // private ?Interfederation $interfederation = null;
 
     #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'referrers')]
     private Collection $referredBy;
@@ -104,6 +104,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToOne(mappedBy: 'theUser', cascade: ['persist', 'remove'])]
     private ?Membership $membership = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $referralCode = null;
 
     public function __construct()
     {
@@ -611,22 +614,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getInterfederation(): ?Interfederation
-    {
-        return $this->interfederation;
-    }
+    // public function getInterfederation(): ?Interfederation
+    // {
+    //     return $this->interfederation;
+    // }
 
-    public function setInterfederation(Interfederation $interfederation): static
-    {
-        // set the owning side of the relation if necessary
-        if ($interfederation->getSif() !== $this) {
-            $interfederation->setSif($this);
-        }
+    // public function setInterfederation(Interfederation $interfederation): static
+    // {
+    //     // set the owning side of the relation if necessary
+    //     if ($interfederation->getSif() !== $this) {
+    //         $interfederation->setSif($this);
+    //     }
 
-        $this->interfederation = $interfederation;
+    //     $this->interfederation = $interfederation;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     /**
      * @return Collection<int, self>
@@ -722,6 +725,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             }
 
             $this->membership = $membership;
+
+            return $this;
+        }
+
+        public function getReferralCode(): ?string
+        {
+            return $this->referralCode;
+        }
+
+        public function setReferralCode(?string $referralCode): static
+        {
+            $this->referralCode = $referralCode;
 
             return $this;
         }

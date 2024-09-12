@@ -12,6 +12,7 @@ use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
@@ -43,6 +44,13 @@ class RegistrationFormType extends AbstractType
                     ]),
                 ],
                 'label' => 'votre nom',
+            ])
+            ->add('joinedAt', DateType::class, [
+                'widget' => 'single_text',
+                // 'html5' => false,
+                // 'attr' => ['class' => 'js-datepicker form-control'],
+                'label' => 'Date d\'adhésion',
+                // 'format' => 'dd-MM-yyyy',
             ])
             ->add('firstName', TextType::class, [
                 'constraints' => [
@@ -87,9 +95,10 @@ class RegistrationFormType extends AbstractType
             ->add('address', AddressType::class, [
                 'label' => false, // Optionnel, pour ne pas afficher de label supplémentaire
             ])
-            ->add('membership', MembershipType::class, [
-                'label' => false, // Optionnel, pour ne pas afficher de label supplémentaire
-            ])
+            
+            // ->add('membership', MembershipType::class, [
+            //     'label' => false, // Optionnel, pour ne pas afficher de label supplémentaire
+            // ])
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
                 'label' => 'Termes et conditions',

@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Membership{% endblock %}
+{% block title %}nouveau membre{% endblock %}
 
 {% block body %}
-    <h1>Create new Membership</h1>
+    <h1>Confirmation de la demande d'adhésion</h1>
 
     {{ include('membership/_form.html.twig') }}
 
-    <a href="{{ path('app_membership_index') }}">back to list</a>
+    <a href="{{ path('app_membership_index') }}">Retour</a>
 {% endblock %}

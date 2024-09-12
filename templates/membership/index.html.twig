@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Membership{% endblock %}
+{% block title %}membres{% endblock %}
 
 {% block body %}
     <h1>Les membres</h1>
@@ -10,8 +10,9 @@
             <tr>
                 <th>Membre</th>
                 <th>Niveau</th>
-                <th>Cotisation</th>
-                <th>Date de paiement</th>
+                <th>Catégorie</th>
+                <th>Fonction</th>
+                <th>Interfédération</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -20,8 +21,9 @@
             <tr>
                 <td>{{ membership.theUser.username }}</td>
                 <td>{{ membership.level }}</td>
-                <td>{{ membership.feeAmount }}</td>
-                <td>{{ membership.feePaidAt ? membership.feePaidAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ membership.membershipType}}</td>
+                <td>{{ membership.fonction }}</td>
+                <td>{{ membership.interfederation }}</td>
                 <td>
                     <a href="{{ path('app_membership_show', {'id': membership.id}) }}">voir</a>
                     <a href="{{ path('app_membership_edit', {'id': membership.id}) }}">edit</a>

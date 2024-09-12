@@ -23,7 +23,7 @@ class AssignRolesType extends AbstractType
             'attr' => ['class' => 'form-control'],])
             ->add('roles', ChoiceType::class, [
                 'choices' => [
-                    'Super admin' => 'ROLE_USER_ADMIN',
+                    'Super admin' => 'ROLE_SUPER_ADMIN',
                     'Admin' => 'ROLE_ADMIN',
                     'User' => 'ROLE_USER',
 

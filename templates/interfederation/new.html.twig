@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer une interfédération{% endblock %}
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('css/register.css') }}">
+    <script src="{{ asset('js/register.js') }}" defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" defer></script>
+    <script>    
+        $(document).ready(function() {
+        $('.select2').select2();
+        });
+    </script>
+{% endblock %}
+
+
+{% block body %}
+    <h1>Créer une nouvelle interfédération</h1>
+
+    {{ include('interfederation/_form.html.twig') }}
+
+    <a href="{{ path('app_interfederation_index') }}">back to list</a>
+{% endblock %}

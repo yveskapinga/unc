@@ -17,16 +17,61 @@ use App\Entity\User;
 use App\Entity\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Repository\AddressRepository;
+use App\Service\ReferralService;
+use App\Service\SecurityService;
+use phpDocumentor\Reflection\Types\This;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TestController extends AbstractController
 {
-    private $client;
-
-    public function __construct(HttpClientInterface $client)
+    public function __construct(
+        private ReferralService $referralService,
+        private SecurityService $securityService,
+        private UserRepository $userRepository,
+        private EntityManagerInterface $em,
+        private AddressRepository $addressRepository
+        )
     {
-        $this->client = $client;
     }
+
+    #[Route('/addresses', name:'address')]
+    public function address() : Response
+    {
+        $address = $this->addressRepository->findAll();
+        foreach($address as $addres)
+        {
+            $addres->setNumber(rand(10,100));
+            $this->em->persist($addres);
+        }
+        $this->em->flush();
+        return new Response('Mis à jour');
+    }
+
+    #[Route('/user', name: 'user')]
+    public function user(){
+        $user = $this->userRepository->find(17);
+        return new JsonResponse($user);
+    }
+
+
+    #[Route('/test', name: 'test')]
+    public function testReferral() : Response
+    {
+        //$user = $this->securityService->getConnectedUser();
+        $users=$this->userRepository->findAll();
+        foreach($users as $user){
+            $link = $user->getId().$this->referralService->generateReferralCode();
+            $tab[] = $user->getReferralCode();
+            $user->setReferralCode($link);
+            $this->em->persist($user);
+        }
+        $this->em->flush();
+        $this->addFlash('success', 'mis à jour avec succès');
+        
+        return new Response('succès');
+    }
+
+
 
     #[Route('/test/key', name: 'key')]
     public function testKey():Response{

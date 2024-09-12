@@ -97,6 +97,7 @@ class AddressType extends AbstractType
                     new NotBlank(),
                 ],
                 'label' => 'Numéro',
+                'trim' => true,
             ])
             ->add('street', TextType::class, [
                 'constraints' => [
@@ -109,6 +110,12 @@ class AddressType extends AbstractType
                     new NotBlank(),
                 ],
                 'label' => 'Ville',
+            ])
+            ->add('province', TextType::class, [
+                'constraints' => [
+                    new NotBlank(),
+                ],
+                'label' => 'Province/Etat',
             ])
             ->add('country', CountryType::class, [
                 'constraints' => [

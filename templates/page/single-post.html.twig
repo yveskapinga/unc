@@ -4,7 +4,50 @@
 {% block title %}{{ topic.title }}{% endblock %}
 
 {% block javascripts %}
-  <script src="{{ asset('js/comments.js') }}"></script>
+  <cript src="{{ asset('js/comments.js') }}"></script>
+  <style>
+  .comment-container {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+}
+
+.comment-img img {
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.comment-content {
+    flex: 1;
+}
+
+.comment-content a {
+    font-weight: bold;
+    color: #333;
+    text-decoration: none;
+}
+
+.comment-content a:hover {
+    text-decoration: underline;
+}
+
+.comment-content time {
+    display: block;
+    font-size: 0.85em;
+    color: #999;
+    margin-bottom: 10px;
+}
+
+.comment-content p {
+    margin: 0;
+    line-height: 1.5;
+}
+</style>
 {% endblock %}
 
 {% block body %}
@@ -34,20 +77,20 @@
             <div class="container">
 
               <article class="article">
+                
+                  <div class="post-img">
+                    <img src="{{ asset('uploads/pictures/' ~ topic.category.image) }}" alt="" class="img-fluid">
+                  </div>
 
-                <div class="post-img">
-                  <img src="{{ asset('uploads/pictures/' ~ topic.category.image) }}" alt="" class="img-fluid">
-                </div>
+                  <h2 class="title">{{ topic.title }}</h2>
 
-                <h2 class="title">{{ topic.title }}</h2>
-
-                <div class="meta-top">
-                  <ul>
-                    <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a href="#">{{ topic.author.username }}</a></li>
-                    <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a href="#"><time datetime="{{ topic.createdAt|date('Y-m-d') }}">{{ topic.createdAt|date('d M, Y') }}</time></a></li>
-                    <li class="d-flex align-items-center"><i class="bi bi-chat-dots"></i> <a href="#">{{ topic.posts|length }} Comments</a></li>
-                  </ul>
-                </div><!-- End meta top -->
+                  <div class="meta-top">
+                    <ul>
+                      <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a href="#">{{ topic.author.username }}</a></li>
+                      <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a href="#"><time datetime="{{ topic.createdAt|date('Y-m-d') }}">{{ topic.createdAt|date('d M, Y') }}</time></a></li>
+                      <li class="d-flex align-items-center"><i class="bi bi-chat-dots"></i> <a href="#">{{ topic.posts|length }} Comments</a></li>
+                    </ul>
+                  </div><!-- End meta top -->
 
                 <div class="content">
                   <blockquote>
@@ -79,23 +122,37 @@
           <section id="blog-comments" class="blog-comments section">
               <div class="container">
                   <h4 class="comments-count">{{ topic.posts|length }} Comments</h4>
-
-                  <div id="comments">
-                   {# | filter(post => post.isValidated) #}
-                      {% for post in topic.posts %}
-                        {{ include('post/_post.html.twig', { post: post }) }}
-                      {% endfor %}
+              {% for post in topic.posts %}
+                  <div class="comment-container">
+                      <div class="comment-img">
+                          <img src="{{ asset('uploads/photos/' ~ post.author.photo) }}" alt="profile" style="width: 50px; height: 50px; object-fit: cover;">
+                      </div>
+                      <div class="comment-content">
+                          <a href="{{ path('app_user_crud_show', { 'id': post.author.id }) }}">{{ post.author.username }}</a>
+                          <time datetime="{{ post.createdAt|date('Y-m-d') }}"> - {{ post.createdAt|date('F j, Y, g:i a') }}</time>
+                          <p>
+                            {{ post.content }}
+                            {% if app.user == post.author %}
+                              <a href="{{ path('app_post_edit', { 'id': post.id }) }}" title ="modifiez votre commentaires"><i class="fas fa-edit"></i></a>
+                            {% endif %}
+                          </p>
+                      </div>
                   </div>
+              {% endfor %}
+
 
                   <!-- Comment Form Section -->
-                  <section id="comment-form" class="comment-form section">
-                      <div class="container">
-                          <button id="comment-button" class="btn btn-primary">Comment</button>
-                          <div id="comment-form-container"></div>
+                  {# <section id="comment-form" class="comment-form section"> #}
+                      <div class="comment-content">
+                      {{ form_start(form) }}
+                      {{ form_row(form) }}
+                          <button class="btn btn-primary">Comment</button>
+                          {# <div id="comment-form-container"></div> #}
+                      {{ form_end(form) }}
                       </div>
-                  </section><!-- /Comment Form Section -->
+                  {# </section><!-- /Comment Form Section --> #}
 
-                  <template id="comment-form-template">
+                  {# <template id="comment-form-template">
                       {{ form_start(form, { 'attr': { 'id': 'comment-form' } }) }}
                           <h4>Post Comment</h4>
                           <p>Your email address will not be published. Required fields are marked * </p>
@@ -123,14 +180,16 @@
                               <button type="submit" class="btn btn-primary">Post Comment</button>
                           </div>
                       {{ form_end(form) }}
-                  </template>
+                  </template> #}
               </div>
           </section><!-- /Blog Comments Section -->
 
 
+
+
         </div>
 
-        <div class="col-lg-4 sidebar">
+        {# <div class="col-lg-4 sidebar">
 
           <div class="widgets-container">
 
@@ -144,7 +203,7 @@
 
           </div>
 
-        </div>
+        </div> #}
 
       </div>
     </div>
@@ -197,6 +256,6 @@
             }
         });
       });
-    </script>
+    </cript>
 
 {% endblock %}

@@ -112,4 +112,11 @@ class AppFixtures extends Fixture
         }
         
     }
+
+    private function createInterfederation(ObjectManager $manager){
+        $interfederations = [
+            '' => 'Dernières nouvelles et analyses sur la politique nationale et internationale.',
+
+        ];
+    }
 }

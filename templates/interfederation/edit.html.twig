@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Interfederation{% endblock %}
+
+{% block body %}
+    <h1>Edit Interfederation</h1>
+
+    {{ include('interfederation/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_interfederation_index') }}">back to list</a>
+
+    {{ include('interfederation/_delete_form.html.twig') }}
+{% endblock %}

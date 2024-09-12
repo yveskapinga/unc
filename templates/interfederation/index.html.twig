@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Les interfédérations{% endblock %}
+
+{% block body %}
+    <h1>Toutes les interfédérations</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Designation</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for interfederation in interfederations %}
+            <tr>
+                <td>{{ interfederation.id }}</td>
+                <td>{{ interfederation.designation }}</td>
+                <td>
+                    <a href="{{ path('app_interfederation_show', {'id': interfederation.id}) }}">show</a>
+                    <a href="{{ path('app_interfederation_edit', {'id': interfederation.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_interfederation_new') }}">Créer</a>
+
+{% endblock %}

@@ -1,0 +1,48 @@
+
+    <aside id="sidebar" class="sidebar">
+
+      <ul class="sidebar-nav" id="sidebar-nav">
+
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="{{path('app_user_crud_show', {'id':app.user.id})}}">
+            <i class="bi bi-grid"></i>
+            <span>Tableau de bord</span>
+          </a>
+        </li><!-- End Dashboard Nav -->
+
+        <li class="nav-item">
+          <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+            <i class="bi bi-menu-button-wide"></i><span>Menu</span><i class="bi bi-chevron-down ms-auto"></i>
+          </a>
+          <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+            <li>
+              <a href="{{path('app_category_index')}}">
+                <i class="bi bi-circle"></i><span>Gestion des catégories</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{path('app_event_index')}}">
+                <i class="bi bi-circle"></i><span>Géstion des évènements</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{path('app_notification_index')}}">
+                <i class="bi bi-circle"></i><span>Gestion des notification</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{path('app_topic_index')}}">
+                <i class="bi bi-circle"></i><span>Forum</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{path('app_message_index')}}">
+                <i class="bi bi-circle"></i><span>Gestion des messages</span>
+              </a>
+            </li>
+          </ul>
+        </li><!-- End Components Nav -->
+
+      </ul>
+
+    </aside><!-- End Sidebar-->
