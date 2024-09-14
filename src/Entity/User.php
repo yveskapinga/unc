@@ -87,9 +87,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'author')]
     private Collection $categories;
 
-    // #[ORM\OneToOne(mappedBy: 'sif', cascade: ['persist', 'remove'])]
-    // private ?Interfederation $interfederation = null;
-
     #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'referrers')]
     private Collection $referredBy;
 

@@ -6,6 +6,7 @@ use App\Entity\Address;
 use App\Entity\Interfederation;
 use App\Form\InterfederationType;
 use App\Repository\InterfederationRepository;
+use App\Service\SecurityService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,6 +16,12 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/interfederation')]
 class InterfederationController extends AbstractController
 {
+    public function __construct(
+        private SecurityService $securityService
+    ){
+
+    }
+
     #[Route('/', name: 'app_interfederation_index', methods: ['GET'])]
     public function index(InterfederationRepository $interfederationRepository): Response
     {

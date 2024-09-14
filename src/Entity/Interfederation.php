@@ -18,10 +18,6 @@ class Interfederation
     #[ORM\Column(length: 255)]
     private ?string $designation = null;
 
-    // #[ORM\OneToOne(inversedBy: 'interfederation', cascade: ['persist'])]
-    // #[ORM\JoinColumn(nullable: true)]
-    // private ?Membership $sif = null;
-
     #[ORM\OneToOne(inversedBy: 'interfederation', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: true)]
     private ?Address $siege = null;

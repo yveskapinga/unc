@@ -30,6 +30,7 @@ class HomeController extends AbstractController
     #[Route('/', name: 'app_home')]
     public function index(EventRepository $eventRepository, TopicRepository $topicRepository): Response
     {
+
         $events = $eventRepository->findAll();
         $topics = $topicRepository->findAll();
 

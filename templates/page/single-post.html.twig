@@ -4,50 +4,50 @@
 {% block title %}{{ topic.title }}{% endblock %}
 
 {% block javascripts %}
-  <cript src="{{ asset('js/comments.js') }}"></script>
+  <script src="{{ asset('js/comments.js') }}"></script>
   <style>
-  .comment-container {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 20px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    background-color: #f9f9f9;
-}
+    .comment-container {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background-color: #f9f9f9;
+    }
 
-.comment-img img {
-    border-radius: 50%;
-    margin-right: 15px;
-}
+    .comment-img img {
+        border-radius: 50%;
+        margin-right: 15px;
+    }
 
-.comment-content {
-    flex: 1;
-}
+    .comment-content {
+        flex: 1;
+    }
 
-.comment-content a {
-    font-weight: bold;
-    color: #333;
-    text-decoration: none;
-}
+    .comment-content a {
+        font-weight: bold;
+        color: #333;
+        text-decoration: none;
+    }
 
-.comment-content a:hover {
-    text-decoration: underline;
-}
+    .comment-content a:hover {
+        text-decoration: underline;
+    }
 
-.comment-content time {
-    display: block;
-    font-size: 0.85em;
-    color: #999;
-    margin-bottom: 10px;
-}
+    .comment-content time {
+        display: block;
+        font-size: 0.85em;
+        color: #999;
+        margin-bottom: 10px;
+    }
 
-.comment-content p {
-    margin: 0;
-    line-height: 1.5;
-}
-</style>
+    .comment-content p {
+        margin: 0;
+        line-height: 1.5;
+    }
+  </style>
 {% endblock %}
 
 {% block body %}
@@ -146,8 +146,10 @@
                       <div class="comment-content">
                       {{ form_start(form) }}
                       {{ form_row(form) }}
-                          <button class="btn btn-primary">Comment</button>
+                          
+                          <button class="btn btn-primary">envoyer</button>
                           {# <div id="comment-form-container"></div> #}
+                          <input type = "hidden" name = "new" value="new"></input>
                       {{ form_end(form) }}
                       </div>
                   {# </section><!-- /Comment Form Section --> #}
@@ -256,6 +258,6 @@
             }
         });
       });
-    </cript>
+    </script>
 
 {% endblock %}

@@ -27,6 +27,13 @@ services:
     tags:
       - { name: "kernel.event_subscriber" }
 
+  App\EventSubscriber\AccessDeniedSubscriber:
+    arguments:
+      $security: "@security.helper"
+      $requestStack: "@request_stack"
+    tags:
+      - { name: "kernel.event_subscriber" }
+
   App\EventSubscriber\MessageSubscriber:
     arguments:
       $encryptionService: '@App\Service\EncryptionService'

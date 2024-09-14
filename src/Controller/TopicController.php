@@ -6,6 +6,7 @@ use App\Entity\Category;
 use App\Entity\Topic;
 use App\Form\TopicType;
 use App\Repository\TopicRepository;
+use App\Service\SecurityService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,6 +16,10 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/topic')]
 class TopicController extends AbstractController
 {
+    public function __construct(private SecurityService $securityService)
+    {
+        
+    }
     #[Route('/', name: 'app_topic_index', methods: ['GET'])]
     public function index(TopicRepository $topicRepository): Response
     {
@@ -26,6 +31,7 @@ class TopicController extends AbstractController
     #[Route('/new/{id}', name: 'app_topic_new', methods: ['GET', 'POST'])]
     public function new(Request $request, Category $category, EntityManagerInterface $entityManager): Response
     {
+        $this->securityService->checkUserAuthentication();
         
         $topic = new Topic();
         $topic->setCategory($category);

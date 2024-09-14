@@ -2,18 +2,58 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Entity\Membership;
 use App\Form\MembershipType;
+use App\Service\MembershipService;
 use App\Repository\MembershipRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/membership')]
 class MembershipController extends AbstractController
 {
+    public function __construct(private MembershipService $membershipService){}
+    
+
+    #[Route('/validate/{userId}', name: 'validate_membership')]
+    public function validateAction(User $user, Request $request): Response
+    {
+        if (!$user) {
+            throw $this->createNotFoundException('Utilisateur non trouvé');
+        }
+
+        $membership = new Membership();
+        $membership->setTheUser($user);
+        $membership->setInterfederation($this->membershipService->getInterfederationByUser($user));
+
+        $form = $this->createForm(MembershipType::class, $membership);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->membershipService->approveMembership($membership);
+
+            return $this->redirectToRoute('app_membership_index');
+        }
+
+        return $this->render('membership/validate.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+    
+        // Action pour approuver une demande d'adhésion
+    #[Route('/approve/{user}', name: 'approve_membership')]
+    public function approveAction(User $user): Response
+    {
+        $this->membershipService->approveMembership($user);
+    
+        return $this->redirectToRoute('app_membership_index');
+    }
+    
     #[Route('/', name: 'app_membership_index', methods: ['GET'])]
     public function index(MembershipRepository $membershipRepository): Response
     {
@@ -28,6 +68,7 @@ class MembershipController extends AbstractController
         $membership = new Membership();
         $form = $this->createForm(MembershipType::class, $membership);
         $form->handleRequest($request);
+        $fonctionsJson = json_encode(GlobalVariables::$functions);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($membership);
@@ -39,6 +80,7 @@ class MembershipController extends AbstractController
         return $this->renderForm('membership/new.html.twig', [
             'membership' => $membership,
             'form' => $form,
+            'fonctionsJson' => $fonctionsJson,
         ]);
     }
 

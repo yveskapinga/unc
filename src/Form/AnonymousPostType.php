@@ -15,22 +15,27 @@ class AnonymousPostType extends AbstractType
     {
 
             $builder
+                ->add('firstname', TextType::class, [
+                    'label' => false,
+                    'required' => true,
+                    'attr' => ['class' => 'form-control', 'placeholder' => 'Votre prénom']
+                ])
                 ->add('name', TextType::class, [
                     'label' => false,
-                    'attr' => ['class' => 'form-control', 'placeholder' => 'Your Name*']
+                    'required' => true,
+                    'attr' => ['class' => 'form-control', 'placeholder' => 'Votre nom']
                 ])
                 ->add('email', EmailType::class, [
                     'label' => false,
+                    'required' => true,
                     'attr' => ['class' => 'form-control', 'placeholder' => 'Your Email*']
                 ])
-                ->add('website', TextType::class, [
-                    'label' => false,
-                    'required' => false,
-                    'attr' => ['class' => 'form-control', 'placeholder' => 'Your Website']
-                ])
+
                 ->add('content', TextareaType::class, [
                     'label' => false,
-                    'attr' => ['class' => 'form-control', 'placeholder' => 'Your Comment*']            ]);
+                    'required' => true,
+                    'attr' => ['class' => 'form-control', 'placeholder' => 'Votre commentaire']            
+                ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -7,6 +7,7 @@ use App\Entity\Post;
 use App\Entity\Topic;
 use App\Form\PostType;
 use App\Entity\Category;
+use App\Entity\User;
 use App\Form\AnonymousPostType;
 use App\Service\SecurityService;
 use App\Repository\PostRepository;
@@ -14,6 +15,7 @@ use App\Repository\UserRepository;
 use App\Repository\TopicRepository;
 use App\Repository\CategoryRepository;
 use App\Service\NotificationService;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -69,6 +71,30 @@ class PageController extends AbstractController
                 $post->setParent($parent);
             }
 
+            if ($request->get('new')){
+               
+                $content = $form->get('content')->getData();
+                $name = $form->get('name')->getData() ;
+                $email = $form->get('email')->getData();
+                $prenom = $form->get('firstname')->getData();
+                $user = new User();
+                $user
+                    ->setName($name)
+                    ->setEmail($email)
+                    ->setFirstName($prenom)
+                    ->setNationality('anonymous')
+                    ->setPhoneNumber('anonymous')
+                    ->setPassword('')
+                    ->setUsername($name.'.'.$prenom)
+                    ->setJoinedAt(new DateTimeImmutable())
+                    ->setNationality('anonymous');
+
+                $post->setContent($content);
+                $entityManager->persist($user);
+                $entityManager->flush();
+                $post->setAuthor($user);
+            }
+
             $entityManager->persist($post);
             $entityManager->flush();
 
@@ -94,6 +120,13 @@ class PageController extends AbstractController
         return $this->render('page/single-post.html.twig', [
             'topic' => $topic,
             'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/category', name: 'page_category')]
+    public function show(): Response
+    {
+        return $this->render('page/category.html.twig', [
         ]);
     }
 

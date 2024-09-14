@@ -78,8 +78,13 @@ class AdminController extends AbstractController
     #[Route('/index', name: 'app_index')]
     public function app(): Response
     {
-        if (!$this->security->isGranted('IS_AUTHENTICATED_FULLY')) {
-            return $this->redirectToRoute('app_login');
+        // if (!$this->security->isGranted('IS_AUTHENTICATED_FULLY')) {
+        //     return $this->redirectToRoute('app_login');
+        // }
+                        // Vérifier si l'utilisateur est authentifié
+        if (!$this->security->getUser()) {
+            $this->addFlash('error', 'Vous devez être connecté pour accéder à cette page.');
+            return $this->redirectToRoute('app_login'); // Redirige vers la page de connexion
         }
             $visitsToday = $this->userRepo->countVisitsByDate(new \DateTime('today'));
             $visitsThisMonth = $this->userRepo->countVisitsByDate(new \DateTime('first day of this month'));

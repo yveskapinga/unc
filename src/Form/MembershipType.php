@@ -27,15 +27,12 @@ class MembershipType extends AbstractType
                 'attr' => ['class' => 'form-control'],
             ])
             ->add('level', ChoiceType::class, [
-                'choices'=>[
-                    'Militant' => 'Militant',
-                    'Cadre' => 'Cadre',
-                ],
+                'choices'=> GlobalVariables::getLevels(),
                 'constraints' => [
                     new NotBlank(),
                 ],
-                'label' => 'Niveau',
-                'data' => 'Militant',
+                'label' => 'Structure',
+                'attr' => ['class' => 'form-control', 'id' => 'level'],
             ])
 
             ->add('fonction', ChoiceType::class, [
@@ -43,7 +40,8 @@ class MembershipType extends AbstractType
                     new NotBlank(),
                 ],
                 'label' => 'Votre fonction',
-                'choices'=> GlobalVariables::getFonctionsForMembership()
+                'choices'=>  [], // Initialement vide, sera rempli par JavaScript
+                'attr' => ['class' => 'form-control', 'id' => 'fonction', 'disabled' => 'disabled'],
             ])
 
             ->add('interfederation', EntityType::class, [
@@ -54,12 +52,7 @@ class MembershipType extends AbstractType
                 'attr'=>['class'=>'form-control'],
             ])
             ->add('membershipType', ChoiceType::class, [
-                'choices' => [
-                    'Membre fondateur' => 'Membre fondateur',
-                    'Membre éffectif' => 'Membre éffectif',
-                    'Membre d\'honneur' => 'Membre d\'honneur',
-                    'Membre sympathisant' => 'Membre sympathisant',
-                ],
+                'choices' => GlobalVariables::getMembershipType(),
                 'constraints' => [
                     new NotBlank(),
                 ],

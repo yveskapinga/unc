@@ -31,6 +31,7 @@ class ActivitySubscriber implements EventSubscriberInterface
             return;
         }
 
+        /** @var User $user */
         $user = $this->security->getUser();
         if ($user) {
             $session = $this->requestStack->getSession();

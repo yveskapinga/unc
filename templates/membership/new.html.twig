@@ -9,3 +9,10 @@
 
     <a href="{{ path('app_membership_index') }}">Retour</a>
 {% endblock %}
+
+  {% block javascripts %}
+    <script>
+        var fonctions = {{ fonctionsJson|raw }};
+    </script>
+    <script src="{{asset('js/membership.js')}}"></script>
+  {% endblock %}

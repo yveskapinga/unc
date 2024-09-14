@@ -3,12 +3,15 @@
 // src/DataFixtures/AppFixtures.php
 namespace App\DataFixtures;
 
+use Faker\Factory;
+use App\Entity\User;
 use App\Entity\Address;
 use App\Entity\Category;
-use App\Entity\User;
-use Doctrine\Bundle\FixturesBundle\Fixture;
+use App\Entity\Membership;
+use App\Utils\GlobalVariables;
+use App\Entity\Interfederation;
 use Doctrine\Persistence\ObjectManager;
-use Faker\Factory;
+use Doctrine\Bundle\FixturesBundle\Fixture;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
@@ -22,8 +25,38 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
-        //  $this->createSuperAdmin($manager);
+        $this->createUsers($manager);
          $manager->flush();
+    }
+
+    private function usersFixtures(ObjectManager $manager){
+        foreach (GlobalVariables::$users as $userData) {
+            $nameParts = explode(' ', $userData[0]);
+            $firstName = array_shift($nameParts);
+            $lastName = implode(' ', $nameParts);
+            $username = strtolower($firstName[0] . '.' . str_replace(' ', '', $lastName));
+            $email = $username . '@unc.iuc';
+
+            $user = new User();
+            $user->setEmail($email);
+            $user->setRoles(['ROLE_USER']);
+            $user->setPassword($this->passwordHasher->hashPassword($user, 'password'));
+            $user->setIsActive(true);
+            $user->setUsername($username);
+            $user->setName($lastName);
+            $user->setFirstName($firstName);
+            $user->setNationality('CD');
+
+            $membership = new Membership();
+            $membership->setTheUser($user);
+            $membership->setMembershipType('Membre éffectif');
+            $membership->setLevel('');
+            $membership->setFonction($userData[1]);
+            $membership->setInterfederation('Lualaba');
+
+            $manager->persist($user);
+            $manager->persist($membership);
+        }
     }
 
     private function createUserAndAddress(ObjectManager $manager){
@@ -74,7 +107,7 @@ class AppFixtures extends Fixture
             $user->setUsername('superadmin');
             $user->setFirstName('Yves');
             $user->setName('Kayembe');
-            $user->setRoles(['ROLE_USER','ROLE_ADMIN','ROLE_SUPER_ADMIN']);
+            $user->setRoles(['ROLE_SUPER_ADMIN']);
             $user->setJoinedAt(new \DateTime('2020-01-30')); // Date de l'année en cours
             $user->setIsActive(true);
             $user->setAddress($address);
@@ -87,24 +120,9 @@ class AppFixtures extends Fixture
     }
 
     private function createCategories(ObjectManager $manager){
-        $categories_with_descriptions = [
-            'Actualités Politiques' => 'Dernières nouvelles et analyses sur la politique nationale et internationale.',
-            'Événements de l\'UNC' => 'Informations sur les événements organisés par l\'Union pour la Nation Congolaise.',
-            'Propositions et Idées' => 'Espace pour partager et discuter des propositions et idées pour le développement de l\'association.',
-            'Questions et Réponses' => 'Forum pour poser des questions et obtenir des réponses de la communauté.',
-            'Annonces Officielles' => 'Communiqués et annonces officielles de l\'UNC.',
-            'Projets de développement' => 'Détails et mises à jour sur les projets de développement en cours et futurs.',
-            'Ressources et Documents' => 'Accès à des documents importants et des ressources utiles pour les membres.',
-            'Présentation des Membres' => 'Profils et présentations des membres de l\'association.',
-            'Aide et Assistance' => 'Support et assistance pour les membres ayant des questions ou des problèmes.',
-            'Formation et Éducation' => 'Opportunités de formation et d\'éducation pour les membres.',
-            'Relations Internationales' => 'Informations sur les relations et collaborations internationales de l\'UNC.',
-            'Économie et social' => 'Discussions sur les questions économiques et sociales affectant la communauté.',
-            'Santé et Bien-être' => 'Conseils et informations sur la santé et le bien-être des membres.',
-            'Sport et Loisir' => 'Activités sportives et de loisirs pour les membres de l\'association.'
-        ];
+
         
-        foreach ($categories_with_descriptions as $name => $description) {
+        foreach (GlobalVariables::getCategories_with_descriptions() as $name => $description) {
             $categorie = new Category();
             $categorie->setName($name);
             $categorie->setDescription($description);
@@ -118,5 +136,50 @@ class AppFixtures extends Fixture
             '' => 'Dernières nouvelles et analyses sur la politique nationale et internationale.',
 
         ];
+    }
+
+    private function createUsers(ObjectManager $manager){
+        // Récupérer l'interfédération 'Lualaba'
+        $interfederationRepository = $manager->getRepository(Interfederation::class);
+        $lualabaInterfederation = $interfederationRepository->findOneBy(['designation' => 'Lualaba']);
+
+        // Vérifier si l'interfédération existe
+        if (!$lualabaInterfederation) {
+            throw new \Exception('Interfederation "Lualaba" not found in the database.');
+        }
+
+        // Tableau des utilisateurs
+        $usersData = GlobalVariables::$users;
+
+        foreach ($usersData as $userData) {
+            list($fullName, $fonction) = $userData;
+            $nameParts = explode(' ', $fullName);
+            $firstName = array_shift($nameParts);
+            $name = implode(' ', $nameParts);
+            $username = strtolower($firstName[0] . '.' . $name);
+
+            // Création de l'utilisateur
+            $user = new User();
+            $user->setEmail($username . '@example.com');
+            $user->setRoles(['ROLE_USER']);
+            $user->setPassword($this->passwordHasher->hashPassword($user, 'password'));
+            $user->setJoinedAt(new \DateTime());
+            $user->setIsActive(true);
+            $user->setUsername($username);
+            $user->setName($name);
+            $user->setFirstName($firstName);
+            $user->setNationality('CD');
+            $manager->persist($user);
+
+            // Création du membership
+            $membership = new Membership();
+            $membership->setFonction($fonction);
+            $membership->setLevel('');
+            $membership->setMembershipType('Membre éffectif');
+            $membership->setInterfederation($lualabaInterfederation);
+            $membership->setTheUser($user);
+            $manager->persist($membership);
+        }
+
     }
 }

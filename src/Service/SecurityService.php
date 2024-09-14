@@ -3,17 +3,34 @@
 namespace App\Service;
 
 use App\Entity\User;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class SecurityService
 {
-    public function __construct(private Security $security)
-    {
+    private $security;
+    private $requestStack;
+    private $urlGenerator;
+
+    public function __construct(
+        Security $security,
+        RequestStack $requestStack,
+        UrlGeneratorInterface $urlGenerator
+    ) {
+        $this->security = $security;
+        $this->requestStack = $requestStack;
+        $this->urlGenerator = $urlGenerator;
     }
 
-    public function getConnectedUser() : ?User
+    private function getRequest()
+    {
+        return $this->requestStack->getCurrentRequest();
+    }
+
+    public function getConnectedUser(): ?User
     {
         /** @var User $user */
         $user = $this->security->getUser();
@@ -36,6 +53,14 @@ class SecurityService
             // return $this->redirectToRoute('custom_error_page');
             throw new AccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page.');
         }
-        
+    }
+
+    public function checkUserAuthentication()
+    {
+        if (!$this->security->getUser()) {
+            // Redirigez vers la page d'erreur personnalisée
+            // return $this->redirectToRoute('custom_error_page');
+            throw new AccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page.');
+        }
     }
 }
