@@ -158,12 +158,15 @@ class AppFixtures extends Fixture
             $firstName = array_shift($nameParts);
             $name = implode(' ', $nameParts);
             $username = strtolower($firstName[0] . '.' . $name);
+            $username = str_replace(' ', '', $username);
 
             // Générer une adresse email unique
             $email = $username . '@unc.iuc';
+            $email = str_replace(' ', '', $email);
             $counter = 1;
             while (in_array($email, $usedEmails)) {
                 $email = $username . $counter . '@unc.iuc';
+                $email = str_replace(' ', '', $email);
                 $counter++;
             }
             $usedEmails[] = $email;
@@ -187,6 +190,7 @@ class AppFixtures extends Fixture
             $membership->setMembershipType('Membre éffectif');
             $membership->setInterfederation($lualabaInterfederation);
             $membership->setTheUser($user);
+            $membership->setLevel('');
             $manager->persist($membership);
         }
 
