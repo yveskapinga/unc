@@ -150,6 +150,7 @@ class AppFixtures extends Fixture
 
         // Tableau des utilisateurs
         $usersData = GlobalVariables::$users;
+        $usedEmails = [];
 
         foreach ($usersData as $userData) {
             list($fullName, $fonction) = $userData;
@@ -158,9 +159,18 @@ class AppFixtures extends Fixture
             $name = implode(' ', $nameParts);
             $username = strtolower($firstName[0] . '.' . $name);
 
+            // Générer une adresse email unique
+            $email = $username . '@unc.iuc';
+            $counter = 1;
+            while (in_array($email, $usedEmails)) {
+                $email = $username . $counter . '@unc.iuc';
+                $counter++;
+            }
+            $usedEmails[] = $email;
+
             // Création de l'utilisateur
             $user = new User();
-            $user->setEmail($username . '@example.com');
+            $user->setEmail($email);
             $user->setRoles(['ROLE_USER']);
             $user->setPassword($this->passwordHasher->hashPassword($user, 'password'));
             $user->setJoinedAt(new \DateTime());
@@ -174,7 +184,6 @@ class AppFixtures extends Fixture
             // Création du membership
             $membership = new Membership();
             $membership->setFonction($fonction);
-            $membership->setLevel('');
             $membership->setMembershipType('Membre éffectif');
             $membership->setInterfederation($lualabaInterfederation);
             $membership->setTheUser($user);
