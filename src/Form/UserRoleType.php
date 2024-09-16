@@ -2,39 +2,31 @@
 
 namespace App\Form;
 
-use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 class UserRoleType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('users', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'username',
-                'multiple' => true,
-                'expanded' => true,
-            ])
-            ->add('roles', ChoiceType::class, [
-                'choices' => [
-                    'Admin' => 'ROLE_ADMIN',
-                    'User' => 'ROLE_USER',
-                    // Ajoutez d'autres rôles si nécessaire
-                ],
-                'multiple' => true,
-                'expanded' => true,
+            ->add('users', CollectionType::class, [
+                'entry_type' => AssignRolesType::class,
+                'allow_add' => true,
+                'by_reference' => false,
+                'prototype' => true,
+                'label' => false,
+                'prototype_name' => '__name__',
+                'attr' => ['class' => 'form-collection'],
             ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            // Configure your form options here
+            'data_class' => null,
         ]);
     }
 }

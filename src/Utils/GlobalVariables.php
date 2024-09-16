@@ -6,13 +6,8 @@ use GuzzleHttp\RetryMiddleware;
 
 class GlobalVariables
 {
-    // Les types de membres pour l'entité Membership
-    private static $membershipType = [
-        'Membre fondateur' => 'Membre fondateur',
-        'Membre éffectif' => 'Membre éffectif',
-        'Membre d\'honneur' => 'Membre d\'honneur',
-        'Membre sympathisant' => 'Membre sympathisant',
-    ];
+
+
     public static function getCategories_with_descriptions(){
         return self::$categories_with_descriptions;
     }
@@ -35,6 +30,27 @@ class GlobalVariables
     public static function getFonctionsForMembership(){
         return self::$fonctionsForMembership;
     }
+
+    public static function getRoles(){
+        return self::$roles;
+    }
+
+    // Les types de membres pour l'entité Membership
+    private static $membershipType = [
+            'Membre fondateur' => 'Membre fondateur',
+            'Membre éffectif' => 'Membre éffectif',
+            'Membre d\'honneur' => 'Membre d\'honneur',
+            'Membre sympathisant' => 'Membre sympathisant',
+    ];
+    private static $roles =
+    [
+        'Super admin' => 'ROLE_SUPER_ADMIN',
+        'Admin' => 'ROLE_ADMIN',
+        'Modérateur' => 'ROLE_MODERATOR',
+        'User' => 'ROLE_USER',
+
+        // Ajoutez d'autres rôles si nécessaire
+    ];
 
     public static $users = [
         ["SAMBA LEON HERITIER", "Vice-Président en charge de la diplomatie et affaire politique"],
@@ -70,6 +86,8 @@ class GlobalVariables
         ["KIBINDA JEAN PIERRE ELIE", "Coordonnateur adjoint en charge des questions sécuritaires et relations publiques"],
         ["MALESO MWITAMBWILA Joseph", "Coordonnateur en charge de l'école du parti"],
         ["VICTOR AKILA Le Roy", "Coordonnateur adjoint en charge de l' école du parti"],
+    ];
+    public static $users2 = [
         ["DENDRY PASCAL Pakson", "Coordonnateur en charge de la santé"],
         ["MAJOND RUBEND Trésor", "Coordonnateur adjoint en charge de la santé"],
         ["MISENGA LENGE PRISCA", "Coordonnateur adjoint en charge de la santé"],
@@ -107,6 +125,8 @@ class GlobalVariables
         ["ORNELIE KAFUKU", "Chef protocole"],
         ["DJILABU NYEMBWE Lyna", "Première protocole"],
         ["MASENGO INAMANJABA Selda", "Deuxième protocole"],
+    ];
+    public static $users3 = [
         ["KAFIA MWAMB Sylvie", "Implantation et organisation de base"],
         ["SAMBA KAJAM Jofrette", "Implantation et organisation de base adjointe"],
         ["MAND KACHAY Gotetti", "Mouvement associative"],
@@ -131,6 +151,8 @@ class GlobalVariables
         ["USENI NDOBOLO KAJAMA", "Coordonnateur adjoint en charge de recrutement"],
         ["MBUYU WA MUTOMBO Vincent de Paul", "Coordonnateur adjoint en charge d'organisation administration"],
         ["TSHIJIKA MUNENGE Joël", "Coordonnateur adjoint en charge de l'implantation"],
+    ];
+    public static $user4 = [
         ["LONGO LONGO Patrick", "Coordonnateur adjoint en charge de l'implantation"],
         ["NGOIE MUHEMBA Israël", "Coordonnateur adjoint en charge de suivi des organes de bases"],
         ["DIKENI MELEKA Hervé", "Rapporteur"],
@@ -185,7 +207,24 @@ class GlobalVariables
         'Économie et social' => 'Discussions sur les questions économiques et sociales affectant la communauté.',
         'Santé et Bien-être' => 'Conseils et informations sur la santé et le bien-être des membres.',
         'Sport et Loisir' => 'Activités sportives et de loisirs pour les membres de l\'association.'
-    ];    
+    ]; 
+    
+    public static $categories_with_pictures = [
+        'Actualités Politiques' => 'politic-66ccefe58953f.jpg',
+        'Événements de l\'UNC' => 'events-66ccf10515c12.jpg',
+        'Propositions et Idées' => 'ideas-66ccf11d69903.jpg',
+        'Questions et Réponses' => 'question-reponse-66ccf142e5db8.jpg',
+        'Annonces Officielles' => 'annonces-66ccf158379ac.jpg',
+        'Projets de développement' => 'projects-66ccf16b3103e.jpg',
+        'Ressources et Documents' => 'documents-66ccf186af085.jpg',
+        'Présentation des Membres' => 'new-member-66ccf1a065f41.jpg',
+        'Aide et Assistance' => 'assistance-66ccf1b557876.jpg',
+        'Formation et Éducation' => 'education-66ccf1c7540f4.jpg',
+        'Relations Internationales' => 'rel-inter-66ccf1dc4ccf8.jpg',
+        'Économie et social' => 'ess-66ccf1f3e6730.jpg',
+        'Santé et Bien-être' => 'sante-bien-ettre-66ccf20adef89.jpg',
+        'Sport et Loisir' => 'sport-loisir-66ccf21e39253.jpg'
+    ];
     
     private static $fonctionsForMembership = [
         'Secrétaire Interfédéral'=>'sif',
@@ -197,11 +236,9 @@ class GlobalVariables
     ];
 
     private static $levels = [
-        'Interfédération provincial' => 'Interfédération provincial',
-        'Interfédération provincial des femmes' => 'Interfédération des femmes',
-        'Interfédération provincial des jeunes' => 'Interfédération des jeunes',
-        'Inspection provincial' => 'Inspection provincial',
-        'Coordination provincial' => 'Coordination provincial',
+        'National' => 'National',
+        'Interfédéral' => 'Interfédéral',
+        'Fédéral' => 'Fédéral',
     ];
 
     private static $functions = [

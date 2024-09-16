@@ -1,10 +1,98 @@
 {# templates/user/assign_roles.html.twig #}
 {% extends 'base.html.twig' %}
 
+{% block title %}
+assign role
+{% endblock %}
+
 {% block body %}
     <h1>Assign Roles to Users</h1>
     {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button class="btn btn-primary">Assign Roles</button>
+    <div class="form-collection" data-prototype="{{ form_widget(form.users.vars.prototype)|e('html_attr') }}">
+        {% for userForm in form.users %}
+            <div class="user-group">
+                <div class="row mb-3">
+                    <div class="col-md-5">
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">{{ form_label(userForm.author) }}</label>
+                            <div class="col-sm-8">
+                                {{ form_widget(userForm.author) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">{{ form_label(userForm.roles) }}</label>
+                            <div class="col-sm-8">
+                                {{ form_widget(userForm.roles) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-danger btn-sm remove-user">Supprimer</button>
+                    </div>
+                </div>
+                <hr>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="mt-3">
+        <button class="btn btn-secondary" type="button" id="add-user">Ajouter un utilisateur</button>
+        <button class="btn btn-primary" type="submit">Assigner les rôles</button>
+    </div>
     {{ form_end(form) }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var collectionHolder = document.querySelector('.form-collection');
+            var addButton = document.getElementById('add-user');
+            var prototype = collectionHolder.dataset.prototype;
+            var index = collectionHolder.children.length;
+
+            function updateUserOptions() {
+                var selectedUsers = Array.from(document.querySelectorAll('.form-collection select[name*="[author]"]')).map(select => select.value);
+                document.querySelectorAll('.form-collection select[name*="[author]"]').forEach(select => {
+                    Array.from(select.options).forEach(option => {
+                        if (selectedUsers.includes(option.value) && option.value !== select.value) {
+                            option.disabled = true;
+                        } else {
+                            option.disabled = false;
+                        }
+                    });
+                });
+            }
+
+            function addRemoveButtonListener(button) {
+                button.addEventListener('click', function() {
+                    button.closest('.user-group').remove();
+                    updateUserOptions();
+                });
+            }
+
+            addButton.addEventListener('click', function() {
+                var newForm = prototype.replace(/__name__/g, index);
+                collectionHolder.dataset.index = index + 1;
+                var newFormElement = document.createElement('div');
+                newFormElement.classList.add('user-group');
+                newFormElement.innerHTML = newForm + '<div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-user">Supprimer</button></div><hr>';
+                collectionHolder.appendChild(newFormElement);
+                index++;
+                updateUserOptions();
+                newFormElement.querySelector('select[name*="[author]"]').addEventListener('change', updateUserOptions);
+                addRemoveButtonListener(newFormElement.querySelector('.remove-user'));
+            });
+
+            collectionHolder.dataset.index = index;
+            document.querySelectorAll('.form-collection select[name*="[author]"]').forEach(select => {
+                select.addEventListener('change', updateUserOptions);
+            });
+            document.querySelectorAll('.remove-user').forEach(button => {
+                addRemoveButtonListener(button);
+            });
+            updateUserOptions();
+        });
+    </script>
 {% endblock %}

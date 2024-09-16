@@ -10,11 +10,12 @@ use Doctrine\Common\EventSubscriber;
 use App\Service\InterfederationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PostPersistEventArgs;
+use Doctrine\ORM\Event\PrePersistEventArgs;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 
-class UserSubscriber implements EventSubscriber
+class UserSubscriber implements EventSubscriberInterface
 {
     private $entityManager;
     private $referralService;
@@ -36,38 +37,37 @@ class UserSubscriber implements EventSubscriber
         $this->router = $router;
     }
 
-    public function getSubscribedEvents()
+    public static function getSubscribedEvents()
     {
         return [
-            InteractiveLoginEvent::class => 'onUserRegister',
-            Events::postPersist
+            // InteractiveLoginEvent::class => 'onUserRegister',
+            Events::postPersist,
         ];
     }
 
-    public function onUserRegister(InteractiveLoginEvent $event)
-    {
-        $user = $event->getAuthenticationToken()->getUser();
-        dd($user);
+    // public function onUserRegister(InteractiveLoginEvent $event)
+    // {
+    //     $user = $event->getAuthenticationToken()->getUser();
 
-        if ($user instanceof User) {
-            // Génère un code de parrainage unique pour le nouvel utilisateur
-            $user->setReferralCode($this->referralService->generateReferralLink($user));
+    //     if ($user instanceof User) {
+    //         // Génère un code de parrainage unique pour le nouvel utilisateur
+    //         $user->setReferralCode($this->referralService->generateReferralLink($user));
 
-            // Vérifie le code de parrainage
-            $referralCode = $user->getReferralCode();
-            if ($referralCode) {
-                $referrer = $this->entityManager->getRepository(User::class)->findOneBy(['referralCode' => $referralCode]);
-                if ($referrer) {
-                    $referrer->addReferrer($user);
-                    $user->addReferredBy($referrer);
-                    $this->entityManager->persist($referrer);
-                }
-            }
+    //         // Vérifie le code de parrainage
+    //         $referralCode = $user->getReferralCode();
+    //         if ($referralCode) {
+    //             $referrer = $this->entityManager->getRepository(User::class)->findOneBy(['referralCode' => $referralCode]);
+    //             if ($referrer) {
+    //                 $referrer->addReferrer($user);
+    //                 $user->addReferredBy($referrer);
+    //                 $this->entityManager->persist($referrer);
+    //             }
+    //         }
 
-            $this->entityManager->persist($user);
-            $this->entityManager->flush();
-        }
-    }
+    //         $this->entityManager->persist($user);
+    //         $this->entityManager->flush();
+    //     }
+    // }
 
     public function postPersist(PostPersistEventArgs $args)
     {

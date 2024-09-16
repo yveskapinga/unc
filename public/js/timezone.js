@@ -1,7 +1,7 @@
 // JavaScript pour détecter le fuseau horaire et l'envoyer au serveur
 document.addEventListener('DOMContentLoaded', (event) => {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    fetch('/admin/set-timezone', {
+    fetch('/set-timezone', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

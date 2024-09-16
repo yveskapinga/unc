@@ -40,6 +40,16 @@ services:
     tags:
       - { name: doctrine.event_subscriber }
 
+  App\EventSubscriber\UserSubscriber:
+    arguments:
+      $entityManager: '@doctrine.orm.entity_manager'
+      $referralService: '@App\Service\ReferralService'
+      $interfederationService: '@App\Service\InterfederationService'
+      $notificationService: '@App\Service\NotificationService'
+      $router: '@router'
+    tags:
+      - { name: 'kernel.event_subscriber' }
+      
   App\DataFixtures\AppFixtures:
     arguments:
       $passwordHasher: "@security.password_hasher"

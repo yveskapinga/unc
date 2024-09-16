@@ -126,9 +126,7 @@ class AddressType extends AbstractType
 
             ])
             ->add('postalCode', TextType::class, [
-                'constraints' => [
-                    new NotBlank(),
-                ],
+                'required' => false,
                 'label' => 'Code postal',
             ]);
     }

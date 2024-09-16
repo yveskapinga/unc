@@ -23,4 +23,24 @@ trait TimestampableTrait
     {
         $this->updatedAt = new \DateTime();
     }
+    
+    public function setCreatedAt(\DateTime $datetime): void
+    {
+        $this->createdAt = $datetime;
+    }
+
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setUpdatedAt(\DateTime $datetime): void
+    {
+        $this->updatedAt = $datetime;
+    }
+
+    public function getUpdatedAt(): ?\DateTime
+    {
+        return $this->updatedAt;
+    }
 }

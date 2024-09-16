@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\User;
+use App\Utils\GlobalVariables;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -19,18 +20,15 @@ class AssignRolesType extends AbstractType
         ->add('author', EntityType::class, [
             'class' => User::class,
             'choice_label' => 'username',
-            'label' => 'Auteur',
+            'label' => 'Membre',
+            'placeholder' => 'Choisir un utilisateur',
             'attr' => ['class' => 'form-control'],])
             ->add('roles', ChoiceType::class, [
-                'choices' => [
-                    'Super admin' => 'ROLE_SUPER_ADMIN',
-                    'Admin' => 'ROLE_ADMIN',
-                    'User' => 'ROLE_USER',
-
-                    // Ajoutez d'autres rôles si nécessaire
-                ],
-                'multiple' => true,
-                'expanded' => true,
+                'choices' => GlobalVariables::getRoles(),
+                'attr' => ['class' => 'form-control'],
+                'placeholder' => 'Choisir un rôle',
+                // 'multiple' => true,
+                // 'expanded' => true,
             ]);
     }
 

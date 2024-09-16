@@ -24,6 +24,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Form\UserRoleType;
+
+
 
 
 
@@ -45,6 +49,43 @@ class AdminController extends AbstractController
 
     ){
     }
+    
+    #[Route('/assign/roles', name: 'assign_roles', methods: ['GET', 'POST'])]
+    public function assignRoles(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(UserRoleType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $currentUser = $this->getUser();
+            $currentUserRoles = $currentUser->getRoles();
+
+            foreach ($data['users'] as $userData) {
+                $user = $userData['author'];
+                $roles = $userData['roles'];
+
+                // Vérifiez si l'utilisateur actuel a le droit d'attribuer ces rôles
+                foreach ($roles as $role) {
+                    if (!in_array($role, $currentUserRoles)) {
+                        throw new AccessDeniedException('Vous ne pouvez pas attribuer un rôle supérieur au vôtre.');
+                    }
+                }
+
+                $user->setRoles($roles);
+                $entityManager->persist($user);
+            }
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Roles assigned successfully!');
+            return $this->redirectToRoute('assign_roles');
+        }
+
+        return $this->render('user_crud/assign_roles.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
 
     #[Route('/statistics', name: 'app_statistics')]
     public function index(): Response
@@ -56,17 +97,6 @@ class AdminController extends AbstractController
     #[Route('/promote/user', name: 'promote_user')]
     public function promoteUser(){
         
-    }
-
-    #[Route('/set-timezone', name: 'set_timezone', methods: ['POST'])]
-    public function setTimezone(Request $request, SessionInterface $session): Response
-    {
-        $data = json_decode($request->getContent(), true);
-        if (isset($data['timezone'])) {
-            $session->set('timezone', $data['timezone']);
-        }
-
-        return new Response('Timezone set', Response::HTTP_OK);
     }
     
     #[Route('/map', name: 'app_map')]

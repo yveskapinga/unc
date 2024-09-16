@@ -139,14 +139,14 @@ class RegistrationController extends AbstractController
                 );
     
             $entityManager->persist($user);
-            $entityManager->flush();
+            // $entityManager->flush();
     
             if ($referrer) {
                 $referrer->addReferrer($user);
                 $entityManager->persist($referrer);
                 $entityManager->flush();
             }
-    
+    dd($user);
             return $userAuthenticator->authenticateUser(
                 $user,
                 $authenticator,

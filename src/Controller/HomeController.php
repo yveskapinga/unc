@@ -7,10 +7,12 @@ use App\Repository\EventRepository;
 use App\Repository\TopicRepository;
 use App\Repository\MembershipRepository;
 use App\Repository\NotificationRepository;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -38,6 +40,17 @@ class HomeController extends AbstractController
             'events' => $events,
             'topics' => $topics,
         ]);
+    }
+
+    #[Route('/set-timezone', name: 'set_timezone', methods: ['POST'])]
+    public function setTimezone(Request $request, SessionInterface $session): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        if (isset($data['timezone'])) {
+            $session->set('timezone', $data['timezone']);
+        }
+
+        return new Response('Timezone set', Response::HTTP_OK);
     }
 
     

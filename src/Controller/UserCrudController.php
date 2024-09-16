@@ -5,26 +5,26 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Entity\Address;
-use App\Entity\Interfederation;
 use App\Form\AddressType;
-use App\Form\AssignRolesType;
 use App\Form\UserRoleType;
+use App\Entity\Interfederation;
 use App\Form\ChangePasswordType;
-use App\Repository\InterfederationRepository;
 use App\Service\GeocoderService;
+use App\Service\ReferralService;
 use App\Service\SecurityService;
 use App\Service\UploaderService;
 use App\Repository\UserRepository;
 use App\Service\NotificationService;
-use App\Service\ReferralService;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Security\Core\Security;
+use App\Repository\InterfederationRepository;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[Route('/user/crud')]
@@ -43,6 +43,11 @@ class UserCrudController extends AbstractController
     #[Route('/', name: 'app_user_crud_index', methods: ['GET'])]
     public function index(InterfederationRepository $interfederationRepository): Response
     {
+        if (!$this->security->isGranted('ROLE_ADMIN')) {
+            // Redirigez vers la page d'erreur personnalisée
+            // return $this->redirectToRoute('custom_error_page');
+            throw new AccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page.');
+        }
         $user = $this->security->getUser();
         // $interfederation = $user->getInterfederation();
 
@@ -84,6 +89,15 @@ class UserCrudController extends AbstractController
     #[Route('/{id}', name: 'app_user_crud_show', methods: ['GET'])]
     public function show(User $user): Response
     {
+        $connectedUser = $this->securityService->getConnectedUser();
+        
+        // Vérifiez si l'utilisateur connecté est soit l'utilisateur en question, soit un administrateur
+        if (!$this->security->isGranted('ROLE_ADMIN') && $connectedUser != $user) {
+            // Redirigez vers la page d'erreur personnalisée
+            // return $this->redirectToRoute('custom_error_page');
+        throw new AccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page.');
+            
+        }
         return $this->render('user_crud/show.html.twig', [
             'user' => $user,
             'referralLink'=>$this->referralService->generateReferralLink($user)
@@ -93,8 +107,9 @@ class UserCrudController extends AbstractController
     #[Route('/{id}/edit', name: 'app_user_crud_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, User $user = null, EntityManagerInterface $entityManager): Response
     {
-        if (!$user) {
-            throw $this->createNotFoundException('Utilisateur non trouvé');
+        if (!$this->security->getUser()) {
+            $this->addFlash('error', 'Vous devez être connecté pour accéder à cette page.');
+            return $this->redirectToRoute('app_login'); // Redirige vers la page de connexion
         }
     
         $address = $user->getAddress() ?: new Address();
@@ -158,36 +173,7 @@ class UserCrudController extends AbstractController
         ]);
     }
 
-    #[Route('/assign/roles', name: 'assign_roles', methods: ['GET','POST'])]
-    public function assignRoles(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        
-        // $user= new User;
-        $form = $this->createForm(AssignRolesType::class);
-        $form->handleRequest($request);
-        //dd('je suis ici');
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $users = $data['author'];
-            $roles = $data['roles'];
-            $users->setRoles($roles);
-            // dd($users);
-            // foreach ($users as $user) {
-            //     $tab[]= $user->setRoles($roles);
-                $entityManager->persist($users);
-            // }
-            // dd($tab);
-            $this->securityService->isAdmin();
-            $entityManager->flush();
 
-            $this->addFlash('success', 'Roles assigned successfully!');
-            return $this->redirectToRoute('assign_roles');
-        }
-
-        return $this->render('user_crud/assign_roles.html.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
 
     #[Route('/update/password/{id}', name: 'update_password')]
     public function changePassword(Request $request, User $user = null, EntityManagerInterface $entityManager, UserPasswordHasherInterface $userPasswordHasher): Response
