@@ -2,6 +2,7 @@
 
 namespace App\EventListener;
 
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Security\Core\Security;
@@ -23,6 +24,7 @@ class ActivityListener
             return;
         }
 
+        /** @var User $user */
         $user = $this->security->getUser();
         if ($user) {
             $user->setLastActivityAt(new \DateTime());

@@ -6,6 +6,7 @@
 parameters:
   photo_directory: "%kernel.project_dir%/public/uploads/photos"
   pictures_directory: "%kernel.project_dir%/public/uploads/pictures"
+  documents_directory: "%kernel.project_dir%/assets/uploads/documents/"
 
 services:
   _defaults:
@@ -42,14 +43,14 @@ services:
 
   App\EventSubscriber\UserSubscriber:
     arguments:
-      $entityManager: '@doctrine.orm.entity_manager'
+      $entityManager: "@doctrine.orm.entity_manager"
       $referralService: '@App\Service\ReferralService'
       $interfederationService: '@App\Service\InterfederationService'
       $notificationService: '@App\Service\NotificationService'
-      $router: '@router'
+      $router: "@router"
     tags:
-      - { name: 'kernel.event_subscriber' }
-      
+      - { name: "kernel.event_subscriber" }
+
   App\DataFixtures\AppFixtures:
     arguments:
       $passwordHasher: "@security.password_hasher"

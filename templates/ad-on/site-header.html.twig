@@ -1,13 +1,7 @@
 
 
 <body class="index-page">
-    {% for label, messages in app.flashes %}
-        <div class="flash-{{ label }}">
-            {% for message in messages %}
-                <p>{{ message }}</p>
-            {% endfor %}
-        </div>
-    {% endfor %}
+
   <header id="header" class="header d-flex align-items-center sticky-top">
     <div class="container position-relative d-flex align-items-center justify-content-between">
 
@@ -19,7 +13,14 @@
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="{{path('app_index')}}" class="active">UNC - app</a></li>
+          {% if is_granted('ROLE_ADMIN') %}
+            <li><a href="{{path('app_index')}}" class="active"> UNC - app</a></li>
+          {% endif %}
+          {% if app.user %}
+            <li><a href="{{path('app_user_crud_show',{'id':app.user.id} )}}" title = "profil"> UNC - app</a></li>
+          {% else %}
+          <li><a href="{{path('app_login')}}" title = "profil"> UNC - app</a></li>
+          {% endif %}
           {# <li><a href="{{path('about')}}">A propos</a></li> #}
           <li><a href="{{path('page_topic')}}">Forum</a></li>
           {# <li><a href="{{path('single-post')}}">Discussion</a></li> #}
@@ -41,13 +42,21 @@
             </ul>
           </li> #}
           <li><a href="{{path('contact')}}">Contact</a></li>
-          <li>
-            {% if app.user %}
-              <a href="{{path('app_user_crud_show',{'id':app.user.id} )}}" title = "profil"><li class="bi bi-person-check-fill"></li>Hi {{app.user.firstname}} ! </a>
-            {% else %}
-              <a href="{{path('app_login')}}"><i class="bi bi-person-x-fill" title="pas connecté"></i></a>
-            {% endif %}
+          {% if app.user %}
+          <li class="dropdown"><a href="{{path('app_user_crud_show',{'id':app.user.id} )}}" title = "profil"><span></span> <i class="bi bi-chevron-down toggle-dropdown"></i>Hi {{app.user.firstname}} ! <i class="bi bi-person-check-fill"></i></a>
+            <ul>
+              <li><a href="{{path('app_user_crud_show',{'id':app.user.id} )}}" title = "profil">Tableau de bord</a></li>
+              <li><a href="{{path('app_logout')}}" title = "se déconnecter">déconnexion</a></li>
+            </ul>
           </li>
+          {% else %}
+          <li class="dropdown"><a href="{{path('app_login')}}" title = "se connecter"><span></span> <i class="bi bi-chevron-down toggle-dropdown"></i>Hi visiteur ! <i class="bi bi-person-x-fill"></i></a>
+            <ul>
+              <li><a href="{{path('app_register')}}">devenir membre</a></li>
+              <li><a href="{{path('app_login')}}" title = "se connecter">connexion</a></li>
+            </ul>
+          </li>
+          {% endif %}
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>

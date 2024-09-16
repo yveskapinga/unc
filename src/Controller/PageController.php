@@ -15,6 +15,7 @@ use App\Repository\UserRepository;
 use App\Repository\TopicRepository;
 use App\Repository\CategoryRepository;
 use App\Service\NotificationService;
+use App\Utils\GlobalVariables;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -142,7 +143,8 @@ class PageController extends AbstractController
         //     $commentCount = $bestAuthorData['commentCount'] ? $bestAuthorData['commentCount'] : null;
         // }
         return $this->render('page/topic.html.twig',[
-            // 'topics'=>$this->topicRepository->findAll(),
+            'comments'=>$this->postRepository->findBy([], ['createdAt' => 'DESC'], GlobalVariables::limitCommentsShow()),
+            'topics'=>$this->postRepository->findAll(),
             // 'categories'=>$this->categoryRepository->findAll(),
             // 'user' => $user,
             // 'articleCount' => $articleCount,

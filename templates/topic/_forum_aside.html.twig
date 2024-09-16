@@ -27,8 +27,8 @@
             <div class="recent-posts-widget widget-item">
 
               <h3 class="widget-title">Recent Posts</h3>
-              {% for topic in topics %}
-                {% for comment in topic.posts | slice (0,4) %}
+              {# {% for topic in topics %} #}
+                {% for comment in comments %}
                   <div class="post-item">
                     <img src="{{ asset('uploads/photos/' ~ comment.author.photo) }}" alt="profile" class="flex-shrink-0">
                     <div>
@@ -37,7 +37,7 @@
                     </div>
                   </div><!-- End recent post item-->                  
                 {% endfor %}
-              {% endfor %}
+              {# {% endfor %} #}
             </div><!--/Recent Posts Widget -->
 
             <!-- Tags Widget -->

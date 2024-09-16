@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <!-- Favicons -->
+    <link href="{{asset('dropdown/assets/img/favicon.jpg')}}" rel="icon"><!-- TO DO TO DO TO DO TO DO -->
+    <link href="{{asset('dropdown/assets/img/apple-touch-icon.jpg')}}" rel="apple-touch-icon">
+    <title>Fiche d'adhésion</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" defer></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="{{ asset('css/register.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/pdf.css') }}">
+    <script src="{{ asset('js/register.js') }}" defer></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" defer></script>
+
+    <style>
+    .form-container {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+}
+
+.logo-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logo {
+    width: 100px;
+    height: auto;
+}
+
+.form-title {
+    text-align: center;
+    color: #333;
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+.form-subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+.form-section {
+    margin-bottom: 20px;
+}
+
+.form-section-title {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.form-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.form-group label {
+    font-weight: bold;
+    flex: 1;
+}
+
+.form-group span {
+    flex: 2;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+}
+
+    </style>
+
+
+
+</head>
+<body>
+
+    <div class="form-container">
+        <div class="logo-container">
+            <img src="{{ absolute_url(asset('zenblog/assets/img/apple-touch-icon.jpg')) }}" alt="Logo de l'association" class="logo">
+        </div>
+        <h2 class="form-title">Fiche de Demande d'adhésion</h2>
+        
+        {% if referrer is defined and referrer %}
+            <h3 class="form-subtitle">Demande d'adhésion parrainé par : {{ referrer.firstName }} {{ referrer.name }}</h3>
+            <input type="hidden" id="referrer" name="referrer" value="{{ referrer.id }}">
+        {% endif %}
+        
+        <div class="form-section">
+            <h3 class="form-section-title">Informations Personnelles</h3>
+            <div class="form-group">
+                <label for="name">Nom :</label>
+                <span id="name">{{ user.name }}</span>
+            </div>
+            <div class="form-group">
+                <label for="firstName">Prénom :</label>
+                <span id="firstName">{{ user.firstName }}</span>
+            </div>
+            <div class="form-group">
+                <label for="phoneNumber">Numéro de téléphone :</label>
+                <span id="phoneNumber">{{ user.phoneNumber }}</span>
+            </div>
+            <div class="form-group">
+                <label for="nationality">Nationalité :</label>
+                <span id="nationality">{{ user.nationality }}</span>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3 class="form-section-title">Créer un compte</h3>
+            <div class="form-group">
+                <label for="username">Nom d'utilisateur :</label>
+                <span id="username">{{ user.username }}</span>
+            </div>
+            <div class="form-group">
+                <label for="email">Email :</label>
+                <span id="email">{{ user.email }}</span>
+            </div>
+            <div class="form-group">
+                <label for="joinedAt">Date d'adhésion :</label>
+                <span id="joinedAt">{{ user.joinedAt | date('d-m-Y') }}</span>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3 class="form-section-title">Adresse</h3>
+            <div class="form-group">
+                <label for="addressNumber">Numéro :</label>
+                <span id="addressNumber">{{ user.address.number }}</span>
+            </div>
+            <div class="form-group">
+                <label for="street">Rue :</label>
+                <span id="street">{{ user.address.street }}</span>
+            </div>
+            <div class="form-group">
+                <label for="city">Ville :</label>
+                <span id="city">{{ user.address.city }}</span>
+            </div>
+            <div class="form-group">
+                <label for="province">Province :</label>
+                <span id="province">{{ user.address.province }}</span>
+            </div>
+            <div class="form-group">
+                <label for="country">Pays :</label>
+                <span id="country">{{ user.address.country }}</span>
+            </div>
+            <div class="form-group">
+                <label for="postalCode">Code postal :</label>
+                <span id="postalCode">{{ user.address.postalCode }}</span>
+            </div>
+        </div>
+    </div>
+
+
+    <script>    
+        $(document).ready(function() {
+        $('.js-datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            todayHighlight: true
+            });
+        });
+    </script>
+
+</body>
+</html>
+

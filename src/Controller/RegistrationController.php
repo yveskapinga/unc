@@ -56,6 +56,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Entity\Address;
+use App\Entity\Document;
 use App\Entity\Membership;
 use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
@@ -68,7 +69,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Security\Authenticator;
-
+use App\Service\PdfService;
 
 class RegistrationController extends AbstractController
 {
@@ -85,7 +86,7 @@ class RegistrationController extends AbstractController
         UserPasswordHasherInterface $userPasswordHasher, 
         Authenticator $authenticator, 
         EntityManagerInterface $entityManager,
-        UserAuthenticatorInterface $userAuthenticator
+        PdfService $pdfService
     ): Response
     {
         $user = new User();
@@ -115,6 +116,7 @@ class RegistrationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // Set Address and Membership
             // Set latitude and longitude
+            $data = $form->getData();
             $latitude = $request->request->get('latitude');
             $longitude = $request->request->get('longitude');
             $address->setLatitude($latitude);
@@ -124,7 +126,7 @@ class RegistrationController extends AbstractController
             if ($referrerId) {
                 $referrer = $this->userRep->find($referrerId);
                 if (!$referrer) {
-                    throw new \Exception('Referrer not found');
+                    return null;
                 }
                 $user->addReferredBy($referrer);
             }
@@ -137,20 +139,37 @@ class RegistrationController extends AbstractController
                         $form->get('plainPassword')->getData()
                     )
                 );
-    
+            
             $entityManager->persist($user);
-            // $entityManager->flush();
+            $entityManager->flush();
     
             if ($referrer) {
                 $referrer->addReferrer($user);
                 $entityManager->persist($referrer);
                 $entityManager->flush();
             }
-    dd($user);
-            return $userAuthenticator->authenticateUser(
-                $user,
-                $authenticator,
-                $request
+
+            $directory = $this->getParameter('documents_directory');
+            $filename = 'fiche_d\'adhésion_'.$user->getName().'-'.$user->getFirstName(). uniqid() .'.pdf';
+
+            $document = new Document();
+            $document->setTitle('Fiche d\'adhésion');
+            $document->setFile($filename);
+            $document->setCreatedAt(new \DateTime());
+            $document->setAuthor($user);
+
+            // Enregistrement du document dans la base de données
+            $entityManager->persist($document);
+            $entityManager->flush();
+
+            // Retourne le fichier PDF généré pour téléchargement
+            
+            return $pdfService->generatePdf(
+                'user_crud/fiche.html.twig',[
+                'user'=>$user
+                    ],
+                $directory, 
+                $filename
             );
         }
     

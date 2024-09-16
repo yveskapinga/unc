@@ -35,6 +35,12 @@ class GlobalVariables
         return self::$roles;
     }
 
+    private static $limitCommentsShow = 5; 
+
+    public static function limitCommentsShow(){
+        return self::$limitCommentsShow;
+    }
+
     // Les types de membres pour l'entité Membership
     private static $membershipType = [
             'Membre fondateur' => 'Membre fondateur',
