@@ -21,7 +21,7 @@
             <tr>
                 <td>{{ loop.index }}</td>
                 <td>{{ notification.type }}</td>
-                <td>{{ notification.content }}</td>
+                <td>{{ notification.content|raw }}</td>
                 <td>{{ notification.isRead ? 'Oui' : 'Non' }}</td>
                 <td>{{ notification.createdAt ? notification.createdAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>

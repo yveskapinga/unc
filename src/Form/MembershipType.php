@@ -6,6 +6,7 @@ use App\Entity\Membership;
 use App\Entity\User;
 use App\Utils\GlobalVariables;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Finder\Glob;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -40,8 +41,8 @@ class MembershipType extends AbstractType
                     new NotBlank(),
                 ],
                 'label' => 'Votre fonction',
-                'choices'=>  [], // Initialement vide, sera rempli par JavaScript
-                'attr' => ['class' => 'form-control', 'id' => 'fonction', 'disabled' => 'disabled'],
+                'choices'=>GlobalVariables::getFonctionsForMembership(), // Initialement vide, sera rempli par JavaScript
+                'attr' => ['class' => 'form-control', 'id' => 'fonction'],
             ])
 
             ->add('interfederation', EntityType::class, [

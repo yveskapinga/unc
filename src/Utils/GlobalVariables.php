@@ -247,19 +247,19 @@ class GlobalVariables
         'Fédéral' => 'Fédéral',
     ];
 
-    private static $functions = [
-        'Interfédération provincial' => [
+    public static $functions = [
+        'National' => [
             'Président de l\'interfédération' => 'Président de l\'interfédération',
             'Vice président' => 'Vice président',
             // Ajoutez d'autres fonctions ici
         ],
-        'Interfédération provincial des femmes' => [
+        'Interfédéral' => [
             'Inspecteur provincial' => 'Inspecteur provincial',
             'Inspecteur provincial adjoint' => 'Inspecteur provincial adjoint',
             'Questeur' => 'Questeur',
             // Ajoutez d'autres fonctions ici
         ],
-        'Interfédération provincial des jeunes' => [
+        'Fédéral' => [
             'Président de l\'interfédération' => 'Président de l\'interfédération',
             'Vice président' => 'Vice président',
             // Ajoutez d'autres fonctions ici

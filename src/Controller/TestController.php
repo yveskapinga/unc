@@ -34,6 +34,17 @@ class TestController extends AbstractController
     {
     }
 
+    #[Route('/testons', name:'testons')]
+    public function testons() : Response
+    {
+        $administrators = $this->em->getRepository(User::class)->findUsersByRole('ROLE_ADMIN');
+
+        dd($administrators);
+
+        return new Response('Mis à jour');
+    }
+
+
     #[Route('/addresses', name:'address')]
     public function address() : Response
     {
@@ -43,7 +54,7 @@ class TestController extends AbstractController
             $addres->setNumber(rand(10,100));
             $this->em->persist($addres);
         }
-        $this->em->flush();
+        // $this->em->flush();
         return new Response('Mis à jour');
     }
 

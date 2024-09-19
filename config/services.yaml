@@ -74,6 +74,9 @@ services:
     arguments:
       $key: "%env(ENCRYPTION_KEY)%"
 
+  App\EventListener\UserRegisteredListener:
+    tags:
+      - { name: 'kernel.event_listener', event: 'user.registered', method: 'onUserRegistered' }
   # Uncomment and configure the following services as needed
   # App\EventSubscriber\NotificationSubscriber:
   #   arguments:

@@ -16,3 +16,16 @@
     </script>
     <script src="{{asset('js/membership.js')}}"></script>
   {% endblock %}
+
+  {% block form %}
+    {{ form_start(form) }}
+    {% if id %}
+        {{ form_row(form.theUser, {'attr': {'disabled': 'disabled'}}) }}
+        {{ form_row(form.interfederation, {'attr': {'disabled': 'disabled'}}) }}
+    {% else %}
+        {{ form_row(form.theUser) }}
+        {{ form_row(form.interfederation) }}
+    {% endif %}
+    <button type="submit" class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+    {{ form_end(form) }}
+{% endblock %}

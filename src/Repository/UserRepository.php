@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Interfederation;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -81,6 +82,27 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->setParameter('endDate', $endDate->format('Y-m-d H:i:s'));
 
         return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    public function findAdministratorsByInterfederation(Interfederation $interfederation)
+    {
+        return $this->createQueryBuilder('u')
+            ->join('u.membership', 'm')
+            ->where('m.interfederation = :interfederation')
+            ->andWhere('u.roles LIKE :role')
+            ->setParameter('interfederation', $interfederation)
+            ->setParameter('role', '%ROLE_ADMIN%')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findUsersByRole(string $role)
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.roles LIKE :role')
+            ->setParameter('role', '%"'.$role.'"%')
+            ->getQuery()
+            ->getResult();
     }
     
 

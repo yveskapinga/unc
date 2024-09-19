@@ -58,6 +58,7 @@ use App\Entity\User;
 use App\Entity\Address;
 use App\Entity\Document;
 use App\Entity\Membership;
+use App\Event\UserRegisteredEvent;
 use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
 use App\Service\ReferralService;
@@ -70,6 +71,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Security\Authenticator;
 use App\Service\PdfService;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class RegistrationController extends AbstractController
 {
@@ -84,7 +86,7 @@ class RegistrationController extends AbstractController
     public function register(
         Request $request, 
         UserPasswordHasherInterface $userPasswordHasher, 
-        Authenticator $authenticator, 
+        EventDispatcherInterface $eventDispatcher, 
         EntityManagerInterface $entityManager,
         PdfService $pdfService
     ): Response
@@ -161,6 +163,11 @@ class RegistrationController extends AbstractController
             // Enregistrement du document dans la base de données
             $entityManager->persist($document);
             $entityManager->flush();
+
+            // Déclencher l'évènement
+            $event = new UserRegisteredEvent($user);
+
+            $eventDispatcher->dispatch($event, UserRegisteredEvent::NAME);
 
             // Retourne le fichier PDF généré pour téléchargement
             

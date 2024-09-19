@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Entity\Membership;
 use App\Form\MembershipType;
+use App\Utils\GlobalVariables;
+use App\Entity\Interfederation;
 use App\Service\MembershipService;
 use App\Repository\MembershipRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -49,7 +51,8 @@ class MembershipController extends AbstractController
     #[Route('/approve/{user}', name: 'approve_membership')]
     public function approveAction(User $user): Response
     {
-        $this->membershipService->approveMembership($user);
+        $membership = new Membership();
+        $this->membershipService->approveMembership($membership);
     
         return $this->redirectToRoute('app_membership_index');
     }
@@ -62,10 +65,13 @@ class MembershipController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_membership_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/new/{id?}', name: 'app_membership_new', methods: ['GET', 'POST'])]
+    public function new(User $user=null, Request $request, EntityManagerInterface $entityManager): Response
     {
-        $membership = new Membership();
+        $membership = new Membership(); 
+        $interfederation = $entityManager->getRepository(Interfederation::class)->findOneBy(['designation'=>$user->getAddress()->getProvince()]);
+        $membership->setTheUser($user)->setInterfederation($interfederation);
+        
         $form = $this->createForm(MembershipType::class, $membership);
         $form->handleRequest($request);
         $fonctionsJson = json_encode(GlobalVariables::$functions);
