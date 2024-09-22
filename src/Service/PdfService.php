@@ -21,8 +21,8 @@ class PdfService
 
     public function generatePdf(
         string $view,
-        array $data = [],
         string $directory,
+        array $data = [],
         string $filename = 'document.pdf',
         string $size = 'A4',
         string $orientation = 'portrait',

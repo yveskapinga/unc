@@ -172,10 +172,9 @@ class RegistrationController extends AbstractController
             // Retourne le fichier PDF généré pour téléchargement
             
             return $pdfService->generatePdf(
-                'user_crud/fiche.html.twig',[
-                'user'=>$user
-                    ],
+                'user_crud/fiche.html.twig',
                 $directory, 
+                ['user'=>$user],
                 $filename
             );
         }
