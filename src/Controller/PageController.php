@@ -171,6 +171,7 @@ class PageController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // Traitez les données du formulaire ici
             $data = $form->getData();
+            //Nous allons envoyer ces données à un administrateur
             // Par exemple, envoyer un email ou enregistrer les données en base de données
 
             $this->addFlash('success', 'Votre message a été envoyé merci');
