@@ -13,14 +13,17 @@
 
       <nav id="navmenu" class="navmenu">
         <ul>
+
           {% if is_granted('ROLE_ADMIN') %}
-            <li><a href="{{path('app_index')}}" class="active"> UNC - app</a></li>
-          {% endif %}
-          {% if app.user %}
-            <li><a href="{{path('app_user_crud_show',{'id':app.user.id} )}}" title = "profil"> UNC - app</a></li>
+              <li><a href="{{ path('app_index') }}" class="active" title="Cliquez pour visiter l'application kiungo"> kiungo</a></li>
           {% else %}
-          <li><a href="{{path('app_login')}}" title = "profil"> UNC - app</a></li>
+              {% if app.user %}
+                  <li><a href="{{ path('app_user_crud_show', {'id': app.user.id}) }}" title="Cliquez pour visiter l'application kiungo"> kiungo</a></li>
+              {% else %}
+                  <li><a href="{{ path('app_login') }}" title="Cliquez pour visiter l'application kiungo"> kiungo</a></li>
+              {% endif %}
           {% endif %}
+
           {# <li><a href="{{path('about')}}">A propos</a></li> #}
           <li><a href="{{path('page_topic')}}">Forum</a></li>
           {# <li><a href="{{path('single-post')}}">Discussion</a></li> #}

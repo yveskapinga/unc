@@ -22,6 +22,18 @@
             </div>
         </div>
         <div class="row mb-3">
+            <label for="inputText" class="col-sm-2 col-form-label">{{ form_label(form.nationality) }}</label>
+            <div class="col-sm-10">
+                {{ form_widget(form.nationality, {'attr': {'class': 'form-control'}}) }}
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="inputText" class="col-sm-2 col-form-label">{{ form_label(form.phoneNumber) }}</label>
+            <div class="col-sm-10">
+                {{ form_widget(form.phoneNumber, {'attr': {'class': 'form-control'}}) }}
+            </div>
+        </div>
+        <div class="row mb-3">
             <label for="inputEmail" class="col-sm-2 col-form-label">{{ form_label(form.email) }}</label>
             <div class="col-sm-10">
                 {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
@@ -48,6 +60,12 @@
             <label for="inputNumber" class="col-sm-2 col-form-label">{{ form_label(form.address.number) }}</label>
             <div class="col-sm-10">
                 {{ form_widget(form.address.number, {'attr': {'class': 'form-control'}}) }}
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="inputNumber" class="col-sm-2 col-form-label">{{ form_label(form.address.postalCode) }}</label>
+            <div class="col-sm-10">
+                {{ form_widget(form.address.postalCode, {'attr': {'class': 'form-control'}}) }}
             </div>
         </div>
 
@@ -77,7 +95,7 @@
     </div>
     <button type="submit" class="btn btn-primary">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}
-
+{# 
 {{ form_start(form, {'attr': {'id': 'userForm'}}) }}
     <div class="row">
     <div class="col">    
@@ -156,7 +174,7 @@
     {{ form_rest(form) }}
     </div>
     <button type="submit" class="btn btn-primary">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+{{ form_end(form) }} #}
 
 <script>
     function getLocation() {

@@ -19,7 +19,9 @@ class AssignRolesType extends AbstractType
         $builder
         ->add('author', EntityType::class, [
             'class' => User::class,
-            'choice_label' => 'username',
+            'choice_label' => function (User $user) {
+                return $user->getFirstName().' '.$user->getName()." - > '".$user->getUsername()."'";
+            },
             'label' => 'Membre',
             'placeholder' => 'Choisir un utilisateur',
             'attr' => ['class' => 'form-control'],])

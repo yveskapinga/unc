@@ -161,7 +161,7 @@ class AppFixtures extends Fixture
             $username = str_replace(' ', '', $username);
 
             // Générer une adresse email unique
-            $email = $username . '@unc.iuc';
+            $email = $username . '@unc.icu';
             $email = str_replace(' ', '', $email);
             $counter = 1;
             while (in_array($email, $usedEmails)) {

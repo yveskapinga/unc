@@ -4,3 +4,8 @@ controllers:
 home:
   path: /
   controller: App\Controller\HomeController::index
+
+# config/routes.yaml
+page_error:
+    path: /page/error
+    controller: App\Controller\PageController::showError

@@ -6,7 +6,7 @@
 parameters:
   photo_directory: "%kernel.project_dir%/public/uploads/photos"
   pictures_directory: "%kernel.project_dir%/public/uploads/pictures"
-  documents_directory: "%kernel.project_dir%/assets/uploads/documents/"
+  documents_directory: "%kernel.project_dir%/public/uploads/documents/"
 
 services:
   _defaults:
@@ -50,6 +50,12 @@ services:
       $router: "@router"
     tags:
       - { name: "kernel.event_subscriber" }
+  
+  App\EventSubscriber\AppSubscriber:
+    arguments:
+      $encryptionService: '@App\Service\EncryptionService'
+    tags:
+      - { name: 'kernel.event_subscriber' }
 
   App\DataFixtures\AppFixtures:
     arguments:
@@ -73,6 +79,7 @@ services:
   App\Service\EncryptionService:
     arguments:
       $key: "%env(ENCRYPTION_KEY)%"
+      $salt: '%env(APP_SALT)%'
 
   App\EventListener\UserRegisteredListener:
     tags:

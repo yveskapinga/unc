@@ -41,7 +41,7 @@ class UserSubscriber implements EventSubscriberInterface
     {
         return [
             // InteractiveLoginEvent::class => 'onUserRegister',
-            Events::postPersist,
+            // Events::postPersist,
         ];
     }
 
@@ -69,37 +69,37 @@ class UserSubscriber implements EventSubscriberInterface
     //     }
     // }
 
-    public function postPersist(PostPersistEventArgs $args)
-    {
-        $entity = $args->getObject();
+    // public function postPersist(PostPersistEventArgs $args)
+    // {
+    //     $entity = $args->getObject();
 
-        // Vérifie si l'entité est un utilisateur
-        if (!$entity instanceof User) {
-            return;
-        }
+    //     // Vérifie si l'entité est un utilisateur
+    //     if (!$entity instanceof User) {
+    //         return;
+    //     }
 
-        $this->handleNewUser($entity);
-    }
+    //     $this->handleNewUser($entity);
+    // }
 
-    // Gère la logique pour un nouvel utilisateur
-    private function handleNewUser(User $user)
-    {
-        $province = $user->getAddress()->getProvince();
-        $interfederation = $this->interfederationService->getInterfederationByProvince($province);
+    // // Gère la logique pour un nouvel utilisateur
+    // private function handleNewUser(User $user)
+    // {
+    //     $province = $user->getAddress()->getProvince();
+    //     $interfederation = $this->interfederationService->getInterfederationByProvince($province);
 
-        if ($interfederation) {
-            $admin = $interfederation->getSif()->getTheUser();
-            $message = sprintf(
-                'Une nouvelle demande d\'adhésion a été soumise pour votre interfédération. <a href="%s">Valider la demande</a>',
-                $this->generateValidationLink($user)
-            );
-            $this->notificationService->createNotification($admin, "demande d'adhésion", $message);
-        }
-    }
+    //     if ($interfederation) {
+    //         $admin = $interfederation->getSif()->getTheUser();
+    //         $message = sprintf(
+    //             'Une nouvelle demande d\'adhésion a été soumise pour votre interfédération. <a href="%s">Valider la demande</a>',
+    //             $this->generateValidationLink($user)
+    //         );
+    //         $this->notificationService->createNotification($admin, "demande d'adhésion", $message);
+    //     }
+    // }
 
-    // Génère le lien de validation pour l'adhésion
-    private function generateValidationLink(User $user): string
-    {
-        return $this->router->generate('validate_membership', ['userId' => $user->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
-    }
+    // // Génère le lien de validation pour l'adhésion
+    // private function generateValidationLink(User $user): string
+    // {
+    //     return $this->router->generate('validate_membership', ['userId' => $user->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+    // }
 }

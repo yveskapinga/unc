@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{# {% extends 'base.html.twig' %}
 
 {% block title %}Erreur{% endblock %}
 
@@ -6,3 +6,27 @@
     <h1>Erreur</h1>
     <p>{{ message }}</p>
 {% endblock %}
+ #}
+
+{# templates/page/error.html.twig #}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Erreur</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f0f0f0; color: #333; }
+        .container { max-width: 600px; margin: 50px auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        h1 { color: #e74c3c; }
+        p { font-size: 18px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Une erreur est survenue</h1>
+        
+        <h3>erreur : {{ status_code }}</h3>
+        <p>{{ message }}</p>
+    </div>
+</body>
+</html>

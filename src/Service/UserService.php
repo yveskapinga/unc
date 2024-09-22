@@ -44,7 +44,7 @@ class UserService
         $user = $this->testUser();
 
         $membership = $this->membershipRepository->findOneBy(['theUser' => $user]);
-        return $membership ? $membership->getLevel() : 'Militant';
+        return $membership ? $membership->getFonction() : 'Militant';
     }
 
     public function getMessage()

@@ -6,7 +6,7 @@ assign role
 {% endblock %}
 
 {% block body %}
-    <h1>Assign Roles to Users</h1>
+    <h1>Assigner un rôle</h1>
     {{ form_start(form) }}
     <div class="form-collection" data-prototype="{{ form_widget(form.users.vars.prototype)|e('html_attr') }}">
         {% for userForm in form.users %}

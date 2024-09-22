@@ -5,6 +5,7 @@ namespace App\Form;
 
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
@@ -51,12 +52,30 @@ class UserType extends AbstractType
                     ]),
                 ],
             ])
+            ->add('nationality', CountryType::class, [
+                'label' => 'Nationalité',
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Veuillez choisir votre nationalité',
+                    ]),
+                ],
+                'data' => 'CD',
+            ])
             ->add('address', AddressType::class, [
                 'label' => 'Adresse du membre',
                 'required' => false,
             ])
             ->add('name', TextType::class, [
                 'label' => 'Nom',
+                'constraints' => [
+                    new Length([
+                        'max' => 255,
+                    ]),
+                ],
+                'required' => false,
+            ])
+            ->add('phoneNumber', TextType::class, [
+                'label' => 'Tél',
                 'constraints' => [
                     new Length([
                         'max' => 255,

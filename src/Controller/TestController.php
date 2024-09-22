@@ -19,6 +19,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Repository\AddressRepository;
 use App\Service\ReferralService;
 use App\Service\SecurityService;
+use DateTime;
 use phpDocumentor\Reflection\Types\This;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -37,10 +38,13 @@ class TestController extends AbstractController
     #[Route('/testons', name:'testons')]
     public function testons() : Response
     {
-        $administrators = $this->em->getRepository(User::class)->findUsersByRole('ROLE_ADMIN');
+        $users = $this->em->getRepository(User::class)->findAll();
 
-        dd($administrators);
-
+        foreach($users as $user){
+            $user->setCreatedAt(new DateTime('2024-08-10'));
+            $this->em->persist($user);
+        }
+        $this->em->flush();
         return new Response('Mis à jour');
     }
 

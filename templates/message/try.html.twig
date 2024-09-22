@@ -9,7 +9,7 @@
                 {% for senderId, messages in senders %}
                     {% set sender = messages[0].getSender().getId() == app.user.id ? messages[0].getRecipient() : messages[0].getSender() %}
                     <li class="sender-item " data-sender-id="{{ senderId }}">
-                        <img style="width: 50px; height: 50px;" src="{{ asset('uploads/photos/' ~ sender.getPhoto()) }}" alt="profile">
+                        <img style="width: 50px; height: 50px;" src="{{ asset('/assets/uploads/photos/' ~ sender.getPhoto()) }}" alt="profile">
                         <div>
                             <strong>{{ sender.getUsername() }}</strong><br>
                             {# <small>{{ messages|length }} messages</small> #}

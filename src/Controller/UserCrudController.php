@@ -17,15 +17,18 @@ use App\Repository\UserRepository;
 use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\InterfederationRepository;
+use Doctrine\ORM\Mapping\Id;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 #[Route('/user/crud')]
 class UserCrudController extends AbstractController
@@ -37,7 +40,8 @@ class UserCrudController extends AbstractController
         private NotificationService $notificationService,
         private UserRepository $userRepository,
         private Security $security,
-        private ReferralService $referralService
+        private ReferralService $referralService,
+        private TokenStorageInterface $tokenStorage
     ) {
     }
     #[Route('/', name: 'app_user_crud_index', methods: ['GET'])]
@@ -175,20 +179,41 @@ class UserCrudController extends AbstractController
 
 
 
-    #[Route('/update/password/{id}', name: 'update_password')]
-    public function changePassword(Request $request, User $user = null, EntityManagerInterface $entityManager, UserPasswordHasherInterface $userPasswordHasher): Response
+    #[Route('/update/password', name: 'update_password')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function changePassword(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $userPasswordHasher): Response
     {
-        $form = $this->createForm(ChangePasswordType::class, $user);
+        // $token = $this->tokenStorage->getToken();
+        // if (null === $token) {
+
+        //     dd('je suis ici');
+        // }
+        $user = $this->securityService->getConnectedUser();
+        // $currentUser = $token->getUser();
+        // if(!$user==$currentUser){
+        //     throw new \LogicException('Vous ne pouvez pas réaliser cette opération');
+        // }
+        $form = $this->createForm(ChangePasswordType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user->setPassword(
+            $currentPassword = $userPasswordHasher->hashPassword(
+                $user,
+                $form->get('current_password')->getData()
+            ); 
+            // if($currentPassword !== $user->getPassword())
+            // {
+            //     $this->addFlash('danger','mot de passe incorrect');
+            //     return $this->redirectToRoute('update_password');
+            // }
+                $hashedPassword=
                 $userPasswordHasher->hashPassword(
                     $user,
                     $form->get('password')->getData()
-                )
                 );
-            $notification = $this->notificationService
+                $user->setPassword($hashedPassword);
+            
+            $this->notificationService
                 ->createNotification(
                     $user, 
                     'info',
@@ -202,7 +227,7 @@ class UserCrudController extends AbstractController
             $this->addFlash('success', 'Mot de passe modifié');
 
 
-            return $this->redirectToRoute('app_user_crud_index');
+            return $this->redirectToRoute('app_user_crud_show', ['id'=>$user->getId()]);
         }
 
         return $this->render('user_crud/password_update.html.twig', [

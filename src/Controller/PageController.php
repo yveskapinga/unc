@@ -4,25 +4,27 @@
 namespace App\Controller;
 
 use App\Entity\Post;
+use App\Entity\User;
 use App\Entity\Topic;
 use App\Form\PostType;
+use DateTimeImmutable;
 use App\Entity\Category;
-use App\Entity\User;
+use App\Form\ContactFormType;
+use App\Utils\GlobalVariables;
 use App\Form\AnonymousPostType;
 use App\Service\SecurityService;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
 use App\Repository\TopicRepository;
-use App\Repository\CategoryRepository;
 use App\Service\NotificationService;
-use App\Utils\GlobalVariables;
-use DateTimeImmutable;
+use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 
 #[Route('/page')]
@@ -160,11 +162,23 @@ class PageController extends AbstractController
         ]);
     }
 
-    #[Route('/contact', name:'contact')]
-    public function contact() : Response
+    #[Route('/contact', name:'contact', methods: ['GET','POST'])]
+    public function contact(Request $request) : Response
     {
+        $form = $this->createForm(ContactFormType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Traitez les données du formulaire ici
+            $data = $form->getData();
+            // Par exemple, envoyer un email ou enregistrer les données en base de données
+
+            $this->addFlash('success', 'Votre message a été envoyé merci');
+            return $this->redirectToRoute('contact');
+        }
+        
         return $this->render('page/contact.html.twig',[
-            
+           'contactForm' => $form->createView(), 
         ]);
     }
 
@@ -175,5 +189,19 @@ class PageController extends AbstractController
             
         ]);
     }
+
+    #[Route('/error', name: 'page_error')]
+    public function showError(Request $request): Response
+    {
+        $message = $request->query->get('message', 'Une erreur est survenue');
+        $statusCode = $request->query->get('status_code', Response::HTTP_INTERNAL_SERVER_ERROR);
+    
+        return $this->render('page/error.html.twig', [
+            'message' => $message,
+            'status_code' => $statusCode,
+        ]);
+    }
+    
+
 }
 

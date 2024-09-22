@@ -55,32 +55,44 @@ class AdminController extends AbstractController
     {
         $form = $this->createForm(UserRoleType::class);
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $currentUser = $this->getUser();
             $currentUserRoles = $currentUser->getRoles();
-
+    
+            // Définir la hiérarchie des rôles
+            $roleHierarchy = [
+                'ROLE_SUPER_ADMIN' => 3,
+                'ROLE_ADMIN' => 2,
+                'ROLE_MODERATOR' => 1,
+                'ROLE_USER' => 0,
+            ];
+    
+            // Obtenir le niveau de rôle le plus élevé de l'utilisateur actuel
+            $currentUserMaxRoleLevel = max(array_map(function($role) use ($roleHierarchy) {
+                return $roleHierarchy[$role];
+            }, $currentUserRoles));
+    
             foreach ($data['users'] as $userData) {
                 $user = $userData['author'];
-                $roles = $userData['roles'];
-
-                // Vérifiez si l'utilisateur actuel a le droit d'attribuer ces rôles
+                $roles[] = $userData['roles'];
+    
                 foreach ($roles as $role) {
-                    if (!in_array($role, $currentUserRoles)) {
+                    if ($roleHierarchy[$role] > $currentUserMaxRoleLevel) {
                         throw new AccessDeniedException('Vous ne pouvez pas attribuer un rôle supérieur au vôtre.');
                     }
                 }
-
+    
                 $user->setRoles($roles);
                 $entityManager->persist($user);
             }
             $entityManager->flush();
-
-            $this->addFlash('success', 'Roles assigned successfully!');
+    
+            $this->addFlash('success', 'Le rôle a été assigné avec succès');
             return $this->redirectToRoute('assign_roles');
         }
-
+    
         return $this->render('user_crud/assign_roles.html.twig', [
             'form' => $form->createView(),
         ]);
