@@ -39,7 +39,7 @@
                             </div>
                             <div class="card-footer text-muted">
                                 <i class="fas fa-user"></i> 
-                                Posté par <a href="#!">{{ topic.author.username }}</a> 
+                                Posté par <a href="{{ path('app_user_crud_show', { 'id': topic.author.id }) }}">{{ topic.author.username }}</a> 
                                 <i class="fas fa-calendar-alt"></i> 
                                 le <small>{{ topic.createdAt|date('d/m/Y H:i') }}</small>
                             </div>
