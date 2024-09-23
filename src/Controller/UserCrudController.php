@@ -146,7 +146,12 @@ class UserCrudController extends AbstractController
             $entityManager->flush();
     
             $this->addFlash('success', 'Profil mis à jour avec succès');
-            return $this->redirectToRoute('app_user_crud_index', [], Response::HTTP_SEE_OTHER);
+            if ($this->security->isGranted('ROLE_ADMIN') && $this->securityService->getConnectedUser() !== $user){
+                return $this->redirectToRoute('app_user_crud_index', [], Response::HTTP_SEE_OTHER);
+            }else{
+                return $this->redirectToRoute('app_user_crud_show', ['id'=>$user->getId()], Response::HTTP_SEE_OTHER); 
+            }
+            
         }
     
         return $this->renderForm('user_crud/edit.html.twig', [
