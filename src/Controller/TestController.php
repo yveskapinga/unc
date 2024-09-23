@@ -17,6 +17,7 @@ use App\Entity\User;
 use App\Entity\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Repository\AddressRepository;
+use App\Service\NotificationService;
 use App\Service\ReferralService;
 use App\Service\SecurityService;
 use DateTime;
@@ -30,7 +31,8 @@ class TestController extends AbstractController
         private SecurityService $securityService,
         private UserRepository $userRepository,
         private EntityManagerInterface $em,
-        private AddressRepository $addressRepository
+        private AddressRepository $addressRepository,
+        private NotificationService $notificationService
         )
     {
     }
@@ -38,7 +40,13 @@ class TestController extends AbstractController
     #[Route('/testons', name:'testons')]
     public function testons() : Response
     {
-        $users = $this->em->getRepository(User::class)->findAll();
+        $users = $this->em->getRepository(User::class)->findUsersByRole('ROLE_SUPER_ADMIN');
+
+        foreach ($users as $superAdmin) {
+            $tab [] = $superAdmin->getMembership();
+        }
+
+        dd($tab);
 
         foreach($users as $user){
             $user->setCreatedAt(new DateTime('2024-08-10'));

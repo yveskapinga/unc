@@ -32,15 +32,20 @@ class UserRegisteredListener
 
         $administrators = $this->entityManager->getRepository(User::class)->findAdministratorsByInterfederation($interfederation);
 
+        $superAdmins = $this->entityManager->getRepository(User::class)->findUsersByRole('ROLE_SUPER_ADMIN');
+
         $link = $this->urlGenerator->generate('app_membership_new', ['id' => $user->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $message = 'Un nouvel utilisateur a demandé à rejoindre votre interfédération. <a href="' . $link . '" class = "btn btn-primary">Cliquez ici pour valider</a>';
-
 
         // $this->notificationService->notificate($administrators, 'Nouvelle demande d\'adhésion', 'Un nouvel utilisateur a demandé à rejoindre votre interfédération. <a href="' . $link . '">Cliquez ici pour valider</a>.');
 
         foreach ($administrators as $admin) {
             $this->notificationService->createNotification($admin, 'Nouvelle demande d\'adhésion', $message);
+        }
+
+        foreach ($superAdmins as $superAdmin) {
+            $this->notificationService->createNotification($superAdmin, 'Nouvelle demande d\'adhésion', $message);
         }
     }
 }

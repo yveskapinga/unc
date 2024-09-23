@@ -9,6 +9,7 @@ use App\Utils\GlobalVariables;
 use App\Entity\Interfederation;
 use App\Service\MembershipService;
 use App\Repository\MembershipRepository;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,32 +19,54 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 #[Route('/membership')]
 class MembershipController extends AbstractController
 {
-    public function __construct(private MembershipService $membershipService){}
+    public function __construct(
+        private MembershipService $membershipService,
+        private EntityManagerInterface $em,
+        private NotificationService $notificationService
+        ){}
     
 
-    #[Route('/validate/{userId}', name: 'validate_membership')]
+    #[Route('/new/{id}', name: 'app_membership_new')]
     public function validateAction(User $user, Request $request): Response
     {
         if (!$user) {
             throw $this->createNotFoundException('Utilisateur non trouvé');
         }
+        if ($user->getMembership()){
+            dd('la demande a déjà été validée', $user->getMembership());
+        }
 
         $membership = new Membership();
         $membership->setTheUser($user);
-        $membership->setInterfederation($this->membershipService->getInterfederationByUser($user));
+        $interfederation = $this->em->getRepository(Interfederation::class)->findOneBy(['designation'=>$user->getAddress()->getProvince()]);
+
+        $membership->setInterfederation($interfederation);
 
         $form = $this->createForm(MembershipType::class, $membership);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->membershipService->approveMembership($membership);
+            $membership->setTheUser($user);
+            $membership->setInterfederation($interfederation);
+            $this->em->persist($membership);
+            $this->em->flush();
 
-            return $this->redirectToRoute('app_membership_index');
+            $this->notificationService
+            ->createNotification(
+                $user, 
+                'info',
+                "Votre demande d'adhésion a été acceptée"
+            );
+
+            $this->addFlash('success','La demande a été approuvée avec succès');
+
+            return $this->redirectToRoute('app_notification_index');
         }
 
         return $this->render('membership/validate.html.twig', [
             'form' => $form->createView(),
+            'user' => $user
         ]);
     }
     
@@ -65,12 +88,15 @@ class MembershipController extends AbstractController
         ]);
     }
 
-    #[Route('/new/{id?}', name: 'app_membership_new', methods: ['GET', 'POST'])]
+    #[Route('/validate/{id?}', name: 'validate_membership', methods: ['GET', 'POST'])]
     public function new(User $user=null, Request $request, EntityManagerInterface $entityManager): Response
     {
-        $membership = new Membership(); 
-        $interfederation = $entityManager->getRepository(Interfederation::class)->findOneBy(['designation'=>$user->getAddress()->getProvince()]);
-        $membership->setTheUser($user)->setInterfederation($interfederation);
+        $membership = new Membership();
+        if (!is_null($user)) {
+            $interfederation = $entityManager->getRepository(Interfederation::class)->findOneBy(['designation'=>$user->getAddress()->getProvince()]);
+            $membership->setTheUser($user)->setInterfederation($interfederation); 
+            $new = true;           
+        }
         
         $form = $this->createForm(MembershipType::class, $membership);
         $form->handleRequest($request);

@@ -1,39 +1,46 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Document index{% endblock %}
+{% block title %}Document{% endblock %}
 
 {% block body %}
-    <h1>Document index</h1>
+    <h1>Vos fichiers</h1>
 
-    <table class="table">
+    <table class="table datatable">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Title</th>
-                <th>File</th>
-                <th>CreatedAt</th>
+                <th>#</th>
+                <th>Titre</th>
+                <th>Nom du fichier</th>
+                <th>Créé le</th>
                 <th>actions</th>
             </tr>
         </thead>
         <tbody>
         {% for document in documents %}
             <tr>
-                <td>{{ document.id }}</td>
+                <td>{{ loop.index }}</td>
                 <td>{{ document.title }}</td>
-                <td>{{ document.file }}</td>
+                <td><a href="{{ path('app_document_download', {'id': document.id}) }}" title = "télécharger"> {{ document.file }}</a></td>
                 <td>{{ document.createdAt ? document.createdAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>
-                    <a href="{{ path('app_document_show', {'id': document.id}) }}">show</a>
-                    <a href="{{ path('app_document_edit', {'id': document.id}) }}">edit</a>
+                    <a href="{{ path('app_document_edit', {'id': document.id}) }}" class="btn btn-warning btn-sm" title="Modifier">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{{ path('app_document_download', {'id': document.id}) }}" class="btn btn-success btn-sm" title = "télécharger">
+                        <i class="fas fa-download"></i> 
+                    </a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="5">no records found</td>
+                <td colspan="5">Pas de document</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_document_new') }}">Create new</a>
+    <a href="{{ path('app_document_new') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Enregistrer un document
+    </a>
 {% endblock %}
+

@@ -3,9 +3,92 @@
 
 {% block body %}
     <h1>Valider l'adhésion</h1>
+    {{ form_start(form, {'attr': {'id': 'userForm'}}) }}
+        <div class="row">
+            <div class="col">    
+                <fieldset class="row mb-3">
+                    <legend class="col-form-label col-sm-2 pt-0">Demandeur</legend>
+                    <div class="row mb-3">
+                        <label for="firstName" class="col-sm-2 col-form-label">Prénom</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control" id="firstName" value="{{ user.firstName }}">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="name" class="col-sm-2 col-form-label">Nom</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control" id="name" value="{{ user.name }}">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="username" class="col-sm-2 col-form-label">Pseudo</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control" id="username" value="{{ user.username }}">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="nationality" class="col-sm-2 col-form-label">Nationalité </label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control" id="nationality" value="{{ user.nationality }}">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="phoneNumber" class="col-sm-2 col-form-label">Tél :</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control" id="phoneNumber" value="{{ user.phoneNumber }}">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="email" class="col-sm-2 col-form-label">Email </label>
+                        <div class="col-sm-10">
+                            <input type="email" readonly class="form-control" id="email" value="{{ user.email }}">
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
 
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button class="btn btn-primary">Valider</button>
+            <div class="col"> 
+                <fieldset class="row mb-3">
+                    <legend class="col-form-label col-sm-2 pt-0">Membership</legend>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-2 col-form-label">{{ form_label(form.theUser) }}</label>
+                        <div class="col-sm-10">
+                            {{ form_widget(form.theUser, {'attr': {'class': 'form-control', 'disabled': 'disabled'}}) }}
+                            {# <input type="hidden" name="{{ form.theUser.vars.full_name }}" value="{{ form.theUser.vars.value }}"> #}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputNumber" class="col-sm-2 col-form-label">{{ form_label(form.interfederation) }}</label>
+                        <div class="col-sm-10">
+                            {{ form_widget(form.interfederation, {'attr': {'class': 'form-control', 'disabled': 'disabled'}}) }}
+                            {# <input type="hidden" name="{{ form.interfederation.vars.full_name }}" value="{{ form.interfederation.vars.value }}"> #}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputNumber" class="col-sm-2 col-form-label">{{ form_label(form.level) }}</label>
+                        <div class="col-sm-10">
+                            {{ form_widget(form.level, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-2 col-form-label">{{ form_label(form.fonction) }}</label>
+                        <div class="col-sm-10">
+                            {{ form_widget(form.fonction, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-2 col-form-label">{{ form_label(form.membershipType) }}</label>
+                        <div class="col-sm-10">
+                            {{ form_widget(form.membershipType, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+
+
+            {{ form_rest(form) }}
+        </div>
+        <button type="submit" class="btn btn-primary">{{ button_label|default('Valider') }}</button>
     {{ form_end(form) }}
+        {{ include('user_crud/_delete_form.html.twig', {'button_label':'Décliner la demande'}) }}
 {% endblock %}

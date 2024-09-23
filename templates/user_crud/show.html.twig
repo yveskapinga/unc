@@ -23,8 +23,7 @@
                             {% else %}
                                 <li class="fas fa-user" style="width: 150px; height: 150px;">profil</li>
                             {% endif %}
-                            {% if app.user == user %}
-                                
+                            {% if app.user == user %} 
                                 <p><a href="{{path('update_password')}}" title ="changer le mot de passe">Changer mot de passe</a>
                                  <!-- Le lien de parrainage à corriger -->
                                     {# <strong>Votre lien de parrainage :</strong>
@@ -38,6 +37,9 @@
                                         Lien copié dans le presse-papiers !
                                     </div> #}
                                 </p><!-- Fin de l'affichage du lien de parrainage -->
+                            {% endif %}
+                            {% if user.membership %}
+                                Fonction : {{user.membership.fonction}}
                             {% endif %}
                         </div>
                         <div class="col-md-6">

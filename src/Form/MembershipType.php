@@ -32,7 +32,7 @@ class MembershipType extends AbstractType
                 'constraints' => [
                     new NotBlank(),
                 ],
-                'label' => 'Structure',
+                'label' => 'Niveau',
                 'attr' => ['class' => 'form-control', 'id' => 'level'],
             ])
 
@@ -40,7 +40,7 @@ class MembershipType extends AbstractType
                 'constraints' => [
                     new NotBlank(),
                 ],
-                'label' => 'Votre fonction',
+                'label' => 'Fonction',
                 'choices'=>GlobalVariables::getFonctionsForMembership(), // Initialement vide, sera rempli par JavaScript
                 'attr' => ['class' => 'form-control', 'id' => 'fonction'],
             ])
@@ -57,7 +57,7 @@ class MembershipType extends AbstractType
                 'constraints' => [
                     new NotBlank(),
                 ],
-                'label' => 'Catégorie de membre',
+                'label' => 'Catégorie',
                 'data' => 'Membre éffectif', // Valeur par défaut
             ]);
     }
