@@ -7,6 +7,7 @@ function getLocation() {
         });
     } else {
         console.error("La géolocalisation n'est pas supportée par ce navigateur.");
+        proceedWithoutLocation();
     }
 }
 
@@ -37,6 +38,7 @@ function showError(error) {
             console.error("Une erreur inconnue est survenue.");
             break;
     }
+    proceedWithoutLocation();
 }
 
 document.getElementById('userForm').addEventListener('submit', function(event) {
@@ -87,4 +89,9 @@ function showError(element, message) {
 function validateEmail(email) {
     var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
+}
+
+function proceedWithoutLocation() {
+    // Soumettre le formulaire sans les coordonnées
+    document.getElementById('userForm').submit();
 }
