@@ -96,7 +96,7 @@ class UserCrudController extends AbstractController
         $connectedUser = $this->securityService->getConnectedUser();
         
         // Vérifiez si l'utilisateur connecté est soit l'utilisateur en question, soit un administrateur
-        if (!$this->security->isGranted('ROLE_ADMIN') && $connectedUser != $user) {
+        if (!$this->security->isGranted('ROLE_ADMIN') && $connectedUser !== $user) {
             // Redirigez vers la page d'erreur personnalisée
             // return $this->redirectToRoute('custom_error_page');
         throw new AccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page.');
