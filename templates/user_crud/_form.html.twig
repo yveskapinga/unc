@@ -228,16 +228,16 @@
                 if (data.lat && data.lon) {
                     updateFormAndSubmit(data.lat, data.lon);
                 } else {
-                    useIPGeolocationFallback();
+                    console.error("La géolocalisation n'est pas supportée par ce navigateur.");
+                    proceedWithoutLocation();
                 }
             })
             .catch(error => {
                 console.error("Erreur lors de la récupération de la position via IP-API:", error);
-                useIPGeolocationFallback();
             });
     }
 
-    function useIPGeolocationFallback() {
+    {# function useIPGeolocationFallback() {
         // Deuxième service : ipinfo.io
         fetch('https://ipinfo.io/json')
             .then(response => response.json())
@@ -253,7 +253,7 @@
                 console.error("Erreur lors de la récupération de la position via ipinfo.io:", error);
                 proceedWithoutLocation();
             });
-    }
+    } #}
 
     function updateFormAndSubmit(latitude, longitude) {
         // Mettre à jour les champs cachés du formulaire

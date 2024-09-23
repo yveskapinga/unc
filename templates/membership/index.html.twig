@@ -25,8 +25,8 @@
                 <td>{{ membership.fonction }}</td>
                 <td>{{ membership.interfederation }}</td>
                 <td>
-                    <a href="{{ path('app_membership_show', {'id': membership.id}) }}">voir</a>
-                    <a href="{{ path('app_membership_edit', {'id': membership.id}) }}">edit</a>
+                    <a href="{{ path('app_membership_show', {'id': membership.id}) }}" title ="Voir"><i class="fas fa-eye"></i></a>
+                    <a href="{{ path('app_membership_edit', {'id': membership.id}) }}" title ="Voir"><i class="fas fa-edit"></i></a>
                 </td>
             </tr>
         {% else %}
@@ -37,5 +37,5 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_membership_new') }}" class="btn btn-primary">Ajouter</a>
+    <i class="fas fa-plus" title ="ajouter"></i><a href="{{ path('app_membership_new') }}" class="btn btn-primary">Ajouter</a>
 {% endblock %}

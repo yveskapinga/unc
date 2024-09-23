@@ -25,18 +25,21 @@
                 <td>{{ user.isActive ? 'Actif' : 'Inactif' }}</td>
                 <td>{{ user.username }}</td>
                 <td>
-                    <a href="{{ path('app_user_crud_show', {'id': user.id}) }}"><i class="fas fa-eye" title ="Voir"></i>voir</a>
-                    <a href="{{ path('app_user_crud_edit', {'id': user.id}) }}"><i class="fas fa-edit" title ="Modifier"></i>edit</a>
-                    <a href="{{ path('app_user_crud_delete', {'id': user.id}) }}"><i class="fas fa-edit" title ="Modifier"></i>drop</a>
+                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                    <a href="{{ path('app_user_crud_show', {'id': user.id}) }}"><i class="fas fa-eye" title ="Voir"></i></a>
+                    <a href="{{ path('app_user_crud_edit', {'id': user.id}) }}"><i class="fas fa-edit" title ="Modifier"></i></a>
+                    <a href="{{ path('app_user_crud_delete', {'id': user.id}) }}"><i class="fas fa-minus" title ="Supprimer"></i></a>
+                {% endif %}
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="8">no records found</td>
+                <td colspan="8">aucune donnée trouvée</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
-
-    <a href="{{ path('app_user_crud_new') }}">Create new</a>
+    {% if is_granted('ROLE_ADMIN') %}
+        <a class="btn btn-primary" href="{{ path('app_user_crud_new') }}">Créer un nouvel utilisateur</a>
+    {% endif %}
 {% endblock %}

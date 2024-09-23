@@ -51,12 +51,15 @@
             <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
 
               <div class="d-flex justify-content-center py-4">
-                <a href="{{path('app_home')}}" class="logo d-flex align-items-center w-auto">
-                  <img src="{{asset('zenblog/assets/img/apple-touch-icon.jpg')}}" alt="">
-                  <span class="d-none d-lg-block">Kiungo</span>
-                  <small class="d-none d-lg-block">L'application web de l'UNC</small>
-                </a>
-              </div><!-- End Logo -->
+                  <a href="{{ path('app_index') }}" class="logo d-flex align-items-center w-auto">
+                      <img src="{{ asset('zenblog/assets/img/apple-touch-icon.jpg') }}" alt="">
+                      <div style="display: flex; flex-direction: column; align-items: center;">
+                          <span class="d-none d-lg-block">Kiungo</span>
+                          <small class="d-none d-lg-block">L'application web de l'UNC</small>
+                      </div>
+                  </a>
+              </div>
+              <!-- End Logo -->
 
               <div class="card mb-3">
 
