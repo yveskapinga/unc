@@ -104,6 +104,50 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getQuery()
             ->getResult();
     }
+
+     /**
+     * Recherche les utilisateurs par terme et pagination.
+     *
+     * @param string|null $term Terme de recherche
+     * @param int $page Numéro de la page
+     * @param int $limit Nombre d'utilisateurs par page
+     * @return User[]
+     */
+    public function searchUsers(string $term = null, int $page = 1, int $limit = 10): array
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        if ($term) {
+            $qb->andWhere('u.username LIKE :term OR u.email LIKE :term')
+               ->setParameter('term', '%' . $term . '%');
+        }
+
+        $qb->setFirstResult(($page - 1) * $limit)
+           ->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Compte le nombre total d'utilisateurs correspondant au terme de recherche.
+     *
+     * @param string|null $term Terme de recherche
+     * @return int
+     */
+    public function countUsers(string $term = null): int
+    {
+        $qb = $this->createQueryBuilder('u')
+                   ->select('COUNT(u.id)');
+
+        if ($term) {
+            $qb->andWhere('u.username LIKE :term OR u.email LIKE :term')
+               ->setParameter('term', '%' . $term . '%');
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    
     
 
 //    /**

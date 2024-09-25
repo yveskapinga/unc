@@ -113,5 +113,28 @@ class MessageRepository extends ServiceEntityRepository
             ->execute();
     }
 
+    public function findAllMessages(User $user)
+    {
+        return $this->createQueryBuilder('m')
+            ->where('m.sender = :user')
+            ->orWhere('m.recipient = :user')
+            ->setParameter('user', $user)
+            ->orderBy('m.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function conversation(User $user, $senderId)
+    {
+        return $this->createQueryBuilder('m')
+            ->where('m.sender = :user AND m.recipient = :sender')
+            ->orWhere('m.sender = :sender AND m.recipient = :user')
+            ->setParameter('user', $user)
+            ->setParameter('sender', $senderId)
+            ->orderBy('m.createdAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
 
 }

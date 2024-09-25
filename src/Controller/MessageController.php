@@ -37,69 +37,15 @@ class MessageController extends AbstractController
         // Message::setEncryptionService($encryptionService);
     }
 
-    // #[Route('/', name: 'app_message_index', methods: ['GET'])]
-    // public function index(UserRepository $userRepo, MessageRepository $messageRepository, Request $request): Response
-    // {
-    //     $currentUser = $this->securityService->getConnectedUser(); // Récupère l'utilisateur actuellement connecté
-    //     $sendersData = $this->messageRepository->findSendersWithUnreadCount($currentUser);
-    //     $allSendersData = $this->messageRepository->findAllSenders($currentUser);
-    //     // Récupère les entités User correspondantes
-    //     $senders = [];
-    //     foreach ($sendersData as $data) {
-    //         $sender = $userRepo->find($data['senderId']);
-    //         if ($sender) {
-    //             $senders[] = [
-    //                 'user' => $sender,
-    //                 'unreadCount' => $data['unreadCount']
-    //             ];
-    //         }
-    //     }
-
-    //     $allSenders = []; 
-    //     foreach ($allSendersData as $data){
-    //          $data = $userRepo->find($data['senderId']);
-    //         if ($data){
-    //             $allSenders[]['user'] = $data;
-    //         }
-    //     }
-    //     // Détermine l'utilisateur sélectionné
-    //     $selectedUserId = $request->query->get('userId');
-    //     $selectedUser = null;
-    //     $messages = [];
-    
-    //     if ($selectedUserId) {
-    //         $selectedUser = $userRepo->find($selectedUserId);
-    //     } elseif (!empty($senders)) {
-    //         // Sélectionne par défaut l'expéditeur le plus récent
-    //         $selectedUser = $senders[0]['user'];
-    //     }
-    
-    //     if ($selectedUser) {
-    //         $messages = $messageRepository->findMessagesBetweenUsers($currentUser, $selectedUser);
-    //         //dd($currentUser, $selectedUser);
-    //         // $messageRepository->markMessagesAsRead($currentUser, $selectedUser);
-    //     }
-    
-    //     return $this->render('message/index.html.twig', [
-    //         'senders' => $senders,
-    //         'messages' => $messages,
-    //         'selectedUser' => $selectedUser,
-    //     ]);
-    // }
 
     #[Route('/', name: 'app_message_index')]
-    public function index(MessageRepository $messageRepository): Response
+    public function index(UserRepository $userRepo): Response
     {
         $user = $this->securityService->getConnectedUser();
 
         // Récupérer tous les messages envoyés et reçus par l'utilisateur
-        $messages = $messageRepository->createQueryBuilder('m')
-            ->where('m.sender = :user')
-            ->orWhere('m.recipient = :user')
-            ->setParameter('user', $user)
-            ->orderBy('m.createdAt', 'DESC')
-            ->getQuery()
-            ->getResult();
+        $messages = $this->messageRepository->findAllMessages($user);
+
 
         // Organiser les messages par expéditeur
         $senders = [];
@@ -110,6 +56,7 @@ class MessageController extends AbstractController
 
         return $this->render('message/try.html.twig', [
             'senders' => $senders,
+            'users' => $userRepo->findAll()
         ]);
     }
 
@@ -119,16 +66,9 @@ class MessageController extends AbstractController
         $user = $this->securityService->getConnectedUser();
         $sender = $userRepo->find($senderId);
         $this->messageRepository->markMessagesAsRead($user, $sender);
-
-        $messages = $messageRepository->createQueryBuilder('m')
-            ->where('m.sender = :user AND m.recipient = :sender')
-            ->orWhere('m.sender = :sender AND m.recipient = :user')
-            ->setParameter('user', $user)
-            ->setParameter('sender', $senderId)
-            ->orderBy('m.createdAt', 'ASC')
-            ->getQuery()
-            ->getResult();
-
+    
+        $messages = $messageRepository->conversation($user, $senderId);
+    
         $conversation = [];
         foreach ($messages as $message) {
             $message->decryptContent();
@@ -138,8 +78,13 @@ class MessageController extends AbstractController
                 'isSent' => $message->getSender()->getId() === $user->getId(),
             ];
         }
-
-        $sender = $messages[0]->getSender()->getId() === $user->getId() ? $messages[0]->getRecipient() : $messages[0]->getSender();
+    
+        if (count($messages) > 0) {
+            $sender = $messages[0]->getSender()->getId() === $user->getId() ? $messages[0]->getRecipient() : $messages[0]->getSender();
+        } else {
+            $sender = $userRepo->find($senderId); // Utiliser directement le destinataire
+        }
+    
         return new JsonResponse([
             'messages' => $conversation,
             'sender' => [
@@ -148,6 +93,7 @@ class MessageController extends AbstractController
             ],
         ]);
     }
+    
 
     #[Route('/send_message', name: 'send_message', methods: ['POST'])]
     public function sendMessage(Request $request, EntityManagerInterface $em): JsonResponse
@@ -175,9 +121,6 @@ class MessageController extends AbstractController
         ]);
     }
 
-
-    
-    
     #[Route('/messages/{id}', name: 'user_messages_with_user')]
     public function messages(User $user): Response
     {
@@ -281,4 +224,30 @@ class MessageController extends AbstractController
             'messages' => $messages,
         ]);
     }
+
+    #[Route('/api/users', name: 'api_users')]
+    public function getUsers(Request $request, UserRepository $userRepository): JsonResponse
+    {
+        $term = $request->query->get('q');
+        $page = $request->query->getInt('page', 1);
+        $limit = 10; // Nombre d'utilisateurs par page
+
+        $users = $userRepository->searchUsers($term, $page, $limit);
+        $totalUsers = $userRepository->countUsers($term);
+
+        $results = [];
+        foreach ($users as $user) {
+            $results[] = [
+                'id' => $user->getId(),
+                'username' => $user->getUsername(),
+                'profilePicture' => $user->getPhoto(),
+            ];
+        }
+
+        return new JsonResponse([
+            'items' => $results,
+            'total_count' => $totalUsers,
+        ]);
+    }
+
 }

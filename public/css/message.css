@@ -153,3 +153,41 @@
 .sender-item:last-child {
     border-bottom: none;
 }
+
+/* Nouvelle section ajoutée from bing */
+.new-message {
+    padding: 10px;
+    background-color: #fff;
+    border-top: 1px solid #ccc;
+    margin-top: 10px;
+}
+.new-message h2 {
+    margin-bottom: 10px;
+}
+.new-message .form-group {
+    margin-bottom: 10px;
+}
+.new-message .form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.new-message .btn {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.new-message-container {
+    display: flex;
+    align-items: center;
+}
+
+.new-message-container label {
+    margin-right: 10px;
+}
+

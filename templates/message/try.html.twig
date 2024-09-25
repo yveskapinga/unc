@@ -9,7 +9,7 @@
                 {% for senderId, messages in senders %}
                     {% set sender = messages[0].getSender().getId() == app.user.id ? messages[0].getRecipient() : messages[0].getSender() %}
                     <li class="sender-item " data-sender-id="{{ senderId }}">
-                        <img style="width: 50px; height: 50px;" src="{{ asset('/assets/uploads/photos/' ~ sender.getPhoto()) }}" alt="profile">
+                        <img style="width: 50px; height: 50px;" src="{{ asset('uploads/photos/' ~ sender.getPhoto()) }}" alt="profile">
                         <div>
                             <strong>{{ sender.getUsername() }}</strong><br>
                             {# <small>{{ messages|length }} messages</small> #}
@@ -17,7 +17,19 @@
                     </li>
                         <hr class="dropdown-divider">
                 {% endfor %}
+
             </ul>
+            <div class="new-message-container">
+                <label for="recipient">New</label>
+                <select id="recipient" class="form-control">
+                    <option value="">Sélectionner un utilisateur</option>
+                    {% for user in users %}
+                        <option data-sender-id="{{ user.id }}" value="{{ user.id }}">{{ user.username }} ({{ user.email }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
         </div>
         <div class="sms">
             <div class="sms-header">
@@ -43,40 +55,57 @@
 {% block stylesheet %}
 <link href="{{asset('css/message.css')}}" rel="stylesheet">
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.expediteurs li').forEach(sender => {
-        sender.addEventListener('click', () => {
-            const senderId = sender.getAttribute('data-sender-id');
-            fetch(`/message/conversation/${senderId}`)
-                .then(response => response.json())
-                .then(data => {
-                    const conversationDiv = document.getElementById('conversation');
-                    const selectedUserPicture = document.getElementById('selected-user-picture');
-                    const selectedUserName = document.getElementById('selected-user-name');
-                    const recipientIdInput = document.getElementById('recipientId');
 
-                    // Mettre à jour les informations de l'expéditeur sélectionné
-                    selectedUserPicture.src = `{{ asset('uploads/photos/') }}${data.sender.profilePicture}`;
-                    selectedUserName.textContent = data.sender.username;
-                    recipientIdInput.value = senderId;
+document.addEventListener('DOMContentLoaded', () => {
+    const senderItems = document.querySelectorAll('.sender-item');
+    const conversation = document.getElementById('conversation');
+    const selectedUserName = document.getElementById('selected-user-name');
+    const selectedUserPicture = document.getElementById('selected-user-picture');
+    const recipientIdInput = document.getElementById('recipientId');
+    const recipientSelect = document.getElementById('recipient');
 
-                    // Afficher la conversation
-                    conversationDiv.innerHTML = '';
+    function loadConversation(senderId) {
+        fetch(`/message/conversation/${senderId}`)
+            .then(response => response.json())
+            .then(data => {
+                selectedUserName.innerText = data.sender.username;
+                selectedUserPicture.src = `{{ asset('uploads/photos/') }}${data.sender.profilePicture}`;
+                recipientIdInput.value = senderId;
+
+                conversation.innerHTML = '';
+                if (data.messages && data.messages.length > 0) {
                     data.messages.forEach(message => {
-                        const messageDiv = document.createElement('div');
-                        messageDiv.classList.add('mon-message');
-                        messageDiv.classList.add(message.isSent ? 'sent' : 'received');
-                        messageDiv.innerHTML = `
-                            <p>${message.content}<small>${message.createdAt}</small></p>
-                            
-                        `;
-                        conversationDiv.appendChild(messageDiv);
+                        const messageElement = document.createElement('div');
+                        messageElement.classList.add('mon-message', message.isSent ? 'sent' : 'received');
+                        messageElement.innerHTML = `<p>${message.content}<small>${message.createdAt}</small></p>`;
+                        conversation.appendChild(messageElement);
                     });
+                } else {
+                    conversation.innerHTML = '<p>Pas de message dans cette conversation.</p>';
+                }
 
-                    // Faire défiler vers le bas de la conversation
-                    conversationDiv.scrollTop = conversationDiv.scrollHeight;
-                });
+                conversation.scrollTop = conversation.scrollHeight;
+            })
+            .catch(() => {
+                selectedUserName.innerText = 'Utilisateur inconnu';
+                selectedUserPicture.src = '';
+                recipientIdInput.value = senderId;
+                conversation.innerHTML = '<p>Pas de message dans cette conversation.</p>';
+            });
+    }
+
+    senderItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const senderId = this.getAttribute('data-sender-id');
+            loadConversation(senderId);
         });
+    });
+
+    recipientSelect.addEventListener('change', function() {
+        const selectedUserId = this.value;
+        if (selectedUserId) {
+            loadConversation(selectedUserId);
+        }
     });
 
     document.querySelector('.mon-message-input form').addEventListener('submit', function(event) {
@@ -89,21 +118,26 @@
         })
         .then(response => response.json())
         .then(data => {
-            const conversationDiv = document.getElementById('conversation');
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('mon-message', 'sent');
-            messageDiv.innerHTML = `
-                <p>${data.content}<br>
-                <small>${data.createdAt}</small>
-                </p>
-                
-            `;
-            conversationDiv.appendChild(messageDiv);
-            conversationDiv.scrollTop = conversationDiv.scrollHeight;
+            messageDiv.innerHTML = `<p>${data.content}<br><small>${data.createdAt}</small></p>`;
+            conversation.appendChild(messageDiv);
+            conversation.scrollTop = conversation.scrollHeight;
             form.reset();
+
+            // Supprimer le message "Pas de message dans cette conversation" si présent
+            const noMessageElement = conversation.querySelector('p');
+            if (noMessageElement && noMessageElement.textContent === 'Pas de message dans cette conversation.') {
+                noMessageElement.remove();
+            }
         });
     });
 });
 
 </script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 {% endblock %}
+
+
