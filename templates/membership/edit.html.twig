@@ -7,7 +7,7 @@
 
     {{ include('membership/_form.html.twig', {'button_label': 'Update'}) }}
 
-    <a href="{{ path('app_membership_index') }}">back to list</a>
+    <a class = "btn btn-secondary" href="{{ path('app_membership_index') }}">back to list</a>
 
     {{ include('membership/_delete_form.html.twig') }}
 {% endblock %}
