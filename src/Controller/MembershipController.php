@@ -26,7 +26,7 @@ class MembershipController extends AbstractController
         ){}
     
 
-    #[Route('/new/{id}', name: 'app_membership_new')]
+    #[Route('/new/{id?}', name: 'app_membership_new')]
     public function validateAction(User $user, Request $request): Response
     {
         if (!$user) {
