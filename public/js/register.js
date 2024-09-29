@@ -1,6 +1,11 @@
+document.getElementById('userForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Empêche la soumission du formulaire initiale
+    getLocation(); // Appelle la fonction pour obtenir la position 
+});
+
 function getLocation() {
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition, showError, {
+        navigator.geolocation.getCurrentPosition(showPosition, proceedWithoutLocation, {
             enableHighAccuracy: true,
             timeout: 5000,
             maximumAge: 0
@@ -23,28 +28,10 @@ function showPosition(position) {
     document.getElementById('userForm').submit();
 }
 
-function showError(error) {
-    switch(error.code) {
-        case error.PERMISSION_DENIED:
-            console.error("L'utilisateur a refusé la demande de géolocalisation.");
-            break;
-        case error.POSITION_UNAVAILABLE:
-            console.error("Les informations de localisation ne sont pas disponibles.");
-            break;
-        case error.TIMEOUT:
-            console.error("La demande de localisation a expiré.");
-            break;
-        case error.UNKNOWN_ERROR:
-            console.error("Une erreur inconnue est survenue.");
-            break;
-    }
-    proceedWithoutLocation();
+function proceedWithoutLocation() {
+    // Soumettre le formulaire sans les coordonnées
+    document.getElementById('userForm').submit();
 }
-
-document.getElementById('userForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Empêche la soumission du formulaire initiale
-    getLocation(); // Appelle la fonction pour obtenir la position 
-});
 
 // Validation côté client
 document.querySelectorAll('#userForm input').forEach(function(input) {
@@ -89,9 +76,4 @@ function showError(element, message) {
 function validateEmail(email) {
     var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
-}
-
-function proceedWithoutLocation() {
-    // Soumettre le formulaire sans les coordonnées
-    document.getElementById('userForm').submit();
 }
