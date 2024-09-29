@@ -4,6 +4,56 @@
 {% endblock %}
 
 {% block stylesheet %}
+    <style>
+            /* Styles pour la modal */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
+            padding-top: 60px; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgb(0,0,0); 
+            background-color: rgba(0,0,0,0.9); 
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+        }
+
+        .modal-content, #caption {
+            animation-name: zoom;
+            animation-duration: 0.6s;
+        }
+
+        @keyframes zoom {
+            from {transform: scale(0)} 
+            to {transform: scale(1)}
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js" defer></script>
 {% endblock %}
@@ -25,8 +75,15 @@
                         <div class="col-md-6">
                             {% if user.photo %}
                                 <a href="{{ asset('uploads/photos/' ~ user.photo) }}" data-lightbox="profile-photo">
-                                    <img src="{{ asset('uploads/photos/' ~ user.photo) }}" alt="Photo de profil" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px;">
-                                </a>                            {% else %}
+                                    <img id="profilePhoto" src="{{ asset('uploads/photos/' ~ user.photo) }}" alt="Photo de profil" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px;">
+                                    <div id="myModal" class="modal">
+                                        <span class="close">&times;</span>
+                                        <img class="modal-content" id="img01">
+                                        <div id="caption"></div>
+                                    </div>                            
+                                </a>                            
+                                
+                            {% else %}
                                 <li class="fas fa-user" style="width: 150px; height: 150px;">profil</li>
                             {% endif %}
                             {% if app.user == user %} 
@@ -198,4 +255,27 @@
             });
         </script>
     {% endif %}
+        <script>
+            // Obtenir la modal
+        var modal = document.getElementById("myModal");
+
+        // Obtenir l'image et l'élément modal
+        var img = document.getElementById("profilePhoto");
+        var modalImg = document.getElementById("img01");
+        var captionText = document.getElementById("caption");
+
+        img.onclick = function(){
+            modal.style.display = "block";
+            modalImg.src = this.src;
+            captionText.innerHTML = this.alt;
+        }
+
+        // Obtenir l'élément de fermeture
+        var span = document.getElementsByClassName("close")[0];
+
+        // Fermer la modal lorsque l'utilisateur clique sur <span> (x)
+        span.onclick = function() { 
+            modal.style.display = "none";
+        }
+     </script>
 {% endblock %}
