@@ -77,7 +77,7 @@
             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
               <li class="dropdown-header">
                 Vous avez {{ unreadMessages|length }} messages non lus
-                <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">Voir tout</span></a>
+                <a href="{{path('app_message_index')}}"><span class="badge rounded-pill bg-primary p-2 ms-2">Voir tout</span></a>
               </li>
               {% for message in unreadMessages | slice(0,4) %}
               <li>

@@ -27,8 +27,10 @@ class ReferralService
     }
 
     public function generateReferralLink(User $user) : string{
+        $referralCode = rawurlencode($user->getReferralCode());
+
         return $this->router->generate('app_register', [
-            'ref'=>$user->getReferralCode()
+            'ref'=>$referralCode
         ], 
         UrlGeneratorInterface::ABSOLUTE_URL
     );

@@ -1,0 +1,29 @@
+1. Symfony Notifier
+Le composant Notifier de Symfony vous permet d’envoyer des notifications via différents canaux comme les emails, Slack, SMS, etc. Vous pouvez l’utiliser pour recevoir des alertes en cas d’erreurs ou d’événements spécifiques.
+
+Installation :
+
+composer require symfony/notifier
+
+Configuration :
+
+# config/packages/notifier.yaml
+framework:
+    notifier:
+        chatter_transports:
+            slack: '%env(SLACK_DSN)%'
+        texter_transports:
+            sms: '%env(SMS_DSN)%'
+
+Utilisation :
+
+PHP
+
+use Symfony\Component\Notifier\Notification\Notification;
+use Symfony\Component\Notifier\NotifierInterface;
+
+public function notifyError(NotifierInterface $notifier, string $message)
+{
+    $notification = new Notification($message, ['email', 'slack']);
+    $notifier->send($notification);
+}

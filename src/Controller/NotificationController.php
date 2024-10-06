@@ -19,8 +19,12 @@ class NotificationController extends AbstractController
     #[Route('/', name: 'app_notification_index', methods: ['GET'])]
     public function index(NotificationRepository $notificationRepository, UserInterface $user): Response
     {
+        $notifications = $notificationRepository->findBy(
+            ['theUser' => $user],
+            ['createdAt' => 'DESC']
+        );
         return $this->render('notification/index.html.twig', [
-            'notifications' => $notificationRepository->findBy(['theUser' => $user]),
+            'notifications' => $notifications
         ]);
     }
 

@@ -84,6 +84,10 @@ services:
   App\EventListener\UserRegisteredListener:
     tags:
       - { name: 'kernel.event_listener', event: 'user.registered', method: 'onUserRegistered' }
+      
+  # App\EventListener\ExceptionListener:
+  #   tags:
+  #     - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
   # Uncomment and configure the following services as needed
   # App\EventSubscriber\NotificationSubscriber:
   #   arguments:

@@ -75,7 +75,7 @@ class PageController extends AbstractController
             }
 
             if ($request->get('new')){
-               
+               dd('je suis entré ici');
                 $content = $form->get('content')->getData();
                 $name = $form->get('name')->getData() ;
                 $email = $form->get('email')->getData();

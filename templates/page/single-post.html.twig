@@ -149,7 +149,9 @@
                           
                           <button class="btn btn-primary">envoyer</button>
                           {# <div id="comment-form-container"></div> #}
+                          {% if not app.user %}
                           <input type = "hidden" name = "new" value="new"></input>
+                          {% endif %}
                       {{ form_end(form) }}
                       </div>
                   {# </section><!-- /Comment Form Section --> #}

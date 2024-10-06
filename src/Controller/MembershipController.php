@@ -33,7 +33,7 @@ class MembershipController extends AbstractController
             throw $this->createNotFoundException('Utilisateur non trouvé');
         }
         if ($user->getMembership()){
-            dd('la demande a déjà été validée', $user->getMembership());
+            return new Response('la demande a déjà été validée');
         }
 
         $membership = new Membership();
@@ -49,7 +49,9 @@ class MembershipController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $membership->setTheUser($user);
             $membership->setInterfederation($interfederation);
+            $user->setIsActive(true);
             $this->em->persist($membership);
+            $this->em->persist($user);
             $this->em->flush();
 
             $this->notificationService

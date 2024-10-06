@@ -18,15 +18,15 @@ class ExceptionListener
 
     public function onKernelException(ExceptionEvent $event)
     {
-        $exception = $event->getThrowable();
-        $statusCode = $exception instanceof HttpExceptionInterface ? $exception->getStatusCode() : Response::HTTP_INTERNAL_SERVER_ERROR;
+        // $exception = $event->getThrowable();
+        // $statusCode = $exception instanceof HttpExceptionInterface ? $exception->getStatusCode() : Response::HTTP_INTERNAL_SERVER_ERROR;
 
-        // Rediriger vers la route d'erreur
-        $response = new RedirectResponse($this->router->generate('page_error', [
-            'message' => $exception->getMessage(),
-            'status_code' => $statusCode,
-        ]));
+        // // Rediriger vers la route d'erreur
+        // $response = new RedirectResponse($this->router->generate('page_error', [
+        //     'message' => $exception->getMessage(),
+        //     'status_code' => $statusCode,
+        // ]));
 
-        $event->setResponse($response);
+        // $event->setResponse($response);
     }
 }

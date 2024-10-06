@@ -74,14 +74,14 @@
                     <div class="row">
                         <div class="col-md-6">
                             {% if user.photo %}
-                                <a href="{{ asset('uploads/photos/' ~ user.photo) }}" data-lightbox="profile-photo">
-                                    <img id="profilePhoto" src="{{ asset('uploads/photos/' ~ user.photo) }}" alt="Photo de profil" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px;">
-                                    <div id="myModal" class="modal">
-                                        <span class="close">&times;</span>
-                                        <img class="modal-content" id="img01">
-                                        <div id="caption"></div>
-                                    </div>                            
-                                </a>                            
+                                {# <a href="{{ asset('uploads/photos/' ~ user.photo) }}" data-lightbox="profile-photo"> #}
+                                <img id="profilePhoto" src="{{ asset('uploads/photos/' ~ user.photo) }}" alt="Photo de profil" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px;">
+                                <div id="myModal" class="modal">
+                                    <span class="close">&times;</span>
+                                    <img class="modal-content" id="img01">
+                                    <div id="caption"></div>
+                                </div>                            
+                                {# </a>                             #}
                                 
                             {% else %}
                                 <li class="fas fa-user" style="width: 150px; height: 150px;">profil</li>

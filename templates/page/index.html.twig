@@ -176,7 +176,7 @@
                       <ul class="trending-post">
                           {% for topic in topCommentedTopics %}
                               <li>
-                                  <a href="{{ path('app_topic_show', { 'id': topic.id }) }}">
+                                  <a href="{{ path('single-post', { 'id': topic.id }) }}">
                                       <span class="number">{{ loop.index }}</span>
                                       <h3>{{ topic.title }}</h3>
                                       <span class="author">{{ topic.author.firstname }}</span>
