@@ -1,0 +1,39 @@
+
+<script>
+    document.getElementById('userForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    let form = event.target;
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            document.getElementById('latitude').value = position.coords.latitude;
+            document.getElementById('longitude').value = position.coords.longitude;
+            form.submit();
+        }, function(error) {
+            console.warn(`Erreur de géolocalisation: ${error.message}`);
+            form.submit();
+        });
+    } else {
+        alert("La géolocalisation n'est pas supportée par ce navigateur.");
+        form.submit();
+    }
+    });
+
+        {# Ici c'est le code simple pour récupérer les coordonnées #}
+
+        {# document.getElementById('membership_request_form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    document.getElementById('{{ form.latitude.vars.id }}').value = position.coords.latitude;
+                    document.getElementById('{{ form.longitude.vars.id }}').value = position.coords.longitude;
+                    event.target.submit();
+                });
+            } else {
+                alert("La géolocalisation n'est pas supportée par ce navigateur.");
+                event.target.submit();
+            }
+            }); 
+        #}
+
+</script>
